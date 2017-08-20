@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./tdbWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="tdbWin" height="100%" width="100%" style="margin:auto;" use="${tdbWindow}">
+    <!-- <zscript src="/zs/projet.zs"/> -->
+        <box pack="start" align="center" width="100%" height="100%"> 
+            <tabbox mold="accordion-lite" width="99%" height="590px">
+                <tabs>
+                    <tab label="Liste des projets encours" />
+                    <tab label="Détail charges projet" />
+                    <tab label="Comparaison affectation produit et Bon de commande" />
+                </tabs>
+                <tabpanels>
+                    <tabpanel>  
+                        <vbox width="1200px" >
+                            <label value="" />
+                            <chart id="sbarchart3d" title="Dépenses et gains des cinq derniers projets " width="1100px"
+                                   height="240" type="bar" threeD="true" fgAlpha="128"
+                                   model="@{tdbWin.chargeMontantProjet}" />
+                            <label value="Projets en cours" style="font-size:15px" />
+                            <listbox id="lstprojet" model="@{tdbWin.listeProjetsEncours}" width="100%" height="300" autopaging="true" >
+                                <listhead sizable="true">
+                                    <listheader label="Projet"/>
+                                    <listheader label="Date début réelle"/>
+                                    <listheader label="Date fin prévue"/>
+                                    <listheader label="Charge réelle"/>	
+                                    <listheader label="Avancement réel"/>
+                                    <listheader label="Montant BC"/>
+                                </listhead>
+                                <listitem self="@{each=element}"> 
+                                    <listcell label="@{element.nom}"/>
+                                    <listcell label="@{element.dateDebutReelle}"/>
+                                    <listcell label="@{element.dateFinPrevue}"/>
+                                    <listcell label="@{element.chargeReelle}"/>
+                                    <listcell label="@{element.avancementReel}"/>
+                                    <listcell label="@{element.montantBonCommande}"/>
+                                </listitem>
+                            </listbox>
+                        </vbox>             
+                    </tabpanel>
+                    <tabpanel>  
+                        <hbox width="100%" widths="650px, 100%">
+                            <vbox>
+                                <grid>
+                                    <rows>
+                                        <row>
+                                            <label value="Choisir un projet" />
+                                            <combobox id="coprojets" model="@{tdbWin.projets}" selectedItem="@{tdbWin.projetSelected}" width="99%" onSelect="tdbWin.getDetailsProjet();">
+                                                <comboitem self="@{each=elementprojet}" label="@{elementprojet}"/>
+                                            </combobox>
+                                        </row>
+                                    </rows>
+                                </grid>
+                                <chart id="etatCharges3d" title="Répartition charges projet" width="640" height="440"
+                                       type="pie" threeD="true" fgAlpha="128" model="@{tdbWin.etatCharges}" />
+                            </vbox>
+                            <tabbox mold="accordion-lite" width="99%" height="550px">
+                                <tabs>
+                                    <tab label="Charges Employés" />
+                                    <tab label="Affectation produits" />
+                                    <tab label="Affectation outils / Machines / Engins" />
+                                    <tab label="Locations Outils" />
+                                    <tab label="Sous-traitances" />
+                                    <tab label="Charges divers" />
+                                </tabs>
+                                <tabpanels>
+                                    <tabpanel>
+                                        <listbox id="lstchargesEmployess" model="@{tdbWin.chargesEmployess}" width="100%" height="100%" autopaging="true" vflex="120px">
+                                            <listhead sizable="true">
+                                                <listheader label="Employé"/>
+                                                <listheader label="Heures travail"/>	
+                                                <listheader label="Heures abscence"/>
+                                                <listheader label="Total"/>
+                                            </listhead>
+                                            <listitem self="@{each=element}"> 
+                                                <listcell label="@{element.employe}"/>
+                                                <listcell label="@{element.heuresTravail}"/>	
+                                                <listcell label="@{element.heuresAbscence}"/>	
+                                                <listcell label="@{element.total}"/>
+                                            </listitem>
+                                        </listbox>
+                                    </tabpanel>
+                                    <tabpanel>
+                                        <listbox id="lstchargesAffectationProduits" model="@{tdbWin.chargesAffectationProduits}" width="100%" height="100%" autopaging="true" vflex="120px">
+                                            <listhead sizable="true">
+                                                <listheader label="Produit"/>
+                                                <listheader label="Quantite"/>
+                                                <listheader label="Total"/>
+                                            </listhead>
+                                            <listitem self="@{each=element}"> 
+                                                <listcell label="@{element.produit}"/>
+                                                <listcell label="@{element.quantite}"/>
+                                                <listcell label="@{element.total}"/>
+                                            </listitem>
+                                        </listbox>
+                                    </tabpanel>
+                                    <tabpanel>
+                                        <listbox id="lstchargesAffectationOutils" model="@{tdbWin.chargesAffectationOutils}" width="100%" height="100%" autopaging="true" vflex="120px">
+                                            <listhead sizable="true">
+                                                <listheader label="Outil"/>
+                                                <listheader label="Date"/>
+                                                <listheader  label="Heures entretien"/>	
+                                                <listheader  label="Heures utilisation"/>	
+                                                <listheader  label="Coût horaire"/>
+                                                <listheader label="Total"/>
+                                            </listhead>
+                                            <listitem self="@{each=element}"> 
+                                                <listcell label="@{element.outilEmploye}"/>
+                                                <listcell label="@{element.date}"/>
+                                                <listcell label="@{element.heuresEntretien}"/>
+                                                <listcell label="@{element.heuresUtilisation}"/>
+                                                <listcell label="@{element.coutHoraire}"/>
+                                                <listcell label="@{element.total}"/>
+                                            </listitem>
+                                        </listbox>
+                                    </tabpanel>
+                                    <tabpanel>
+                                        <listbox id="lstchargesLocationOutils" model="@{tdbWin.chargesLocationOutils}" width="100%" height="100%" autopaging="true" vflex="120px">
+                                            <listhead sizable="true">
+                                                <listheader label="Loueur"/>                                                
+                                                <listheader label="Outil"/>                                                
+                                                <listheader label="Date"/>                                                
+                                                <listheader label="Total"/>
+                                            </listhead>
+                                            <listitem self="@{each=element}"> 
+                                                <listcell label="@{element.loueur}"/>
+                                                <listcell label="@{element.outilLouable}"/>
+                                                <listcell label="@{element.date}"/>
+                                                <listcell label="@{element.total}"/>
+                                            </listitem>
+                                        </listbox>
+                                    </tabpanel>
+                                    <tabpanel>
+                                        <listbox id="lstchargesSoustraitances" model="@{tdbWin.chargesSoustraitances}" width="100%" height="100%" autopaging="true" vflex="120px">
+                                            <listhead sizable="true">
+                                                <listheader label="Soustraitant"/>
+                                                <listheader label="Date"/>
+                                                <listheader label="Mission"/>
+                                                <listheader label="Total"/>
+                                            </listhead>
+                                            <listitem self="@{each=element}"> 
+                                                <listcell label="@{element.soustraitant}"/>
+                                                <listcell label="@{element.date}"/>
+                                                <listcell label="@{element.nom}"/>
+                                                <listcell label="@{element.cout}"/>
+                                            </listitem>
+                                        </listbox>
+                                    </tabpanel>
+                                    <tabpanel>
+                                        <listbox id="lstchargesChargeDiverss" model="@{tdbWin.chargesChargeDiverss}" width="100%" height="100%" autopaging="true" vflex="120px">
+                                            <listhead sizable="true">
+                                                <listheader label="Date"/>
+                                                <listheader label="Nom"/>
+                                                <listheader label="Total"/>
+                                            </listhead>
+                                            <listitem self="@{each=element}"> 
+                                                <listcell label="@{element.date}"/>
+                                                <listcell label="@{element.nom}"/>
+                                                <listcell label="@{element.cout}"/>
+                                            </listitem>
+                                        </listbox>
+                                    </tabpanel>                                    
+                                </tabpanels>
+                            </tabbox>
+                        </hbox>                         
+                    </tabpanel>
+                    <tabpanel>
+                        <vbox width="1200px">
+                            <grid>
+                                <rows>
+                                    <row>
+                                        <label value="Choisir un projet" />
+                                        <combobox id="coprojetscomp" model="@{tdbWin.projets}" selectedItem="@{tdbWin.projetSelected}" width="99%" onSelect="tdbWin.getDetailsProjet();">
+                                            <comboitem self="@{each=elementprojetcomp}" label="@{elementprojetcomp}"/>
+                                        </combobox>
+                                    </row>
+                                </rows>
+                            </grid>
+                            <hbox>
+                                <vbox>
+                                    <label value="Produits Bon commande" />
+                                    <listbox id="lstchargesAffectationProduitsComp" model="@{tdbWin.produitsBonCommande}" width="550px" height="450px" autopaging="true" vflex="120px">
+                                        <listhead sizable="true">
+                                            <listheader label="Produit"/>                                                
+                                            <listheader label="Quantite"/>                                               
+                                        </listhead>
+                                        <listitem self="@{each=element11}"> 
+                                            <listcell label="@{element11.produit}"/>
+                                            <listcell label="@{element11.quantite}"/>
+                                        </listitem>
+                                    </listbox>
+                                </vbox>
+                                <vbox>
+                                    <label value="Produits Affectés au chantier" />
+                                    <listbox id="lstchargesPdtBonCommande" model="@{tdbWin.chargesAffectationProduits}" width="550px" height="450px" autopaging="true" vflex="120px">
+                                        <listhead sizable="true">
+                                            <listheader label="Produit"/>                                                
+                                            <listheader label="Quantite"/>                                               
+                                        </listhead>
+                                        <listitem self="@{each=element12}"> 
+                                            <listcell label="@{element12.produit}"/>
+                                            <listcell label="@{element12.quantite}"/>
+                                        </listitem>
+                                    </listbox>
+                                </vbox>
+                            </hbox>
+                        </vbox>
+                    </tabpanel>
+                </tabpanels>
+            </tabbox>
+        </box>
+    </window>
+</zk>

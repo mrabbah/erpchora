@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./depensesWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="depensesWin" height="100%" width="100%" style="margin:auto;" use="${depensesWindow}">
+    <!-- <zscript src="/zs/depenses.zs"/> -->
+        <borderlayout>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="depensesWin.select()" model="@{depensesWin.listeObjets}" selectedItem="@{depensesWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDate" format="dd/MM/yyyy" value="@{depensesWin.filtre.date}" onOK="depensesWin.ofs=0; depensesWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterDetail" value="@{depensesWin.filtre.detail}" onChanging="depensesWin.ofs; depensesWin.filtre.detail=event.value; depensesWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterMontant" value="@{depensesWin.filtre.montant}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                depensesWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(depensesWin.filtre.montant != null) {
+                                                                depensesWin.filtre.montant = null;
+                                                        }
+                                                } else {
+                                                        depensesWin.filtre.montant=new Double(event.value);
+                                                }
+                                                depensesWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+                            
+                            <auxheader>
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filternatureDeCharge" model="@{depensesWin.natureDeCharges}" selectedItem="@{depensesWin.filtre.natureDeCharge}" autocomplete="true" autodrop="true" mold="rounded" onSelect="depensesWin.ofs=0;depensesWin.filtrer()" onOK="depensesWin.ofs=0;depensesWin.filtrer()">
+                                    <comboitem self="@{each=elementfiltrenatureDeCharge}" label="@{elementfiltrenatureDeCharge}"/>
+                                </combobox>
+                            </auxheader>
+                            
+                            <auxheader colspan="1"/>
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+							
+                            <listheader label="Date" sort="auto(date)" onSort="depensesWin.sort(event)"/>	
+							
+                            <listheader label="Detail" sort="auto(detail)" onSort="depensesWin.sort(event)"/>	
+							
+                            <listheader label="Montant" sort="auto(montant)" onSort="depensesWin.sort(event)"/>	
+                            
+                            <listheader label="Nature de charge" sort="auto(natureDeCharge.libelle)" onSort="depensesWin.sort(event)"/>
+                            
+                            <listheader width="32px" />		                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            
+                            <listcell>
+							
+                                <datebox format="dd/MM/yyyy" value="@{element.date, save-when='self.onChange'}" inplace="true" onOK="depensesWin.objet=self.parent.parent.value; depensesWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.detail, save-when='self.onChange'}" inplace="true" onOK="depensesWin.objet=self.parent.parent.value; depensesWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <doublebox value="@{element.montant, save-when='self.onChange'}" inplace="true" onOK="depensesWin.objet=self.parent.parent.value; depensesWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>
+                            
+                            <listcell>
+							
+                                <textbox readonly="true" value="@{element.natureDeCharge, save-when='self.onChange'}" inplace="true" onOK="depensesWin.objet=self.parent.parent.value; depensesWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>
+                            
+                            <listcell image="/images/skin/database_delete.png">
+                                <attribute name="onClick">
+                                    <![CDATA[
+                                    Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                        public void onEvent(Event evt) throws InterruptedException {
+                                            if (evt.getName().equals("onOK")) {
+                                                depensesWin.delete();
+                                                depensesWin.natureDeChargeSelected = null;
+                                                conatureDeCharges.disabled = true; 
+                                                //depensesWin.afficherValeurAssociation();
+                                            } 
+                                        }
+                                    });
+                                    ]]>
+                                </attribute>                                 
+                            </listcell>
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{depensesWin.tailleListe}" pageSize="@{depensesWin.maxNb}" onPaging="depensesWin.getNextElements(event);" />
+                    <separator/>
+                    <grid>
+                        <columns>
+                            <column width="32px" />
+							
+                            <column />
+							
+                            <column />
+							
+                            <column />
+                            
+                            <column />
+                            
+                            <column width="32px" />
+							
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png" >
+                                    <attribute name="onClick">
+                                        <![CDATA[
+                                            depensesWin.objet = com.choranet.gesticom.Depenses.class.newInstance();
+                                            depensesWin.rafraichirField();
+                                            depensesWin.rafraichirList();
+                                            depensesWin.isUpdate = false;
+                                        ]]>
+                                    </attribute>
+                                </image>
+								
+                                <datebox id="fielddatebis" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{depensesWin.objet.date, save-when='self.onChange'}" inplace="true" width="99%">
+                                    <attribute name="onChange">
+                                        <![CDATA[ 
+                                            if(self != null){ 
+                                                conatureDeCharges.disabled = false;
+                                            }
+                                            else conatureDeCharges.disabled = true; 
+                                        ]]>    
+                                    </attribute>
+                                    <attribute name="onOK">
+                                        <![CDATA[ 
+                                            depensesWin.addOrUpdate();
+                                            conatureDeCharges.disabled = false;
+                                        ]]>    
+                                    </attribute>
+                                </datebox>
+								
+                                <textbox id="fielddetailbis" value="@{depensesWin.objet.detail, save-when='self.onChange'}" inplace="true" width="99%">
+                                    <attribute name="onOK">
+                                        <![CDATA[ 
+                                            depensesWin.addOrUpdate();
+                                            conatureDeCharges.disabled = false;
+                                        ]]>    
+                                    </attribute>
+                                </textbox>
+								
+                                <doublebox id="fieldmontantbis" value="@{depensesWin.objet.montant, save-when='self.onChange'}" inplace="true" width="99%" >
+                                    <attribute name="onOK">
+                                        <![CDATA[ 
+                                            depensesWin.addOrUpdate();
+                                            conatureDeCharges.disabled = false;
+                                        ]]>    
+                                    </attribute>
+                                </doublebox>
+                                
+                                <combobox id="conatureDeCharges" disabled="true" readonly="true" model="@{depensesWin.natureDeCharges}" selectedItem="@{depensesWin.natureDeChargeSelected}" width="99%">
+                                    <attribute name="onOK">
+                                        <![CDATA[ 
+                                            depensesWin.addOrUpdate();
+                                            conatureDeCharges.disabled = false;
+                                        ]]>    
+                                    </attribute>
+                                    <comboitem self="@{each=elementnatureDeCharge}" label="@{elementnatureDeCharge}"/>
+                                </combobox>
+                                
+                                <label/>
+                            </row>
+                        </rows>
+                    </grid>
+                    <separator/>
+                    <button id="btnPdf" onClick="depensesWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="depensesWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./soustraitantWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="soustraitantWin" height="100%" width="100%" style="margin:auto;" use="${soustraitantWindow}" onCreate='soustraitantWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/soustraitant.zs"/> -->
+        <borderlayout>
+           
+            <west id="westPanel" title="Gestion des sous-traitants" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+						
+                            <row>
+                                <label value="Numéro"/>
+								 
+                                <intbox id="fieldNumero" constraint="no empty: Veillez indiquez une valeur" value="@{soustraitantWin.objet.numero, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+                            <row>
+                                <label value="Nom"/>
+								 
+                                <textbox id="fieldNom" constraint="no empty: Veillez indiquez une valeur" value="@{soustraitantWin.objet.nom, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+                            <row>
+                                <label value="Adresse"/>
+								 
+                                <textbox id="fieldAdresse"  value="@{soustraitantWin.objet.adresse, save-when='triggerBtn.onClick'}" />
+                            </row>												
+						
+                            <row>
+                                <label value="Code Postal"/>
+								 
+                                <textbox id="fieldCodePostal" value="@{soustraitantWin.objet.codePostal, save-when='triggerBtn.onClick'}" />
+                            </row>												
+						
+                            <row>
+                                <label value="Ville"/>
+								 
+                                <textbox id="fieldVille"  value="@{soustraitantWin.objet.ville, save-when='triggerBtn.onClick'}" />
+                            </row>												
+						
+                            <row>
+                                <label value="Téléphone"/>
+								 
+                                <textbox id="fieldTelephone" value="@{soustraitantWin.objet.telephone, save-when='triggerBtn.onClick'}" />
+                            </row>												
+						
+                            <row>
+                                <label value="Fax"/>
+								 
+                                <textbox id="fieldFax"  value="@{soustraitantWin.objet.fax, save-when='triggerBtn.onClick'}" />
+                            </row>												
+						
+                            <row>
+                                <label value="Email"/>
+								 
+                                <textbox id="fieldEmail" value="@{soustraitantWin.objet.email, save-when='triggerBtn.onClick'}" />
+                            </row>												
+						 
+						
+                        </rows>
+                    </grid>					
+					
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));soustraitantWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));soustraitantWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        soustraitantWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute> 
+                    </button>
+                    <!-- <button id="btnNew" onClick="soustraitantWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="soustraitantWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="soustraitantWin.select()" model="@{soustraitantWin.listeObjets}" selectedItem="@{soustraitantWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterNumero" value="@{soustraitantWin.filtre.numero}" width="100%">
+                                    <attribute name="onChanging">
+										<![CDATA[
+											soustraitantWin.ofs=0;
+											if(event.value.equals("")) {
+												if(soustraitantWin.filtre.numero != null) {
+													soustraitantWin.filtre.numero = null;
+												}
+											} else {
+												soustraitantWin.filtre.numero=new Integer(event.value);
+											}
+											soustraitantWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterNom" value="@{soustraitantWin.filtre.nom}" onChanging="soustraitantWin.ofs; soustraitantWin.filtre.nom=event.value; soustraitantWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterAdresse" value="@{soustraitantWin.filtre.adresse}" onChanging="soustraitantWin.ofs; soustraitantWin.filtre.adresse=event.value; soustraitantWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterCodePostal" value="@{soustraitantWin.filtre.codePostal}" onChanging="soustraitantWin.ofs; soustraitantWin.filtre.codePostal=event.value; soustraitantWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterVille" value="@{soustraitantWin.filtre.ville}" onChanging="soustraitantWin.ofs; soustraitantWin.filtre.ville=event.value; soustraitantWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterTelephone" value="@{soustraitantWin.filtre.telephone}" onChanging="soustraitantWin.ofs; soustraitantWin.filtre.telephone=event.value; soustraitantWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterFax" value="@{soustraitantWin.filtre.fax}" onChanging="soustraitantWin.ofs; soustraitantWin.filtre.fax=event.value; soustraitantWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterEmail" value="@{soustraitantWin.filtre.email}" onChanging="soustraitantWin.ofs; soustraitantWin.filtre.email=event.value; soustraitantWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+							
+                            <listheader id="hnumero" label="Numéro" sort="auto(numero)" onSort="soustraitantWin.sort(event)"/>	
+							
+                            <listheader id="hnom" label="Nom" sort="auto(nom)" onSort="soustraitantWin.sort(event)"/>	
+							
+                            <listheader id="hadresse" label="Adresse" sort="auto(adresse)" onSort="soustraitantWin.sort(event)"/>	
+							
+                            <listheader id="hcodePostal" label="Code Postal" sort="auto(codePostal)" onSort="soustraitantWin.sort(event)"/>	
+							
+                            <listheader id="hville" label="Ville" sort="auto(ville)" onSort="soustraitantWin.sort(event)"/>	
+							
+                            <listheader id="htelephone" label="Téléphone" sort="auto(telephone)" onSort="soustraitantWin.sort(event)"/>	
+							
+                            <listheader id="hfax" label="Fax" sort="auto(fax)" onSort="soustraitantWin.sort(event)"/>	
+							
+                            <listheader id="hemail" label="Email" sort="auto(email)" onSort="soustraitantWin.sort(event)"/>	
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            
+                            <listcell>
+							
+                                <intbox value="@{element.numero, save-when='self.onChange'}" inplace="true" onOK="soustraitantWin.objet=self.parent.parent.value; soustraitantWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.nom, save-when='self.onChange'}" inplace="true" onOK="soustraitantWin.objet=self.parent.parent.value; soustraitantWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.adresse, save-when='self.onChange'}" inplace="true" onOK="soustraitantWin.objet=self.parent.parent.value; soustraitantWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.codePostal, save-when='self.onChange'}" inplace="true" onOK="soustraitantWin.objet=self.parent.parent.value; soustraitantWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.ville, save-when='self.onChange'}" inplace="true" onOK="soustraitantWin.objet=self.parent.parent.value; soustraitantWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.telephone, save-when='self.onChange'}" inplace="true" onOK="soustraitantWin.objet=self.parent.parent.value; soustraitantWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.fax, save-when='self.onChange'}" inplace="true" onOK="soustraitantWin.objet=self.parent.parent.value; soustraitantWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.email, save-when='self.onChange'}" inplace="true" onOK="soustraitantWin.objet=self.parent.parent.value; soustraitantWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{soustraitantWin.tailleListe}" pageSize="@{soustraitantWin.maxNb}" onPaging="soustraitantWin.getNextElements(event);" />
+                    
+                    <separator/>
+                    <button id="btnNew" onClick="soustraitantWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="soustraitantWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="soustraitantWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

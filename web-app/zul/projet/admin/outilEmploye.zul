@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./outilEmployeWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="outilEmployeWin" height="100%" width="100%" style="margin:auto;" use="${outilEmployeWindow}" onCreate='outilEmployeWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/outilEmploye.zs"/> -->
+        <borderlayout>
+            
+            <west id="westPanel" title="Gestion des outils, Machines et Engins" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+						
+                            <row>
+                                <label value="Numero"/>
+								 
+                                <intbox id="fieldNumero" constraint="no empty: Veillez indiquez une valeur" value="@{outilEmployeWin.objet.numero, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+                            <row>
+                                <label value="Nom"/>
+								 
+                                <textbox id="fieldNom" constraint="no empty: Veillez indiquez une valeur" value="@{outilEmployeWin.objet.nom, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+                            <row>
+                                <label value="CoutHoraire"/>
+								 
+                                <doublebox id="fieldCoutHoraire" constraint="no empty: Veillez indiquez une valeur" value="@{outilEmployeWin.objet.coutHoraire, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						 
+						
+                            <row>
+                                <label value="employe " />
+                                <combobox id="coemployes" model="@{outilEmployeWin.employes}" selectedItem="@{outilEmployeWin.employeSelected, save-when='self.onChange'}">
+                                    <comboitem self="@{each=elementemploye1}" label="@{elementemploye1}"/>
+                                </combobox>
+                            </row>
+						
+                        </rows>
+                    </grid>					
+					
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));outilEmployeWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));outilEmployeWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        outilEmployeWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute> 
+                    </button>
+                    <!-- <button id="btnNew" onClick="outilEmployeWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="outilEmployeWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="outilEmployeWin.select()" model="@{outilEmployeWin.listeObjets}" selectedItem="@{outilEmployeWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterNumero" value="@{outilEmployeWin.filtre.numero}" width="100%">
+                                    <attribute name="onChanging">
+										<![CDATA[
+											outilEmployeWin.ofs=0;
+											if(event.value.equals("")) {
+												if(outilEmployeWin.filtre.numero != null) {
+													outilEmployeWin.filtre.numero = null;
+												}
+											} else {
+												outilEmployeWin.filtre.numero=new Integer(event.value);
+											}
+											outilEmployeWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterNom" value="@{outilEmployeWin.filtre.nom}" onChanging="outilEmployeWin.ofs; outilEmployeWin.filtre.nom=event.value; outilEmployeWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterCoutHoraire" value="@{outilEmployeWin.filtre.coutHoraire}" width="100%">
+                                    <attribute name="onChanging">
+										<![CDATA[
+											outilEmployeWin.ofs=0;
+											if(event.value.equals("")) {
+												if(outilEmployeWin.filtre.coutHoraire != null) {
+													outilEmployeWin.filtre.coutHoraire = null;
+												}
+											} else {
+												outilEmployeWin.filtre.coutHoraire=new Double(event.value);
+											}
+											outilEmployeWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+                            
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+<!--                                <textbox id="filterEmploye" value="@{outilEmployeWin.filtre.nom}" onChanging="outilEmployeWin.ofs; outilEmployeWin.filtre.nom=event.value; outilEmployeWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>-->
+                                <combobox id="filteremployebis" model="@{outilEmployeWin.employes}" selectedItem="@{outilEmployeWin.filtre.employe}" autocomplete="true" autodrop="true" mold="rounded" onSelect="outilEmployeWin.ofs=0;outilEmployeWin.filtrer()" onOK="outilEmployeWin.ofs=0;outilEmployeWin.filtrer()">
+                                    <comboitem self="@{each=elementfiltreemploye}" label="@{elementfiltreemploye}"/>
+                                </combobox>
+                            </auxheader>
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+							
+                            <listheader id="hnumero" label="Numero" sort="auto(numero)" onSort="outilEmployeWin.sort(event)"/>	
+							
+                            <listheader id="hnom" label="Nom" sort="auto(nom)" onSort="outilEmployeWin.sort(event)"/>	
+							
+                            <listheader id="hcoutHoraire" label="CoutHoraire" sort="auto(coutHoraire)" onSort="outilEmployeWin.sort(event)"/>	
+                            
+                            <listheader id="hemploye" label="Employe" sort="auto(employe.nom)" onSort="outilEmployeWin.sort(event)"/>	
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            
+                            <listcell>
+							
+                                <intbox value="@{element.numero, save-when='self.onChange'}" inplace="true" onOK="outilEmployeWin.objet=self.parent.parent.value; outilEmployeWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.nom, save-when='self.onChange'}" inplace="true" onOK="outilEmployeWin.objet=self.parent.parent.value; outilEmployeWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <doublebox value="@{element.coutHoraire, save-when='self.onChange'}" inplace="true" onOK="outilEmployeWin.objet=self.parent.parent.value; outilEmployeWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>
+                            
+                            <listcell>
+							
+                                <textbox value="@{element.employe.nom}" inplace="true"  width="99%"/>
+							
+                            </listcell>
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{outilEmployeWin.tailleListe}" pageSize="@{outilEmployeWin.maxNb}" onPaging="outilEmployeWin.getNextElements(event);" />
+                    
+                    <separator/>
+                    <button id="btnNew" onClick="outilEmployeWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="outilEmployeWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="outilEmployeWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

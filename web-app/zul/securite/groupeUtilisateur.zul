@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./groupeUtilisateurWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"  ?>
+<!--<?page zscriptLanguage="GroovyGrails"?>-->
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="groupeUtilisateurWin" height="100%" width="100%" style="margin:auto;" use="${groupeUtilisateurWindow}">
+        <borderlayout>            
+            <west id="westPanel" title="CRUD" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+                            <row>
+                                <label value="Nom"/>
+                                <textbox id="fieldIntitule" constraint="" value="@{groupeUtilisateurWin.objet.intitule, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>
+                            <row>
+                                <label value="Description"/>
+                                <textbox id="fieldDescription" constraint="" value="@{groupeUtilisateurWin.objet.description, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>
+                        </rows>
+                    </grid>					
+                    <separator />
+                    <groupbox  mold="3d" width="100%" open="false">
+                        <caption label="Droits du goupe" />
+                        <tree id="treedroit" rows="19" multiple="true" checkmark="true" model="@{groupeUtilisateurWin.droits}" treeitemRenderer="@{groupeUtilisateurWin.droitRenderer}" zclass="z-dottree" />                            
+                    </groupbox>
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));groupeUtilisateurWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));groupeUtilisateurWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        groupeUtilisateurWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute> 
+                    </button>
+                    <button id="btnCancel" onClick="groupeUtilisateurWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="groupeUtilisateurWin.select()"
+                             model="@{groupeUtilisateurWin.listeObjets}" selectedItem="@{groupeUtilisateurWin.objetSelected}" 
+                             width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filter1" value="@{groupeUtilisateurWin.filtre.intitule}" onChanging='groupeUtilisateurWin.ofs=0;groupeUtilisateurWin.filtre.intitule=event.value; groupeUtilisateurWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())' width="100%" />
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filter2" value="@{groupeUtilisateurWin.filtre.description}" onChanging='groupeUtilisateurWin.ofs=0;groupeUtilisateurWin.filtre.description=event.value; groupeUtilisateurWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())' width="100%" />
+                            </auxheader>
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader id="hintitule" label="Nom" sort="auto(intitule)"/>
+                            <listheader id="hdescription" label="Description" sort="auto(description)"/>	
+                        </listhead>
+                        <listitem self="@{each=element}">
+                            <listcell label="@{element.intitule}"/>                            
+                            <listcell label="@{element.description}"/>
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{groupeUtilisateurWin.tailleListe}" pageSize="@{groupeUtilisateurWin.maxNb}" onPaging="groupeUtilisateurWin.getNextElements(event);" />
+                    <separator/>
+                    <button id="btnNew" onClick="groupeUtilisateurWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                </groupbox>
+            </center>            
+        </borderlayout>
+    </window>
+</zk>

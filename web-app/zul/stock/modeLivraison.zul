@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./modeLivraisonWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="modeLivraisonWin" height="100%" width="100%" style="margin:auto;" use="${modeLivraisonWindow}" onCreate='modeLivraisonWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/modeLivraison.zs"/> -->
+        <borderlayout>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="modeLivraisonWin.select()" model="@{modeLivraisonWin.listeObjets}" selectedItem="@{modeLivraisonWin.objetSelected}"  width="100%" height="480px" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterCode" value="@{modeLivraisonWin.filtre.code}" onChanging="modeLivraisonWin.ofs; modeLivraisonWin.filtre.code=event.value; modeLivraisonWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterTransporteur" value="@{modeLivraisonWin.filtre.transporteur}" onChanging="modeLivraisonWin.ofs; modeLivraisonWin.filtre.transporteur=event.value; modeLivraisonWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filterPaiementALaReception" readonly="true" onOK="modeLivraisonWin.ofs=0;modeLivraisonWin.filtrer();" >
+                                    <attribute name="onCreate">
+                                        <![CDATA[
+                                            List l = new ArrayList();
+                                            l.add("Oui/Non");
+                                            l.add("Oui");
+                                            l.add("Non");
+                                            ListModelList lm = new ListModelList(l);
+                                            lm.addSelection(lm.get(0));
+                                            self.setModel(lm);
+                                        ]]>
+                                    </attribute>
+                                    <attribute name="onChange">
+                                        <![CDATA[
+                                            if(self.selectedIndex == 0) {
+                                                modeLivraisonWin.filtre.paiementALaReception = null;
+                                            } else if(self.selectedIndex == 1) {
+                                                modeLivraisonWin.filtre.paiementALaReception = true;
+                                            } else {
+                                                modeLivraisonWin.filtre.paiementALaReception = false;
+                                            }
+                                        ]]>
+                                    </attribute>
+                                </combobox>                                
+                            </auxheader>
+                            
+                            <auxheader colspan="1"/>
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+							
+                            <listheader label="Code" sort="auto(code)" onSort="modeLivraisonWin.sort(event)"/>	
+							
+                            <listheader label="Transporteur" sort="auto(transporteur)" onSort="modeLivraisonWin.sort(event)"/>	
+							
+                            <listheader label="PaiementALaReception" sort="auto(paiementALaReception)" onSort="modeLivraisonWin.sort(event)"/>	
+                            
+                            <listheader width="50px" />
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            
+                            <listcell>
+							
+                                <textbox constraint="no empty: Veillez indiquez une valeur" value="@{element.code, save-when='self.onChange'}" inplace="true" onOK="modeLivraisonWin.objet=self.parent.parent.value; modeLivraisonWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox constraint="no empty: Veillez indiquez une valeur" value="@{element.transporteur, save-when='self.onChange'}" inplace="true" onOK="modeLivraisonWin.objet=self.parent.parent.value; modeLivraisonWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <combobox inplace="true" readonly="true" >
+                                    <attribute name="onOK">
+                                        <![CDATA[
+                                            if(self.selectedIndex == 0) {
+                                                self.parent.parent.value.paiementALaReception = true;
+                                            } else {
+                                                self.parent.parent.value.paiementALaReception = false;
+                                            }
+                                            modeLivraisonWin.objet=self.parent.parent.value; 
+                                            modeLivraisonWin.update();
+                                        ]]>
+                                    </attribute>
+                                    <attribute name="onCreate">
+                                        <![CDATA[
+                                            List l = new ArrayList();
+                                            l.add("Oui");
+                                            l.add("Non");
+                                            ListModelList lm = new ListModelList(l);
+                                            self.setModel(lm);
+                                        ]]>
+                                    </attribute>
+                                    <attribute name="onAfterRender">
+                                        <![CDATA[
+                                            if(self.parent.parent.value.paiementALaReception == true) {
+                                                self.selectedIndex = 0;
+                                            } else {
+                                                self.selectedIndex = 1;
+                                            }
+                                        ]]>
+                                    </attribute>
+                                </combobox>
+							
+                            </listcell>		
+                            
+                            <listcell image="/images/skin/database_delete.png" unless="${arg.ispopup}">
+                                <attribute name="onClick">
+                                    <![CDATA[
+                                    Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                        public void onEvent(Event evt) throws InterruptedException {
+                                            if (evt.getName().equals("onOK")) {
+                                                modeLivraisonWin.delete();
+                                            } 
+                                        }
+                                    });
+                                    ]]>
+                                </attribute>                                      
+                            </listcell>
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{modeLivraisonWin.tailleListe}" pageSize="@{modeLivraisonWin.maxNb}" onPaging="modeLivraisonWin.getNextElements(event);" />
+                    <separator/>
+                    <grid>
+                        <columns>
+                            <column width="32px" />
+							
+                            <column />
+							
+                            <column />
+							
+                            <column />
+                            
+                            <column width="50px" />
+							
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png" >
+                                    <attribute name="onClick">
+                                        <![CDATA[
+                                            modeLivraisonWin.objet = com.choranet.stock.ModeLivraison.class.newInstance();
+                                            modeLivraisonWin.rafraichirField();
+                                            modeLivraisonWin.rafraichirList();
+                                            modeLivraisonWin.isUpdate = false;
+                                        ]]>
+                                    </attribute>
+                                </image>
+								
+                                <textbox id="fieldcodebis" constraint="no empty: Veillez indiquez une valeur" value="@{modeLivraisonWin.objet.code, save-when='triggerBtn.onClick'}" 
+                                         inplace="true" width="99%"/>
+                                    		
+                                <textbox id="fieldtransporteurbis" constraint="no empty: Veillez indiquez une valeur" value="@{modeLivraisonWin.objet.transporteur, save-when='triggerBtn.onClick'}" 
+                                         inplace="true" width="99%"/>
+								
+                                <combobox id="fieldpaiementALaReceptionbis" inplace="true" readonly="true" >
+                                    <attribute name="onCreate">
+                                        <![CDATA[
+                                                List l = new ArrayList();
+                                                l.add("");
+                                                l.add("Oui");
+                                                l.add("Non");
+                                                ListModelList lm = new ListModelList(l);
+                                                lm.addSelection(lm.get(0));
+                                                self.setModel(lm);
+                                                modeLivraisonWin.objet.paiementALaReception = true;
+                                        ]]>
+                                    </attribute>
+                                    <attribute name="onChange">
+                                        <![CDATA[
+                                                if(self.selectedIndex == 1) {
+                                                        modeLivraisonWin.objet.paiementALaReception = true;
+                                                }
+                                                if(self.selectedIndex == 2) {
+                                                        modeLivraisonWin.objet.paiementALaReception = false;
+                                                }
+                                        ]]>
+                                    </attribute>
+                                </combobox>	
+                                
+                                <button id="btnAdd" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn)); modeLivraisonWin.addOrUpdate();" image="/images/skin/database_add.png" width="99%"/>
+                            </row>
+                        </rows>
+                    </grid>
+                    <separator/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                    <button id="btnPdf" unless="${arg.ispopup}" onClick="modeLivraisonWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" unless="${arg.ispopup}" onClick="modeLivraisonWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

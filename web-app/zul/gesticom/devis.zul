@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./devisWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+        
+    <window id="devisWin" height="100%" width="100%" style="margin:auto;" use="${devisWindow}" onCreate='devisWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/devis.zs"/> -->
+        <zscript>
+        <![CDATA[
+              boolean afficherNumPartenaire = false;
+              String s_partenaire = "client";
+              String uper_s_partenaire = "Client";
+              if(devisWin.type.equals("ACHAT")) {
+                  s_partenaire = "fournisseur";
+                  uper_s_partenaire = "Fournisseur";
+                  afficherNumPartenaire = true;
+              }
+        ]]>
+        </zscript>
+        <popup id="informationsporduit" width="200px" >  
+            <label id="lbStock" value="" style="color: #F52203;"  /> 
+        </popup>
+        <borderlayout>
+            <west id="westPanel" title="Gestion des devis" size="100%" flex="true" splittable="true" collapsible="true" open="false" border="none">
+                <borderlayout>
+                    <west size="200px" flex="true" border="none">
+                        <vbox height="100%">
+                            <separator />
+                            <groupbox  height="100%">
+                                <grid fixedLayout="true" span="true" sizedByContent="true">
+                                    <rows>
+                                        <row>
+                                            <label value="Numéro système"/>
+                                        </row>
+                                        <row>
+                                            <textbox id="fieldNumDevis" value="@{devisWin.objet.numDevis, save-when='triggerBtn.onClick'}" disabled="true" width="99%"/>                                                                                                                        
+                                        </row>
+                                        <row if="${afficherNumPartenaire}">
+                                            <label value="Numéro fournisseur"/>
+                                        </row>
+                                        <row if="${afficherNumPartenaire}">
+                                            <textbox id="fieldReference" value="@{devisWin.objet.reference, save-when='triggerBtn.onClick'}"  width="99%"/>                                                                                                                        
+                                        </row>
+                                        <row>
+                                            <label value="${uper_s_partenaire}" />
+                                        </row>
+                                        <row>
+                                            <bandbox id="band" autodrop="true" >
+                                                <bandpopup>
+                                                    <vbox>
+                                                        <label value="Choisir un ${s_partenaire} existant:" />
+                                                        <combobox id="copartenaires" autodrop="true"  constraint="no empty:Veuillez choisir un ${s_partenaire}" model="@{devisWin.partenaires}" selectedItem="@{devisWin.objet.partenaire, save-when='self.onChange'}" width="99%">
+                                                            <attribute name="onSelect">
+                                                            <![CDATA[
+                                                                if(gridAjout.visible == false) {
+                                                                    gridAjout.visible = true;
+                                                                }
+                                                                band.value = devisWin.objet.partenaire.raisonSociale;
+                                                                band.close();
+                                                                band.disabled = true;
+                                                                btnSave.visible = true;
+                                                                conewproduits.focus();
+                                                            ]]>
+                                                            </attribute>
+                                                            <attribute name="onOK">
+                                                            <![CDATA[
+                                                                if(gridAjout.visible == false) {
+                                                                    gridAjout.visible = true;
+                                                                }
+                                                                band.value = devisWin.objet.partenaire.raisonSociale;
+                                                                band.close();
+                                                                band.disabled = true;
+                                                                btnSave.visible = true;
+                                                                conewproduits.focus();
+                                                            ]]>
+                                                            </attribute>
+                                                            <comboitem self="@{each=elementpartenaire}" label="@{elementpartenaire}"/>
+                                                        </combobox>
+                                                        <button label="Ajouter un nouveau ${s_partenaire}" image="/images/skin/database_edit.png" onClick="winClient.visible = true;" />
+                                                        <window id="winClient" title="Ajout d'un nouveau ${s_partenaire}" width="300px" height="170px" closable="true" visible="false" onClose="self.visible = false; event.stopPropagation();">
+                                                            <toolbar>
+                                                                <toolbarbutton id="btnSavePartenraire" label="Enregistrer" image="/images/skin/DisketteBlack-16x16.png" onClick="winClient.visible = false; devisWin.ajouterPartenaire();" />
+                                                                <toolbarbutton label="Annuler" image="/images/skin/cancel.png" onClick="winClient.visible = false;" />
+                                                            </toolbar>
+                                                            <grid>
+                                                                <rows>
+                                                                    <row>
+                                                                        <label value="Code" />
+                                                                        <textbox value="@{devisWin.nouveauPartenaire.code, save-when='btnSavePartenraire.onClick'}" constraint="no empty:Veuillez indiquez le code ${s_partenaire}" />
+                                                                    </row>
+                                                                    <row>
+                                                                        <label value="(Nom/Raison) ${s_partenaire}" />
+                                                                        <textbox value="@{devisWin.nouveauPartenaire.raisonSociale, save-when='btnSavePartenraire.onClick'}" constraint="no empty:Veuillez indiquez (Nom/Raison) ${s_partenaire}"/>
+                                                                    </row>
+                                                                    <row>
+                                                                        <label value="Est il un particulier?" />
+                                                                        <checkbox checked="@{devisWin.nouveauPartenaire.estParticulier, save-when='btnSavePartenraire.onClick'}"/>
+                                                                    </row>
+                                                                </rows>
+                                                            </grid>
+                                                        </window>
+                                                    </vbox>
+                                                </bandpopup>
+                                            </bandbox>
+                                            
+                                        </row>
+                                        <row>
+                                            <label value="Date devis"/>
+                                        </row>
+                                        <row>
+                                            <datebox id="fieldDate" constraint="no empty:Veuillez indiquez la date du devis" format="dd/MM/yyyy" value="@{devisWin.objet.date, save-when='triggerBtn.onClick'}" width="99%"/>
+                                        </row>
+                                        <row>
+                                            <label value="Date fin validité"/>
+                                        </row>
+                                        <row>
+                                            <datebox id="fieldDateFinValidite" format="dd/MM/yyyy" value="@{devisWin.objet.dateFinValidite, save-when='triggerBtn.onClick'}" width="99%"/>
+                                        </row>
+                                    </rows>
+                                </grid>
+                            </groupbox>
+                            <separator />
+                            <groupbox  height="100%" >
+                                <grid fixedLayout="true" span="true" sizedByContent="true">
+                                    <rows>
+                                        <row>
+                                            <label value="TOTAL HT" />
+                                        </row>
+                                        <row>
+                                            <doublebox id="fieldTotalHt" format="#,##0.##" value="@{devisWin.objet.trans_totalht}" readonly="true" width="99%" style="font-weight:bold;color:#093;"/>
+                                        </row>
+                                        <row>
+                                            <label value="TVA"/>
+                                        </row>
+                                        <row>
+                                            <doublebox id="fieldTva" format="#,##0.##" readonly="true" value="@{devisWin.objet.trans_totaltva}" width="99%" style="font-weight:bold;color:#33F;"/>
+                                        </row>
+                                        <row>
+                                            <label value="TTC" />
+                                        </row>
+                                        <row>
+                                            <doublebox id="fieldTtc" format="#,##0.##" readonly="true" value="@{devisWin.objet.trans_totalttc}" width="99%" style="font-weight:bold;color:#F93;"/>
+                                        </row>
+                                    </rows>
+                                </grid>	
+                            </groupbox>
+                        </vbox>
+                    </west>
+                    <center border="none">
+                        <groupbox height="100%">
+                            <tabbox height="490px">
+                                <tabs>
+                                    <tab label="Lignes produits" />
+                                </tabs>
+                                <tabpanels>
+                                    <tabpanel>
+                                        <vbox width="100%">
+                                            <listbox id="lstligneProduits" model="@{devisWin.objet.ligneProduits}"  rows="10" sizedByContent="true" span="true">
+                                                <listhead sizable="true">
+                                                    <listheader width="32px"/>
+                                                    <listheader label="Séquence" width="70px"/>	
+                                                    <listheader label="Produit" width="300px"/>	
+                                                    <listheader label="Quantité" width="70px"/>	
+                                                    <listheader label="UM" width="70px"/>	
+                                                    <listheader if="${devisWin.type == 'VENTE'}" label="Prix vente std" width="90px"/>	
+                                                    <listheader if="${devisWin.type == 'ACHAT'}" label="Prix achat" width="90px"/>	
+                                                    <listheader label="Prix déduit" width="90px"/>	
+                                                    <listheader label="Remise %" width="70px"/>	
+                                                    <listheader label="Sous total" width="150px"/>	
+                                                </listhead>
+                                                <listitem value="@{lignepdt}" self="@{each=lignepdt}">    
+                                                    <listcell image="/images/skin/database_delete.png" onClick="devisWin.deleteLigneProduit(self.parent.value)"/>
+                                                    <listcell>
+                                                        <intbox format="#,##0" value="@{lignepdt.sequenceLigne, save-when='self.onChange'}" inplace="true" onChange='self.style="font-weight:bold"' width="99%" />
+                                                    </listcell>							
+                                                    <listcell>
+                                                        <textbox value="@{lignepdt.produit}" inplace="true" readonly="true"  hflex="1"/>
+                                                    </listcell>
+                                                    <listcell>
+<!--                                                        <doublebox format="#,##0.##" value="@{lignepdt.quantite, save-when='self.onChange'}" constraint="no negative,no empty:Veuillez indiquez une valeur positive" inplace="true" onChange='self.style="font-weight:bold"; devisWin.updateLigneProduit();' onOK='self.style="font-weight:bold"; devisWin.updateLigneProduit();' width="99%" />-->
+                                                        <doublebox format="#,##0.##" value="@{lignepdt.quantite, save-when='self.onChange'}" constraint="no negative,no empty:Veuillez indiquez une valeur positive" inplace="true" width="99%" >
+                                                            <attribute name="onChanging">
+                                                                <![CDATA[
+                                                                    if(event.value != null && !event.value.equals("")) {
+                                                                      if(Double.valueOf(event.value.replaceAll(",", ".")) > 0){
+                                                                        self.style="font-weight:bold";
+                                                                        devisWin.calculerPrixDeduitForCurrentLigne(self.parent.parent.value, Double.valueOf(event.value.replaceAll(",", ".")));
+                                                                      }
+                                                                      else self.constraint="no negative, no zero:Veuillez indiquez une valeur strictement positive";
+                                                                    }
+                                                                ]]>
+                                                            </attribute>
+                                                            <attribute name="onChange,onOK">
+                                                                <![CDATA[
+                                                                    if(self.value != null && (self.value.equals("") || Double.valueOf(event.value.replaceAll(",", ".")) < 0)){ 
+                                                                        self.focus = true;
+                                                                        else {
+                                                                            devisWin.updateLigneProduit();
+                                                                        }
+                                                                    }
+                                                                ]]>
+                                                            </attribute>
+                                                            
+                                                        </doublebox>    
+                                                    </listcell>	
+                                                    <listcell label="@{lignepdt.produit.uniteMesure.libelle}" />
+                                                    <listcell label="@{lignepdt.produit.prixAchat, converter='com.choranet.zk.DoubleConverter'}" />
+                                                    <listcell>
+<!--                                                        <doublebox value="@{lignepdt.prixDeduit, save-when='self.onChange'}" constraint="no negative,no empty:Veuillez indiquez une valeur positive" format="#,##0.##" inplace="true" onChange='self.style="font-weight:bold"; devisWin.updateLigneProduit();' onOK='self.style="font-weight:bold"; devisWin.updateLigneProduit();' width="99%" />-->
+                                                        <doublebox value="@{lignepdt.prixDeduit, save-when='self.onChange'}" constraint="no negative,no empty:Veuillez indiquez une valeur positive" format="#,##0.##" inplace="true" onChange='self.style="font-weight:bold"; devisWin.updateLigneProduit();' onOK='self.style="font-weight:bold"; devisWin.updateLigneProduit();' width="99%" >
+                                                            <attribute name="onChanging">
+                                                                <![CDATA[
+                                                                    if(event.value != null && !event.value.equals("")) {
+                                                                        devisWin.updateLigneProduit();
+                                                                    }
+                                                                ]]>
+                                                            </attribute>
+                                                        </doublebox>
+                                                    </listcell>
+                                                    <listcell>
+<!--                                                        <doublebox value="@{lignepdt.remise, save-when='self.onChange'}" constraint="no negative,no empty:Veuillez indiquez une valeur positive" format="#,##0.##" inplace="true" onChange='self.style="font-weight:bold"; devisWin.updateLigneProduit();'  onOK='self.style="font-weight:bold"; devisWin.updateLigneProduit();' width="99%" />-->
+                                                        <doublebox value="@{lignepdt.remise, save-when='self.onChange'}" constraint="no negative,no empty:Veuillez indiquez une valeur positive" format="#,##0.##" inplace="true" onChange='self.style="font-weight:bold"; devisWin.updateLigneProduit();'  onOK='self.style="font-weight:bold"; devisWin.updateLigneProduit();' width="99%" >
+                                                            <attribute name="onChanging">
+                                                                <![CDATA[
+                                                                    if(event.value != null && !event.value.equals("")) {
+                                                                        devisWin.updateLigneProduit();
+                                                                    }
+                                                                ]]>
+                                                            </attribute>
+                                                        </doublebox>   
+                                                    </listcell>	
+                                                    <listcell>
+                                                        <doublebox value="@{lignepdt.trans_sousTotal}" readonly="true" format="#,##0.##" inplace="true"  width="99%" />
+                                                    </listcell>	
+                                                </listitem>
+                                            </listbox>
+                                            <separator/>
+                                            <grid id="gridAjout" span="true" sizedByContent="true" visible="false">
+                                                <columns>
+                                                    <column width="32px" />
+                                                    <column width="70px" />
+                                                    <column width="300px" />
+                                                    <column width="70px" />
+                                                    <column width="70px"/>
+                                                    <column width="90px" />
+                                                    <column width="90px" />
+                                                    <column width="70px"/>
+                                                    <column width="150px"/>
+                                                </columns>
+                                                <rows>
+                                                    <row>
+                                                        <image src="/images/skin/database_edit.png"  />
+                                                        <intbox id="fieldsequenceLignebis" format="#,##0" value="@{devisWin.ligneProduit.sequenceLigne, save-when='self.onChange'}" onOK="devisWin.addLigneProduit();informationsporduit.close();" inplace="true" width="99%" />
+                                                        <combobox id="conewproduits" constraint="no empty : Veuillez choisir un produit" model="@{devisWin.produits}" selectedItem="@{devisWin.ligneProduit.produit}" onChange='devisWin.calculerPrixDeduit();devisWin.calculerQuantiteProduitEnStock();informationsporduit.open(self, "after_start")' onOK="devisWin.addLigneProduit();informationsporduit.close();self.focus();" inplace="true" width="99%">
+                                                            <comboitem self="@{each=elementnewproduit}" label="@{elementnewproduit}"/>
+                                                        </combobox>
+                                                        <doublebox id="fieldquantitebis" format="#,##0.##" constraint="no negative,no empty:Veuillez indiquez une valeur positive" value="@{devisWin.ligneProduit.quantite, save-when='self.onChange'}" onOK="devisWin.addLigneProduit();informationsporduit.close();conewproduits.focus();" inplace="true" width="99%">
+                                                            <attribute name="onChanging">
+                                                                <![CDATA[
+                                                                    if(event.value != null && !event.value.equals("")) {
+                                                                        devisWin.ligneProduit.quantite = Double.valueOf(event.value.replaceAll(",", "."));
+                                                                        devisWin.calculerPrixDeduit();
+                                                                        //fieldsoustotal.value = fieldprixDeduitbis.value * (1 - fieldremisebis.value / 100) * Double.valueOf(event.value.replaceAll(",", "."));
+                                                                        //devisWin.calculerPrixDeduit();
+                                                                    } 
+                                                                ]]>
+                                                            </attribute>
+                                                        </doublebox>
+                                                        <label id="lblUm" value="@{devisWin.ligneProduit.produit.uniteMesure.libelle, save-when='self.onChange'}" width="99%" />
+                                                        <label id="fieldprixbis" value="@{devisWin.ligneProduit.produit.prixAchat, converter='com.choranet.zk.DoubleConverter'}" width="99%" />
+                                                        <doublebox id="fieldprixDeduitbis" constraint="no negative:Veuillez indiquez une valeur positive" format="#,##0.##" value="@{devisWin.ligneProduit.prixDeduit, save-when='self.onChange'}" inplace="true" width="99%">
+                                                            <attribute name="onOK">
+                                                                <![CDATA[
+                                                                    if(self.value != null){
+                                                                      devisWin.addLigneProduit();informationsporduit.close();
+                                                                    }
+                                                                    conewproduits.focus();
+                                                                ]]>
+                                                            </attribute>
+                                                            <attribute name="onChanging">
+                                                                <![CDATA[
+                                                                    if(event.value != null && !event.value.equals(""))
+                                                                    fieldsoustotal.value = Double.valueOf(event.value.replaceAll(",", ".")) * (1 - fieldremisebis.value / 100) * fieldquantitebis.value;
+                                                                ]]>
+                                                            </attribute>
+                                                        </doublebox>
+                                                        <doublebox id="fieldremisebis" constraint="no negative,no empty:Veuillez indiquez une valeur positive" format="#,##0.##" value="@{devisWin.ligneProduit.remise, save-when='self.onChange'}"  onOK="devisWin.addLigneProduit();informationsporduit.close();conewproduits.focus();" inplace="true" width="99%">
+                                                            <attribute name="onChanging">
+                                                                <![CDATA[
+                                                                    if(event.value != null && !event.value.equals("") && fieldprixDeduitbis.value != null)
+                                                                    fieldsoustotal.value = fieldprixDeduitbis.value * (1 - Double.valueOf(event.value.replaceAll(",", ".")) / 100) * fieldquantitebis.value;
+                                                                ]]>
+                                                            </attribute>
+                                                        </doublebox>
+                                                        <doublebox id="fieldsoustotal" format="#,##0.##" value="@{devisWin.ligneProduit.trans_sousTotal}" readonly="true" width="99%"/>
+                                                    </row>
+                                                </rows>
+                                            </grid>
+                                        </vbox>
+                                    </tabpanel>
+                                </tabpanels>
+                            </tabbox>
+                            <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));devisWin.add();conewproduits.clearErrorMessage();conewproduits.focus();" label="Sauveguarder" image="/images/skin/database_save.png" visible="false"/>
+                            <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));devisWin.update();conewproduits.clearErrorMessage();conewproduits.focus();" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                            <button id="btnDocument" label="Imprimer" image="/images/skin/printer_small.png" visible="false" onClick="devisWin.doModalDialogChoix()" />
+                            <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                                <attribute name="onClick">
+                                    <![CDATA[
+                                    Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                        public void onEvent(Event evt) throws InterruptedException {
+                                            if (evt.getName().equals("onOK")) {
+                                                Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                                devisWin.delete();
+                                            } 
+                                        }
+                                    });
+                                    ]]>
+                                </attribute>    
+                            </button>
+                            <button id="btnCancel" onClick="devisWin.cancel()" label="Effacer" image="/images/skin/cancel.png" />
+                            <button id="btnList" onClick="devisWin.fermer()" label="Retourner à la liste" image="/images/skin/database_table.png" />
+                            <button id="btnPdt" label="Produits" image="/images/skin/BriefcaseSpark-16x16.png" visible="true" onClick="devisWin.doModalDialogPdt()" />
+                            <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                        </groupbox>
+                    </center>
+                </borderlayout>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="devisWin.select()" model="@{devisWin.listeObjets}" selectedItem="@{devisWin.objetSelected}"  width="100%" height="520px" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filterpartenaire" model="@{devisWin.partenaires}" selectedItem="@{devisWin.filtre.partenaire}" autocomplete="true" autodrop="true" mold="rounded" onSelect="devisWin.ofs=0;devisWin.filtrer()" onOK="devisWin.ofs=0;devisWin.filtrer()" width="90%">
+                                    <comboitem self="@{each=elementfiltrepartenaire}" label="@{elementfiltrepartenaire}"/>
+                                </combobox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterNumDevis" value="@{devisWin.filtre.numDevis}" onChanging="devisWin.ofs; devisWin.filtre.numDevis=event.value; devisWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+                            <auxheader colspan="1" if="${afficherNumPartenaire}">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterReference" value="@{devisWin.filtre.reference}" onChanging="devisWin.ofs; devisWin.filtre.reference=event.value; devisWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDate" format="dd/MM/yyyy" value="@{devisWin.filtre.date}" onOK="devisWin.ofs=0; devisWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDateFinValidite" format="dd/MM/yyyy" value="@{devisWin.filtre.dateFinValidite}" onOK="devisWin.ofs=0; devisWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+                            <listheader label="${uper_s_partenaire}" sort="auto(partenaire)" onSort="devisWin.sort(event)"/>	
+                            <listheader label="Numéro système" sort="auto(numDevis)" onSort="devisWin.sort(event)"/>	
+                            <listheader label="Numéro fournisseur" sort="auto(reference)" onSort="devisWin.sort(event)" if="${afficherNumPartenaire}"/>	
+                            <listheader label="Date" sort="auto(date)" onSort="devisWin.sort(event)"/>	
+                            <listheader label="Date fin validité" sort="auto(dateFinValidite)" onSort="devisWin.sort(event)"/>	
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            <listcell label="@{element.partenaire}" />
+                            <listcell label="@{element.numDevis}" />
+                            <listcell if="${afficherNumPartenaire}">
+                                <textbox value="@{element.reference, save-when='self.onChange'}" inplace="true" onOK="devisWin.objet=self.parent.parent.value; devisWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>							
+                            <listcell>
+                                <datebox format="dd/MM/yyyy" value="@{element.date, save-when='self.onChange'}" inplace="true" onOK="devisWin.objet=self.parent.parent.value; devisWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>							
+                            <listcell>
+                                <datebox format="dd/MM/yyyy" value="@{element.dateFinValidite, save-when='self.onChange'}" inplace="true" onOK="devisWin.objet=self.parent.parent.value; devisWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>							
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{devisWin.tailleListe}" pageSize="@{devisWin.maxNb}" onPaging="devisWin.getNextElements(event);" />
+                    
+                    <separator/>
+                    <button id="btnNew" onClick="devisWin.newRecord();" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="devisWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="devisWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+        <window id="modalDialogChoix" title="Générer document" border="normal" width="460px"
+                closable="true" action="show: slideDown;hide: slideUp" position="center,center" visible = "false" onClose="self.visible = false; event.stopPropagation();">
+            <vlayout>
+                <div>
+                    <radiogroup id="sv1" />
+                    <radio id="rdefaut" label="Par défaut" radiogroup="sv1" />
+                    <radio id="ravecEntetepied" label="Avec entête et pied" radiogroup="sv1" />
+                    <radio id="rsansEntetepied" label="Sans entête et pied" radiogroup="sv1" />
+                </div>
+                <separator/>
+                <checkbox id="AvecCachet" label="Avec cachet" />
+                <checkbox id="AvecCopie" label="Avec message copie" />
+                <checkbox id="AvecDestinataire" label="Avec destinataire" value=" " >
+        
+                    <attribute name="onCheck">
+         <![CDATA[
+         
+         if(AvecDestinataire.checked) {
+          fieldDestinataire.visible = true;
+         }
+         else{
+         fieldDestinataire.visible = false;
+         fieldDestinataire.constraint="";
+         }
+         ]]>
+                    </attribute>
+                </checkbox>
+                <textbox id="fieldDestinataire" hflex = "1" visible = 'false'/>
+           
+                <button hflex="1" label="Générer" onClick='devisWin.genererDocument(rdefaut.selected,ravecEntetepied.selected,rsansEntetepied.selected, AvecCachet.checked, AvecCopie.checked, AvecDestinataire.checked, fieldDestinataire.value)'/> 
+
+            </vlayout>
+        </window>
+        <window id="winProduit" title="Gestion produits" border="normal" width="850px" height="100%"
+                closable="true" action="show: slideDown;hide: slideUp" position="center,center" visible = "false" onClose="self.visible = false; event.stopPropagation();">
+            <groupbox width="100%" height="100%">
+                <listbox id="lstProduitRecherche" model="@{devisWin.produitsRecherche}" selectedItem="@{devisWin.produitRechercheSelected}"  width="800px" height="350px" rows="9">
+                    <auxhead sclass="category-center">
+                        <auxheader colspan="1"/>
+                        <auxheader colspan="1">
+                            <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                            <combobox id="cocatpdtrechreche" model="@{devisWin.categoriesProduitRecherche}" selectedItem="@{devisWin.categorieRecherche}" autocomplete="true" autodrop="true" mold="rounded" onSelect="devisWin.rechercher()" onOK=";devisWin.rechercher()" width="90%">
+                                <comboitem self="@{each=elementcatpdt}" label="@{elementcatpdt}"/>
+                            </combobox>
+                        </auxheader>
+                        <auxheader colspan="1">
+                            <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                            <textbox id="filterPdtCode" value="@{devisWin.codeRecherche}" onChanging="devisWin.codeRecherche=event.value; devisWin.rechercher(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="90%"/>
+                        </auxheader>
+                        <auxheader colspan="1">
+                            <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                            <textbox id="filterPdtDesignation" value="@{devisWin.designationRecherche}" onChanging="devisWin.designationRecherche=event.value; devisWin.rechercher(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="90%"/>
+                        </auxheader>
+                    </auxhead>
+                    <listhead sizable="true">
+                        <listheader width="32px" />
+                        <listheader label="Catégorie" sort="auto(categorieProduit)"/>	
+                        <listheader label="Code" sort="auto(code)"/>	
+                        <listheader label="Désignation" sort="auto(designation)"/>	
+                    </listhead>
+                    <listitem value="@{elementpdt}" self="@{each=elementpdt}">    
+                        <listcell image="/images/skin/icon_selection.png"/>
+                        <listcell label="@{elementpdt.categorieProduit.intitule}" />
+                        <listcell label="@{elementpdt.code}" />
+                        <listcell label="@{elementpdt.designation}" />
+                    </listitem>
+                </listbox>
+<!--                    <paging id="paging" totalSize="@{devisWin.tailleListe}" pageSize="@{devisWin.maxNb}" onPaging="devisWin.getNextElements(event);" />-->
+                <separator/>
+                <button id="btnUtiliserPdt" label="Utiliser produit sélectioné" image="/images/skin/ArrowRightGreen-16x16.png" onClick="devisWin.utiliserProduitRecherche()" />
+                <separator />
+                <grid fixedLayout="true" width="800px">
+                    <rows>
+                        <row>
+                            <label value="Code"/>
+                            <textbox id="fieldCodeNewPdt" constraint="no empty: Veillez indiquez une valeur" value="@{devisWin.newPdt.code, save-when='triggerBtnNewPdt.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            <label value="Désignation"/>
+                            <textbox id="fieldDesignationNewPdt" constraint="no empty: Veillez indiquez une valeur" value="@{devisWin.newPdt.designation, save-when='triggerBtnNewPdt.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                        </row>												
+                        <row>
+                            <label value="Prix d'achat"/>
+                            <doublebox id="fieldPrixAchatNewPdt" constraint="no empty, no negative: Veillez indiquez une valeur valide" value="@{devisWin.newPdt.prixAchat, save-when='triggerBtnNewPdt.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            <label value="Prix de revient"/>
+                            <doublebox id="fieldPrixRevientNewPdt" constraint="no empty, no negative: Veillez indiquez une valeur valide" value="@{devisWin.newPdt.prixRevient, save-when='triggerBtnNewPdt.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                        </row>												
+                        <row>
+                            <label value="Prix de vente"/>
+                            <doublebox id="fieldPrixVenteStandardNewPdt" constraint="no empty, no negative: Veillez indiquez une valeur valide" value="@{devisWin.newPdt.prixVenteStandard, save-when='triggerBtnNewPdt.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            <label value="Emplacement de réception" />
+                            <combobox id="coempReceptionsNewPdt" model="@{devisWin.empReceptions}" selectedItem="@{devisWin.newPdt.empReception}" width="99%">
+                                <comboitem self="@{each=elementempReception}" label="@{elementempReception}"/>
+                            </combobox>
+                        </row>
+                        <row>
+                            <label value="Unité de mesure" />
+                            <combobox id="couniteMesuresNewPdt" model="@{devisWin.uniteMesures}" selectedItem="@{devisWin.newPdt.uniteMesure}" constraint="no empty: Veillez choisir une valeur" width="99%">
+                                <comboitem self="@{each=elementuniteMesure}" label="@{elementuniteMesure}"/>
+                            </combobox>
+                            <label value="Régime TVA" />
+                            <combobox id="coregimeTVAsNewPdt" model="@{devisWin.regimeTVAs}" selectedItem="@{devisWin.newPdt.regimeTVA}" constraint="no empty: Veillez choisir une valeur" width="99%">
+                                <comboitem self="@{each=elementregimeTVA}" label="@{elementregimeTVA}"/>
+                            </combobox>
+                        </row>
+                        <row>
+                            <label value="Catégorie" />
+                            <combobox id="cocategorieProduitsNewPdt" model="@{devisWin.categorieProduits}" selectedItem="@{devisWin.newPdt.categorieProduit}" constraint="no empty: Veillez choisir une valeur" width="99%">
+                                <comboitem self="@{each=elementcategorieProduita}" label="@{elementcategorieProduita}"/>
+                            </combobox>
+                        </row>
+                    </rows>
+                </grid>
+                <separator />
+                <button id="triggerBtnNewPdt" onClick="devisWin.ajouterNouveauProduit()" label="Ajouter nouveau produit" image="/images/skin/database_save.png" />
+            </groupbox>
+        </window>
+    </window>
+</zk>

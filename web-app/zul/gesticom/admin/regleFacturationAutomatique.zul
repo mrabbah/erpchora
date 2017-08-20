@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./regleFacturationAutomatiqueWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="regleFacturationAutomatiqueWin" height="100%" width="100%" style="margin:auto;" use="${regleFacturationAutomatiqueWindow}" onCreate='regleFacturationAutomatiqueWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/regleFacturationAutomatique.zs"/> -->
+        <borderlayout>
+            <north id="eastPanel" size="65px" open="false"  title="Recherche avancée" flex="true" splittable="true"  collapsible="true"  >
+                <hlayout spacing="10px" style="margin-top:9px;margin-left:10px">
+					
+                    <label value="partenaires :" />
+                    <bandbox    autodrop="true" mold="rounded">
+                        <bandpopup>
+                            <listbox id="filterpartenaires" model="@{regleFacturationAutomatiqueWin.partenaires}" 
+                        selectedItem="@{regleFacturationAutomatiqueWin.filtre.partenairess, converter=com.choranet.zk.SelectedItemsConverterV3}"
+                        onSelect="regleFacturationAutomatiqueWin.ofs=0;regleFacturationAutomatiqueWin.filtrer();"
+                        fixedLayout="true" multiple="true" checkmark="true">
+                                <listhead>
+                                    <listheader label=""/>							
+                                </listhead>
+                                <listitem self="@{each=elementfiltrepartenaires}">
+                                    <listcell label="@{elementfiltrepartenaires}"/>							
+                                </listitem>								
+                            </listbox>
+                        </bandpopup>
+                    </bandbox>
+										                    
+                </hlayout>
+            </north>
+            <west id="westPanel" title="Gestion des Régles de facturation automatique" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <vbox id="vbchoix" width="100%">
+                        <label value="Type de régle : " />
+                        <radiogroup id =  "choixType">
+                            <attribute name="onCheck">
+                                <![CDATA[
+                                    regleFacturationAutomatiqueWin.choixGenreRegleFacturationAutomatique(self.selectedItem.id);
+                                    
+                                    if(self.selectedItem.id.equals("r1")) {
+                                        fieldType.value = "JusquaDateActuelle";
+                                        fieldNombreBlaRegroupe.value = -1;
+                                    }
+                                    else if(self.selectedItem.id.equals("r2")) {
+                                        fieldType.value = "DernierMois";
+                                        fieldNombreBlaRegroupe.value = -1;
+                                    }
+                                    else if(self.selectedItem.id.equals("r3")) {
+                                        fieldType.value = "TroisDerniersMois";
+                                        fieldNombreBlaRegroupe.value = -1;
+                                    }
+                                    else if(self.selectedItem.id.equals("r4")) {
+                                        fieldType.value = "NombreBonLivraison";
+                                        fieldNombreBlaRegroupe.constraint="no empty: Veillez indiquez une valeur";
+                                    } 
+                                ]]>
+                            </attribute>
+                            <grid>
+                                <rows>
+                                    <row>
+                                        <radio id="r1" label="Jusqu'à aujourd'hui" />
+                                    </row>
+                                    <row>
+                                        <radio id="r2" label="Dernier mois" />
+                                    </row>
+                                    <row>
+                                        <radio id="r3" label="Trois derniers mois" /> 
+                                    </row>
+                                    <row>
+                                        <radio id="r4" label="Nombre bon de livraison" />
+                                    </row>				
+                   
+                                </rows>
+                            </grid>
+                                            
+                        </radiogroup>
+                    </vbox>
+                    
+                    <grid id="grcrud" fixedLayout="true" visible="false">
+                        <rows>
+						
+                            <row id="LigneBL">
+                                <label value="Nombre BL groupe"/>
+								 
+                                <intbox id="fieldNombreBlaRegroupe" constraint="no empty: Veillez indiquez une valeur" value="@{regleFacturationAutomatiqueWin.objet.nombreBlaRegroupe, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+                            <row>
+                                <label value="Libelle"/>
+								 
+                                <textbox id="fieldLibelle" constraint="no empty: Veillez indiquez une valeur" value="@{regleFacturationAutomatiqueWin.objet.libelle, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+                            <row>
+                                <label value="Priorite"/>
+								 
+                                <intbox id="fieldPriorite" constraint="no empty: Veillez indiquez une valeur" value="@{regleFacturationAutomatiqueWin.objet.priorite, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+																							
+                            <row>
+                                <label value="Partenaires" />
+                                <bandbox    autodrop="true" mold="rounded">
+                                    <bandpopup>
+                                        <listbox id="lstpartenaires" model="@{regleFacturationAutomatiqueWin.partenaires}" selectedItem="@{regleFacturationAutomatiqueWin.partenairesSelected, converter=com.choranet.zk.SelectedItemsConverterV3}" fixedLayout="true" multiple="true" checkmark="true">
+                                            <listhead>
+                                                <listheader label=""/>							
+                                            </listhead>
+                                            <listitem self="@{each=elementpartenaires}">
+                                                <listcell label="@{elementpartenaires}"/>							
+                                            </listitem>								
+                                        </listbox>	
+                                    </bandpopup>
+                                </bandbox>
+                            </row>	
+                        
+                            <row id="LigneType">
+                                <label value="Type" visible="false"/>
+								 
+                                <textbox id="fieldType" visible="false" constraint="no empty: Veillez indiquez une valeur" value="@{regleFacturationAutomatiqueWin.objet.type, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>	
+						
+                        </rows>
+                    </grid>	
+                    
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));regleFacturationAutomatiqueWin.add()" label="Sauvegarder" image="/images/skin/database_save.png"/>
+                    <button id="btnGenerer" onClick="regleFacturationAutomatiqueWin.GenererRegleFacturationAutomatique(choixType.selectedItem.id, fieldNombreBlaRegroupe.value)" label="Générer" image=""/>
+                
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));regleFacturationAutomatiqueWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        regleFacturationAutomatiqueWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute>
+                    </button>
+                    <!-- <button id="btnNew" onClick="regleFacturationAutomatiqueWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="regleFacturationAutomatiqueWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="true"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="regleFacturationAutomatiqueWin.select()" model="@{regleFacturationAutomatiqueWin.listeObjets}" selectedItem="@{regleFacturationAutomatiqueWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterNombreBlaRegroupe" value="@{regleFacturationAutomatiqueWin.filtre.nombreBlaRegroupe}" width="100%">
+                                    <attribute name="onChanging">
+										<![CDATA[
+											regleFacturationAutomatiqueWin.ofs=0;
+											if(event.value.equals("")) {
+												if(regleFacturationAutomatiqueWin.filtre.nombreBlaRegroupe != null) {
+													regleFacturationAutomatiqueWin.filtre.nombreBlaRegroupe = null;
+												}
+											} else {
+												regleFacturationAutomatiqueWin.filtre.nombreBlaRegroupe=new Integer(event.value);
+											}
+											regleFacturationAutomatiqueWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterLibelle" value="@{regleFacturationAutomatiqueWin.filtre.libelle}" onChanging="regleFacturationAutomatiqueWin.ofs; regleFacturationAutomatiqueWin.filtre.libelle=event.value; regleFacturationAutomatiqueWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterPriorite" value="@{regleFacturationAutomatiqueWin.filtre.priorite}" width="100%">
+                                    <attribute name="onChanging">
+										<![CDATA[
+											regleFacturationAutomatiqueWin.ofs=0;
+											if(event.value.equals("")) {
+												if(regleFacturationAutomatiqueWin.filtre.priorite != null) {
+													regleFacturationAutomatiqueWin.filtre.priorite = null;
+												}
+											} else {
+												regleFacturationAutomatiqueWin.filtre.priorite=new Integer(event.value);
+											}
+											regleFacturationAutomatiqueWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterType" value="@{regleFacturationAutomatiqueWin.filtre.type}" onChanging="regleFacturationAutomatiqueWin.ofs; regleFacturationAutomatiqueWin.filtre.type=event.value; regleFacturationAutomatiqueWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+							
+                            <listheader label="NombreBlaRegroupe" sort="auto(nombreBlaRegroupe)" onSort="regleFacturationAutomatiqueWin.sort(event)"/>	
+							
+                            <listheader label="Libelle" sort="auto(libelle)" onSort="regleFacturationAutomatiqueWin.sort(event)"/>	
+							
+                            <listheader label="Priorite" sort="auto(priorite)" onSort="regleFacturationAutomatiqueWin.sort(event)"/>	
+							
+                            <listheader label="Type" sort="auto(type)" onSort="regleFacturationAutomatiqueWin.sort(event)"/>	
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            
+                            <listcell>
+							
+                                <intbox value="@{element.nombreBlaRegroupe, save-when='self.onChange'}" inplace="true" onOK="regleFacturationAutomatiqueWin.objet=self.parent.parent.value; regleFacturationAutomatiqueWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.libelle, save-when='self.onChange'}" inplace="true" onOK="regleFacturationAutomatiqueWin.objet=self.parent.parent.value; regleFacturationAutomatiqueWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <intbox value="@{element.priorite, save-when='self.onChange'}" inplace="true" onOK="regleFacturationAutomatiqueWin.objet=self.parent.parent.value; regleFacturationAutomatiqueWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.type, save-when='self.onChange'}" inplace="true" onOK="regleFacturationAutomatiqueWin.objet=self.parent.parent.value; regleFacturationAutomatiqueWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{regleFacturationAutomatiqueWin.tailleListe}" pageSize="@{regleFacturationAutomatiqueWin.maxNb}" onPaging="regleFacturationAutomatiqueWin.getNextElements(event);" />
+                    <separator/>
+                    <grid>
+                        <columns>
+                            <column width="32px" />
+							
+                            <column />
+							
+                            <column />
+							
+                            <column />
+							
+                            <column />
+							
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png"  />
+								
+                                <intbox id="fieldnombreBlaRegroupebis" value="@{regleFacturationAutomatiqueWin.objet.nombreBlaRegroupe, save-when='self.onChange'}" inplace="true" onOK="regleFacturationAutomatiqueWin.add();" width="99%" />
+								
+                                <textbox id="fieldlibellebis" value="@{regleFacturationAutomatiqueWin.objet.libelle, save-when='self.onChange'}" inplace="true" onOK="regleFacturationAutomatiqueWin.add();" width="99%"/>
+								
+                                <intbox id="fieldprioritebis" value="@{regleFacturationAutomatiqueWin.objet.priorite, save-when='self.onChange'}" inplace="true" onOK="regleFacturationAutomatiqueWin.add();" width="99%" />
+								
+                                <textbox id="fieldtypebis" value="@{regleFacturationAutomatiqueWin.objet.type, save-when='self.onChange'}" inplace="true" onOK="regleFacturationAutomatiqueWin.add();" width="99%"/>
+								  
+                            </row>
+                        </rows>
+                    </grid>
+                    <separator/>
+                    <button id="btnNew" onClick="regleFacturationAutomatiqueWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="regleFacturationAutomatiqueWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="regleFacturationAutomatiqueWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                    
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?page id="choraerp" title="CHORA ERP"?>
+<?link rel="stylesheet" type="text/css" href="/macros/category.css.dsp?v=${desktop.webApp.build}"?>
+<?script type="text/javascript" src="/macros/zksandbox.js.dsp?v=${desktop.webApp.build}"?>
+<?script type="text/javascript" content="jq.IE6_ALPHAFIX=/24x24.png|32x32.png|48x48.png|128x128.png|ButtonBlue.png|ButtonGray.png|small.png|small-sel.png|normal.png|normal-sel.png|large.png|large-sel.png/;"?>
+<?meta name="keywords" content="CHORA ERP, Maroc, gesticom commerciale, Paie, gesticom projets, gesticom chantiers, gesticom de flotte, TMS" ?>
+<?component name="category" extends="button" widgetClass="com.choranet.zk.Category" mold="default"?>
+<?component name="categorybar" extends="div" widgetClass="com.choranet.zk.Categorybar"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" root="mainWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c" ?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <style dynamic="true">
+        .z-tab-ver .z-tab-ver-hm {
+        height : 62px
+        }
+    </style>
+    <zscript src="./main.zs"/>
+<!--    <zscript src="/vs.zs"/>-->
+
+    <window id="mainWin" height="700px" width="100%" style="margin-left:auto;margin-right:auto;margin-top:5px;" use="${mainWindow}">
+        <borderlayout id="main">
+            <north border="none" size="90px" sclass="demo-header" collapsible="true">
+                <div>         
+               
+                    <div sclass="demo-logo pointer">
+                        <a href="@{mainWin.site}" target="_blank">
+                            <image width="180px" height="80px" content="@{mainWin.trans_logo}"/>
+                        </a>
+                    </div>
+                    <categorybar zclass="demo-categorybar" id="header">   
+                    
+                        <category id="cg_client_vente" image="${imgPath}/client.png" label="Clients" onClick='xcontents.src = "/zul/gesticom/partenaire/partenaire.zul?type=CLIENT"' zclass="demo-category" if="${affichervente == true}"/>                      
+                        <category id="cg_devis_vente" image="${imgPath}/devis.png" label="Devis" onClick='xcontents.src = "/zul/gesticom/devis.zul?type=VENTE"' zclass="demo-category" if="${affichervente == true}"/>  
+                        <category id="cg_bp_vente" image="${imgPath}/bp.png" label="Bon de prêt" onClick='xcontents.src = "/zul/gesticom/bonCommande.zul?bonPret=true&amp;type=VENTE"' zclass="demo-category" if="${affichervente == true}"/>  
+                        <category id="cg_bc_vente" image="${imgPath}/bc.png" label="Bon commande" onClick='xcontents.src = "/zul/gesticom/bonCommande.zul?bonPret=false&amp;type=VENTE"' zclass="demo-category" if="${affichervente == true}"/>  
+                        <category id="cg_bl_vente" image="${imgPath}/bl.png" label="Bon livraison" onClick='xcontents.src = "/zul/gesticom/bonLivraison.zul?estBonRetour=false&amp;type=VENTE"' zclass="demo-category" if="${affichervente == true}"/>  
+                        <category id="cg_facture_vente" image="${imgPath}/facture.png" label="Facture" onClick='xcontents.src = "/zul/gesticom/facture.zul?type=VENTE&amp;estAvoir=false"' zclass="demo-category" if="${affichervente == true}"/>  
+                        <category id="cg_br_vente" image="${imgPath}/br.png" label="Bon retour" onClick='xcontents.src = "/zul/gesticom/bonLivraison.zul?type=VENTE&amp;estBonRetour=true"' zclass="demo-category" if="${affichervente == true}"/>  
+                        <category id="cg_avoir_vente" image="${imgPath}/avoir.png" label="Avoir" onClick='xcontents.src = "/zul/gesticom/facture.zul?type=VENTE&amp;estAvoir=true"' zclass="demo-category" if="${affichervente == true}"/>  
+                        <category id="cg_paiement_vente" image="${imgPath}/paiement.png" label="Paiement" onClick='paiementVente.open(self, "after_start")' zclass="demo-category" if="${affichervente == true}"/>  
+
+                        <category id="cg_fournisseur_achat" image="${imgPath}/client.png" label="Fournisseurs" onClick='xcontents.src = "/zul/gesticom/partenaire/partenaire.zul?type=FOURNISSEUR"' zclass="demo-category" if="${afficherachat == true}"/>  
+                        <category id="cg_devis_achat" image="${imgPath}/devis.png" label="Devis" onClick='xcontents.src = "/zul/gesticom/devis.zul?type=ACHAT"' zclass="demo-category" if="${afficherachat == true}"/>  
+                        <category id="cg_bp_achat" image="${imgPath}/bp.png" label="Bon de prêt" onClick='xcontents.src = "/zul/gesticom/bonCommande.zul?bonPret=true&amp;type=ACHAT"' zclass="demo-category" if="${afficherachat == true}"/>  
+                        <category id="cg_bc_achat" image="${imgPath}/bc.png" label="Bon commande" onClick='xcontents.src = "/zul/gesticom/bonCommande.zul?bonPret=false&amp;type=ACHAT"' zclass="demo-category" if="${afficherachat == true}"/>  
+                        <category id="cg_bl_achat" image="${imgPath}/bl.png" label="Bon livraison" onClick='xcontents.src = "/zul/gesticom/bonLivraison.zul?type=ACHAT&amp;estBonRetour=false"' zclass="demo-category" if="${afficherachat == true}"/>  
+                        <category id="cg_facture_achat" image="${imgPath}/facture.png" label="Facture" onClick='xcontents.src = "/zul/gesticom/facture.zul?type=ACHAT&amp;estAvoir=false"' zclass="demo-category" if="${afficherachat == true}"/>  
+                        <category id="cg_br_achat" image="${imgPath}/br.png" label="Bon retour" onClick='xcontents.src = "/zul/gesticom/bonLivraison.zul?type=ACHAT&amp;estBonRetour=true"' zclass="demo-category" if="${afficherachat == true}"/>  
+                        <category id="cg_avoir_achat" image="${imgPath}/avoir.png" label="Avoir" onClick='xcontents.src = "/zul/gesticom/facture.zul?type=ACHAT&amp;estAvoir=true"' zclass="demo-category" if="${afficherachat == true}"/>  
+                        <category id="cg_paiement_achat" image="${imgPath}/paiement.png" label="Paiement" onClick='paiementAchat.open(self, "after_start")' zclass="demo-category" if="${afficherachat == true}"/>  
+                        <category id="cg_depenses" image="${imgPath}/depenses.png" label="Dépenses" onClick='xcontents.src = "/zul/exception/depenses.zul"' zclass="demo-category" if="${afficherachat == true}"/>                          
+                    
+                        <category id="cg_entrepot" image="${imgPath}/palette.png" label="Entrepôts" onClick='xcontents.src = "/zul/stock/entrepot.zul"' zclass="demo-category" if="${afficherstock == true}"/>  
+                        <category id="cg_produit" image="${imgPath}/product-icon-header.png" label="Produits" onClick='xcontents.src = "/zul/stock/produit.zul"' zclass="demo-category" if="${afficherstock == true}"/>  
+                        <category id="cg_securitestock" image="${imgPath}/securitestock.png" label="Sécurité stock" onClick='xcontents.src = "/zul/stock/securitestock.zul"' zclass="demo-category" if="${afficherstock == true}"/>  
+                        <category id="cg_mouvementstock" image="${imgPath}/mouvements.png" label="Mouvements stock" onClick='xcontents.src = "/zul/stock/mouvementStock.zul"' zclass="demo-category" if="${afficherstock == true}"/>  
+                        <category id="cg_livraison" image="${imgPath}/camion-2.png" label="Livraisons" onClick='xcontents.src = "/zul/stock/livraison.zul"' zclass="demo-category" if="${afficherstock == true}"/>  
+                        <category id="cg_inventaire" image="${imgPath}/carton_maron.png" label="Inventaire" onClick='xcontents.src = "/zul/stock/inventaire.zul"' zclass="demo-category" if="${afficherstock == true}"/>  
+                        <category id="cg_alertsstock" image="${imgPath}/alert.png" label="Alertes stock" onClick='xcontents.src = "/zul/stock/alertsSecuriteStock.zul"' zclass="demo-category" if="${afficherstock == true}"/>  
+                    
+<!--                        <category id="cg_declarationTva" image="${imgPath}/declaration.png" label="Déclarations TVA" onClick='xcontents.src = "/zul/compta/declarationTva.zul"' zclass="demo-category" if="${affichercompta == true}"/>  -->
+                        
+                        <category id="cg_partenaires" image="${imgPath}/client.png" label="gesticom des partenaires" onClick='partenairemenu.open(self, "after_start")' zclass="demo-category" if="${afficheradmin == true}"/> 
+                        <category id="cg_paramAchatVente" image="${imgPath}/achatventeparam.png" label="Paramètres achats et ventes" onClick='achatventemenu.open(self, "after_start")' zclass="demo-category" if="${afficheradmin == true}"/>
+                        <category id="cg_paramProduit" image="${imgPath}/palette.png" label="Paramètres produits" onClick='produitmenu.open(self, "after_start")' zclass="demo-category" if="${afficheradmin == true}"/>
+<!--                        <category id="cg_natureDeCharge" image="${imgPath}/paiement.png" label="Catégories dépenses" onClick='xcontents.src = "/zul/gesticom/admin/natureDeCharge.zul"' zclass="demo-category" if="${afficheradmin == true}"/>  -->
+                        <category id="cg_messagedocument" image="${imgPath}/headerfooter.png" label="Entêtes pieds Docuements" onClick='xcontents.src = "/zul/commun/messageDocument.zul"' zclass="demo-category" if="${afficheradmin == true}"/>
+                        <category id="cg_parametrage" image="${imgPath}/cubes.png" label="Paramètrage Système" onClick='paramsysmenu.open(self, "after_start")' zclass="demo-category" if="${afficheradmin == true}"/>  <!--
+                        <category id="cg_parametrage" image="${imgPath}/cubes.png" label="Paramètrage système" onClick='xcontents.src = "/zul/commun/parametrage.zul"' zclass="demo-category" if="${afficheradmin == true}"/>  -->
+                        <category id="cg_pays" image="${imgPath}/glob.png" label="Pays" onClick='xcontents.src = "/zul/commun/pays.zul"' zclass="demo-category" if="${afficheradmin == true}"/>
+                        <category id="cg_ville" image="${imgPath}/ville.png" label="Villes" onClick='xcontents.src = "/zul/commun/ville.zul"' zclass="demo-category" if="${afficheradmin == true}"/>  
+                        <category id="cg_zone" image="${imgPath}/zone.png" label="Zones" onClick='xcontents.src = "/zul/commun/zone.zul"' zclass="demo-category" if="${afficheradmin == true}"/>  
+                        <category id="cg_clientinfo" image="${imgPath}/EnterpriseAndIntegration-48x48.png" label="Informations société" onClick='xcontents.src = "/zul/securite/clientinfo.zul"' zclass="demo-category" if="${afficherroot == true}"/>  
+<!--                        <category id="cg_backup" image="${imgPath}/backup.png" label="Sauvegurder Restaurer" onClick='xcontents.src = "/zul/securite/backup.zul"' zclass="demo-category" if="${afficherroot == true}"/>  -->
+                        <category id="cg_gressource" image="${imgPath}/39px-Administrateur.png" label="Utilisateurs" onClick='xcontents.src = "/zul/securite/utilisateur.zul"' zclass="demo-category" if="${afficherroot == true}"/>
+                        <category id="cg_grpusers" image="${imgPath}/icon_users.png" label="Groupes Utilisateurs" onClick='xcontents.src = "/zul/securite/groupeUtilisateur.zul"' zclass="demo-category" if="${afficherroot == true}"/>
+                        <category id="cg_gmodulesactifs" image="${imgPath}/cubes.png" label="Activation Modules" onClick='xcontents.src = "/zul/securite/activationmodules.zul"' zclass="demo-category" if="${ROOT == true}"/>
+
+                        <!--                        Partie analyse                      -->
+<!--                        <category id="cg_evolutionachatvente" image="${imgPath}/growth-chart1.png" label="Evolution ventes et achats" onClick='xcontents.src = "/zul/gesticom/tdb/evolutionVentesAchats.zul"' zclass="demo-category" if="${afficheranalyse == true}"/>  -->
+<!--                        <category id="cg_produitachatvente" image="${imgPath}/ChartLogo600.png" label="Analyse des produits" onClick='xcontents.src = "/zul/gesticom/tdb/produitsVendusAchetes.zul"' zclass="demo-category" if="${afficheranalyse == true}"/>  -->
+                        <category id="cg_boiteoutil" image="${imgPath}/boitoutil.png" label="Boite à outils" onClick='xcontents.src = "/zul/gesticom/tdb/boiteOutils.zul"' zclass="demo-category" if="${afficheranalyse == true}"/>  
+                        <category id="cg_tdbgc" image="${imgPath}/ChartLogo600.png" label="Tableau de Bord Projets" onClick='xcontents.src = "/zul/projet/tdb/tdb.zul"' zclass="demo-category" if="${afficheranalyse == true}"/>  
+                        <category id="cg_alertesrupture" image="${imgPath}/alert.png" label="Alertes stock" onClick='xcontents.src = "/zul/stock/alertsSecuriteStock.zul"' zclass="demo-category" if="${afficheranalyse == true}"/>  
+                        <category id="cg_report" image="${imgPath}/reports.png" label="Rapports" onClick='xcontents.src = "/zul/gesticom/tdb/rapports.zul"' zclass="demo-category" if="${afficheranalyse == true}"/>  
+
+                        <!-- Partie gesticom des projet    -->
+                        <category id="cg_projet" image="${imgPath}/projet.png" label="Chantiers" onClick='xcontents.src = "/zul/projet/projet.zul"' zclass="demo-category" if="${afficherprojet == true}"/>  
+                        <category id="cg_affpdt" image="${imgPath}/Ciment.jpg" label="Affectation produits" onClick='xcontents.src = "/zul/projet/affectationProduit.zul"' zclass="demo-category" if="${afficherprojet == true}"/>  
+                        <category id="cg_affoutil" image="${imgPath}/bull.png" label="Affectation outils / machines / engins" onClick='xcontents.src = "/zul/projet/affectationOutil.zul"' zclass="demo-category" if="${afficherprojet == true}"/>  
+                        <category id="cg_affoutillage" image="${imgPath}/photo.png" label="Affectation outillages" onClick='xcontents.src = "/zul/projet/affectationOutillage.zul"' zclass="demo-category" if="${afficherprojet == true}"/>  
+                        <category id="cg_fichepresence" image="${imgPath}/tache.png" label="Fiche présence" onClick='xcontents.src = "/zul/rh/fichePresence.zul"' zclass="demo-category" if="${afficherprojet == true}"/>  
+                        <category id="cg_sstraitance" image="${imgPath}/sous-traitance1.png" label="Sous traitances" onClick='xcontents.src = "/zul/projet/soustraitance.zul"' zclass="demo-category" if="${afficherprojet == true}"/>  
+                        <category id="cg_locoutil" image="${imgPath}/location-voiture.png" label="Location outils" onClick='xcontents.src = "/zul/projet/locationOutil.zul"' zclass="demo-category" if="${afficherprojet == true}"/>  
+                        <category id="cg_chdivers" image="${imgPath}/facture.png" label="Charges divers" onClick='xcontents.src = "/zul/projet/chargeDivers.zul"' zclass="demo-category" if="${afficherprojet == true}"/>  
+                        <category id="cg_note" image="${imgPath}/icon_texteditor.png" label="Notes" onClick='xcontents.src = "/zul/projet/note.zul"' zclass="demo-category" if="${afficherprojet == true}"/>  
+                        <category id="cg_pai" image="${imgPath}/paiement.png" label="Paiements employés" onClick='xcontents.src = "/zul/exception/paiementJbl.zul"' zclass="demo-category" if="${afficherprojet == true}"/>  
+                        <category id="cg_adprjt" image="${imgPath}/EnterpriseAndIntegration-48x48.png" label="Administration" onClick='adminprojet.open(self, "after_start")' zclass="demo-category" if="${afficherprojet == true}"/>  
+<!--                        <category id="cg_employ" image="${imgPath}/travaux-chantier.png" label="Employés" onClick='xcontents.src = "/zul/projet/admin/employe.zul"' zclass="demo-category" if="${afficherprojet == true}"/>  
+                        <category id="cg_foncti" image="${imgPath}/casquechantier.png" label="Fonctions" onClick='xcontents.src = "/zul/projet/admin/fonction.zul"' zclass="demo-category" if="${afficherprojet == true}"/>  
+                        <category id="cg_outilemply" image="${imgPath}/jcb8085.png" label="Outils/Machines/Engins" onClick='xcontents.src = "/zul/projet/admin/outilEmploye.zul"' zclass="demo-category" if="${afficherprojet == true}"/>  
+                        <category id="cg_outilloua" image="${imgPath}/vehicule8.png" label="Outils louables" onClick='xcontents.src = "/zul/projet/admin/outilLouable.zul"' zclass="demo-category" if="${afficherprojet == true}"/>  
+                        <category id="cg_outilcollect" image="${imgPath}/boitoutil.png" label="Outillages collectifs" onClick='xcontents.src = "/zul/projet/admin/outillageCollectif.zul"' zclass="demo-category" if="${afficherprojet == true}"/>  
+                        <category id="cg_loueurs" image="${imgPath}/location-voiture.png" label="Loueurs" onClick='xcontents.src = "/zul/projet/admin/loueur.zul"' zclass="demo-category" if="${afficherprojet == true}"/>  
+                        <category id="cg_sstraitants" image="${imgPath}/societe.png" label="Sous traitants" onClick='xcontents.src = "/zul/projet/admin/soustraitant.zul"' zclass="demo-category" if="${afficherprojet == true}"/>  -->
+                        
+                        
+                        <!-- Partie commune -->
+                        <category zclass="demo-category" id="cg_help" image="${imgPath}/merlin.gif" label="Aide" onClick='helpmenu.open(self, "after_start")' />  
+                        <category zclass="demo-category" id="cg_logout" href="/logout" image="${imgPath}/48px-Vista-logout.png" label="Se deconnecter" />  
+                    </categorybar>
+                </div>
+            </north>
+            <center  flex="true">   
+                <borderlayout width="100%" height="100%">
+                    <west width="47px" border="none" flex="true">
+                        <div id="dv1" style="${style}">
+                            <tabbox orient="vertical" height="675px" tabscroll="false" >
+                                <tabs width="47px">
+                                    <tab image="${imgPath}/chantier.png" if="${GESTION_CHANTIERS == true}" selected="${afficherprojet == true}">
+                                        <attribute name="onClick">
+                                         <![CDATA[
+                                            xcontents.src = "/zul/home.zul";
+                                            Executions.sendRedirect("/zul/main.zul?cm=7");
+                                        ]]>
+                                        </attribute>
+                                    </tab>
+                                    <tab image="${imgPath}/ventes.png" if="${GESTION_VENTES == true}" selected="${affichervente == true}">
+                                        <attribute name="onClick">
+                                         <![CDATA[
+                                            xcontents.src = "/zul/home.zul";
+                                            Executions.sendRedirect("/zul/main.zul?cm=0");
+                                        ]]>
+                                        </attribute>
+                                    </tab>
+                                    <tab image="${imgPath}/achats.png" if="${GESTION_ACHATS == true}" selected="${afficherachat == true}">
+                                        <attribute name="onClick">
+                                         <![CDATA[
+                                            xcontents.src = "/zul/home.zul";
+                                            Executions.sendRedirect("/zul/main.zul?cm=1");
+                                        ]]>
+                                        </attribute>
+                                    </tab>
+                                    <tab image="${imgPath}/stock.png" if="${GESTION_STOCKS == true}" selected="${afficherstock == true}">
+                                        <attribute name="onClick">
+                                         <![CDATA[
+                                            xcontents.src = "/zul/home.zul";
+                                            Executions.sendRedirect("/zul/main.zul?cm=2");
+                                        ]]>
+                                        </attribute>
+                                    </tab>
+                                    <tab image="${imgPath}/statistiques.png" if="${TDB == true}" selected="${afficheranalyse == true}">
+                                        <attribute name="onClick">
+                                         <![CDATA[
+                                            xcontents.src = "/zul/home.zul";
+                                            Executions.sendRedirect("/zul/main.zul?cm=4");
+                                        ]]>
+                                        </attribute>
+                                    </tab>
+<!--                                    <tab image="${imgPath}/compta.png" if="${GESTION_COMPTA == true}" selected="${affichercompta == true}">
+                                        <attribute name="onClick">
+                                         <![CDATA[
+                                            xcontents.src = "/zul/home.zul";
+                                            Executions.sendRedirect("/zul/main.zul?cm=3");
+                                        ]]>
+                                        </attribute>
+                                    </tab>                                    -->
+                                    <tab image="${imgPath}/param.png" if="${PARAMETRAGE == true}" selected="${afficheradmin == true}">
+                                        <attribute name="onClick">
+                                         <![CDATA[
+                                            xcontents.src = "/zul/home.zul";
+                                            Executions.sendRedirect("/zul/main.zul?cm=5");
+                                        ]]>
+                                        </attribute>
+                                    </tab>
+                                    <tab image="${imgPath}/administration.png" if="${ADMINISTRATION == true}" selected="${afficherroot == true}">
+                                        <attribute name="onClick">
+                                         <![CDATA[
+                                            xcontents.src = "/zul/home.zul";
+                                            Executions.sendRedirect("/zul/main.zul?cm=6");
+                                        ]]>
+                                        </attribute>
+                                    </tab>
+                                </tabs>
+                            </tabbox>
+                        </div>
+                        
+                    </west>
+                    <center>
+                        <include src="/zul/home.zul"  style="padding:3px;" id="xcontents" progressing="true" />
+                    </center>
+                </borderlayout>
+            </center>
+        </borderlayout>    
+        <popup id="helpmenu" width="230px">
+            <toolbar orient="vertical" mold="panel">
+                <toolbarbutton label="Aide" width="200px" image="${imgPath}/help.png" onClick="" />
+                <toolbarbutton label="Manager vos licences" width="200px" image="${imgPath}/cle.png" if="${ROOT == true}">
+                    <attribute name="onClick">
+                    <![CDATA[
+                        helpmenu.close();
+                        Executions.createComponents("/zul/securite/cle.zul", null, null).doModal();
+                    ]]>
+                    </attribute>
+                </toolbarbutton>
+                <separator bar="true" width="200px" />
+                <toolbarbutton label="A propos de" width="200px" image="${imgPath}/about_32.png">
+                    <attribute name="onClick">
+                    <![CDATA[
+                        helpmenu.close();
+                        Executions.createComponents("/zul/aide/apropos.zul", null, null).doModal();
+                    ]]>
+                    </attribute>
+                </toolbarbutton>
+            </toolbar>
+        </popup>
+        <popup id="partenairemenu" width="230px">
+            <toolbar orient="vertical" mold="panel">
+                <toolbarbutton label="Partenaires" width="200px" image="${imgPath}/client_small.png" onClick='partenairemenu.close(); xcontents.src = "/zul/gesticom/partenaire/partenaire.zul"' />
+                <toolbarbutton label="Contacts" width="200px" image="${imgPath}/adddmin_small.png" onClick='partenairemenu.close(); xcontents.src = "/zul/gesticom/partenaire/contact.zul"' />
+                <toolbarbutton label="Catégories partenaires" width="200px" image="${imgPath}/main-image_small.png" onClick='partenairemenu.close(); xcontents.src = "/zul/gesticom/admin/categoriePartenaire.zul"' />
+                <toolbarbutton label="Calendrier" width="200px" image="${imgPath}/calendar_small.jpg" onClick='partenairemenu.close(); xcontents.src = "/zul/projet/admin/calendrier.zul"' />
+                <toolbarbutton label="Fonctions" width="200px" image="${imgPath}/casquechantier_small.png" onClick='partenairemenu.close(); xcontents.src = "/zul/rh/fonction.zul"' />
+                <toolbarbutton label="Employés" width="200px" image="${imgPath}/travaux-chantier_small.png" onClick='partenairemenu.close(); xcontents.src = "/zul/rh/employe.zul"' />
+                <toolbarbutton label="Agences Bancaires" width="200px" image="${imgPath}/bank_small.png" onClick='partenairemenu.close(); xcontents.src = "/zul/gesticom/partenaire/agenceBancaire.zul"' />
+                <toolbarbutton label="Comptes bancaires" width="200px" image="${imgPath}/comptebancaire_small.png" onClick='partenairemenu.close(); xcontents.src = "/zul/gesticom/partenaire/compteBancaire.zul"' />
+                <toolbarbutton label="Forme juridique" width="200px" image="${imgPath}/BriefcaseOpen-16x16.png" onClick='partenairemenu.close(); xcontents.src = "/zul/commun/formeJuridique.zul"' />
+            </toolbar>
+        </popup>
+        <popup id="produitmenu" width="230px">
+            <toolbar orient="vertical" mold="panel">
+                <toolbarbutton label="Catégories produits" width="200px" image="${imgPath}/colis_small.png" onClick='produitmenu.close(); xcontents.src = "/zul/stock/categorieProduit.zul"' />
+                <toolbarbutton label="Régime TVA" width="200px" image="${imgPath}/ClientSideAction-24x24.png" onClick='produitmenu.close(); xcontents.src = "/zul/compta/regimeTVA.zul"' />
+                <toolbarbutton label="Nature produits" width="200px" image="${imgPath}/marque_1.png" onClick='produitmenu.close(); xcontents.src = "/zul/stock/nature.zul"' />
+                <toolbarbutton label="Unités de mesure" width="200px" image="${imgPath}/SimileTimeline-24x24.png" onClick='produitmenu.close(); xcontents.src = "/zul/stock/uniteMesure.zul"' />
+            </toolbar>
+        </popup>
+        <popup id="paramsysmenu" width="200px">
+            <toolbar orient="vertical" mold="panel">
+                <toolbarbutton label="Patterns Compteurs" width="150px" image="${imgPath}/compteur.jpg" onClick='paramsysmenu.close(); xcontents.src = "/zul/commun/paternCompteur.zul"' />
+                <toolbarbutton label="Paramètrage de base" width="150px" image="${imgPath}/parametrage.jpg" onClick='paramsysmenu.close(); xcontents.src = "/zul/commun/parametrage.zul"' />
+            </toolbar>
+        </popup>
+        <popup id="achatventemenu" width="230px">
+            <toolbar orient="vertical" mold="panel">
+                <toolbarbutton label="Echeances" width="200px" image="${imgPath}/TimeIsMoney.png" onClick='achatventemenu.close(); xcontents.src = "/zul/gesticom/admin/echeance.zul"' />
+<!--                <toolbarbutton label="Règle Facturation Automatique" width="200px" image="${imgPath}/pg.png" onClick='achatventemenu.close(); xcontents.src = "/zul/gesticom/admin/regleFacturationAutomatique.zul"' />-->
+                <toolbarbutton label="Règles des prix" width="200px" image="${imgPath}/pg_money.png" onClick='achatventemenu.close(); xcontents.src = "/zul/gesticom/admin/reglePrix.zul"' />
+                <toolbarbutton label="Mode Livraison" width="200px" image="${imgPath}/camion-2_small.png" onClick='achatventemenu.close(); xcontents.src = "/zul/stock/modeLivraison.zul"' />
+                <toolbarbutton label="Mode relance paiement" width="200px" image="${imgPath}/reservationbis.png" onClick='achatventemenu.close(); xcontents.src = "/zul/gesticom/admin/modeRelancePaiement.zul"' />
+                <toolbarbutton label="Modes règlement" width="200px" image="${imgPath}/paiement_small.png" onClick='achatventemenu.close(); xcontents.src = "/zul/gesticom/admin/modeReglement.zul"' />
+            </toolbar>
+        </popup>        
+        <popup id="adminprojet" width="230px">
+            <toolbar orient="vertical" mold="panel">
+<!--                <toolbarbutton label="Calendrier" width="200px" image="${imgPath}/calendar_small.jpg" onClick='adminprojet.close(); xcontents.src = "/zul/projet/admin/calendrier.zul"' />
+                <toolbarbutton label="Fonctions" width="200px" image="${imgPath}/casquechantier_small.png" onClick='adminprojet.close(); xcontents.src = "/zul/rh/fonction.zul"' />-->
+<!--		<toolbarbutton label="Employés" width="200px" image="${imgPath}/travaux-chantier_small.png" onClick='adminprojet.close(); xcontents.src = "/zul/rh/employe.zul"' />-->
+                <toolbarbutton label="Sous traitants" width="200px" image="${imgPath}/societe_small.png" onClick='adminprojet.close(); xcontents.src = "/zul/projet/admin/soustraitant.zul"' />
+                <toolbarbutton label="Loueurs" width="200px" image="${imgPath}/location-voiture_small.png" onClick='adminprojet.close(); xcontents.src = "/zul/projet/admin/loueur.zul"' />
+		<toolbarbutton label="Outils louables" width="200px" image="${imgPath}/vehicule8_small.png" onClick='adminprojet.close(); xcontents.src = "/zul/projet/admin/outilLouable.zul"' />
+                <toolbarbutton label="Outillages collectifs" width="200px" image="${imgPath}/boitoutil_small.png" onClick='adminprojet.close(); xcontents.src = "/zul/projet/admin/outillageCollectif.zul"' />
+                <toolbarbutton label="Outils / Machines / Engins" width="200px" image="${imgPath}/jcb8085_small.png" onClick='adminprojet.close(); xcontents.src = "/zul/projet/admin/outilEmploye.zul"' />
+            </toolbar>
+        </popup>
+        <popup id="paiementVente" width="230px">
+            <toolbar orient="vertical" mold="panel">
+                <toolbarbutton label="Paiement livraison" width="200px" image="${imgPath}/ArrowRight-16x16.png" onClick='paiementVente.close(); xcontents.src = "/zul/gesticom/paiement.zul?type=VENTE&amp;estAvoir=false"' />
+                <toolbarbutton label="Paiement retour" width="200px" image="${imgPath}/ArrowLeftGreen-16x16.png" onClick='paiementVente.close(); xcontents.src = "/zul/gesticom/paiement.zul?type=VENTE&amp;estAvoir=true"' />                
+            </toolbar>
+        </popup>
+        <popup id="paiementAchat" width="230px">
+            <toolbar orient="vertical" mold="panel">
+                <toolbarbutton label="Paiement livraison" width="200px" image="${imgPath}/ArrowRight-16x16.png" onClick='paiementAchat.close(); xcontents.src = "/zul/gesticom/paiement.zul?type=ACHAT&amp;estAvoir=false"' />
+                <toolbarbutton label="Paiement retour" width="200px" image="${imgPath}/ArrowLeftGreen-16x16.png" onClick='paiementAchat.close(); xcontents.src = "/zul/gesticom/paiement.zul?type=ACHAT&amp;estAvoir=true"' />                
+            </toolbar>
+        </popup>
+    </window>
+</zk>

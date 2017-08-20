@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./jourFerierWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="jourFerierWin" height="100%" width="100%" style="margin:auto;" use="${jourFerierWindow}" onCreate='jourFerierWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/jourFerier.zs"/> -->
+        <borderlayout>
+            <north id="eastPanel" size="65px" open="false"  title="Recherche avanc�e" flex="true" splittable="true"  collapsible="true"  >
+                <hlayout spacing="10px" style="margin-top:9px;margin-left:10px">
+										                    
+                </hlayout>
+            </north>
+            <west id="westPanel" title="CRUD" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+						
+							<row>
+                                <label value="Date"/>
+								 
+								<datebox id="fieldDate" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{jourFerierWin.objet.date, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="Intitule"/>
+								 
+								<textbox id="fieldIntitule" constraint="no empty: Veillez indiquez une valeur" value="@{jourFerierWin.objet.intitule, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="Annuel"/>
+								 
+								<checkbox id="fieldAnnuel" label="?" checked="@{jourFerierWin.objet.annuel, save-when='triggerBtn.onClick'}"/>
+                            </row>												
+						 
+						
+                        </rows>
+                    </grid>					
+					
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));jourFerierWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));jourFerierWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        jourFerierWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute>  
+                    </button>
+                    <!-- <button id="btnNew" onClick="jourFerierWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="jourFerierWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="jourFerierWin.select()" model="@{jourFerierWin.listeObjets}" selectedItem="@{jourFerierWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+							<auxheader colspan="1"/>
+							
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDate" format="dd/MM/yyyy" value="@{jourFerierWin.filtre.date}" onOK="jourFerierWin.ofs=0; jourFerierWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterIntitule" value="@{jourFerierWin.filtre.intitule}" onChanging="jourFerierWin.ofs; jourFerierWin.filtre.intitule=event.value; jourFerierWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+								<combobox id="filterAnnuel" readonly="true" onOK="jourFerierWin.ofs=0;jourFerierWin.filtrer();" >
+                                    <attribute name="onCreate">
+                                        <![CDATA[
+                                            List l = new ArrayList();
+                                            l.add("Oui/Non");
+                                            l.add("Oui");
+                                            l.add("Non");
+                                            ListModelList lm = new ListModelList(l);
+                                            lm.addSelection(lm.get(0));
+                                            self.setModel(lm);
+                                        ]]>
+                                    </attribute>
+                                    <attribute name="onChange">
+                                        <![CDATA[
+                                            if(self.selectedIndex == 0) {
+                                                jourFerierWin.filtre.annuel = null;
+                                            } else if(self.selectedIndex == 1) {
+                                                jourFerierWin.filtre.annuel = true;
+                                            } else {
+                                                jourFerierWin.filtre.annuel = false;
+                                            }
+                                        ]]>
+                                    </attribute>
+                                </combobox>                                
+                            </auxheader>
+								 
+                        </auxhead>
+						<listhead sizable="true">
+							<listheader width="32px" />
+							
+							<listheader id="hdate" label="Date" sort="auto(date)" onSort="jourFerierWin.sort(event)"/>	
+							
+							<listheader id="hintitule" label="Intitule" sort="auto(intitule)" onSort="jourFerierWin.sort(event)"/>	
+							
+							<listheader id="hannuel" label="Annuel" sort="auto(annuel)" onSort="jourFerierWin.sort(event)"/>	
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+							<listcell image="/images/skin/icon_selection.png"/>
+                            
+							<listcell>
+							
+								<datebox format="dd/MM/yyyy" value="@{element.date, save-when='self.onChange'}" inplace="true" onOK="jourFerierWin.objet=self.parent.parent.value; jourFerierWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<textbox value="@{element.intitule, save-when='self.onChange'}" inplace="true" onOK="jourFerierWin.objet=self.parent.parent.value; jourFerierWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<combobox inplace="true" readonly="true" >
+                                    <attribute name="onOK">
+                                        <![CDATA[
+                                            if(self.selectedIndex == 0) {
+                                                self.parent.parent.value.annuel = true;
+                                            } else {
+                                                self.parent.parent.value.annuel = false;
+                                            }
+                                            jourFerierWin.objet=self.parent.parent.value; 
+                                            jourFerierWin.update();
+                                        ]]>
+                                    </attribute>
+                                    <attribute name="onCreate">
+                                        <![CDATA[
+                                            List l = new ArrayList();
+                                            l.add("Oui");
+                                            l.add("Non");
+                                            ListModelList lm = new ListModelList(l);
+                                            self.setModel(lm);
+                                        ]]>
+                                    </attribute>
+                                    <attribute name="onAfterRender">
+                                        <![CDATA[
+                                            if(self.parent.parent.value.annuel == true) {
+                                                self.selectedIndex = 0;
+                                            } else {
+                                                self.selectedIndex = 1;
+                                            }
+                                        ]]>
+                                    </attribute>
+                                </combobox>
+							
+							</listcell>							
+							     
+                        </listitem>
+                    </listbox>
+					<paging id="paging" totalSize="@{jourFerierWin.tailleListe}" pageSize="@{jourFerierWin.maxNb}" onPaging="jourFerierWin.getNextElements(event);" />
+					<separator/>
+                    <grid>
+                        <columns>
+                            <column width="32px" />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png"  />
+								
+									<datebox id="fielddatebis" format="dd/MM/yyyy" value="@{jourFerierWin.objet.date, save-when='self.onChange'}" inplace="true" onOK="jourFerierWin.add();" width="99%"/>
+								
+									<textbox id="fieldintitulebis" value="@{jourFerierWin.objet.intitule, save-when='self.onChange'}" inplace="true" onOK="jourFerierWin.add();" width="99%"/>
+								
+									<combobox id="fieldannuelbis" inplace="true" readonly="true" onOK="jourFerierWin.add();" >
+										<attribute name="onCreate">
+											<![CDATA[
+												List l = new ArrayList();
+												l.add("Oui");
+												l.add("Non");
+												ListModelList lm = new ListModelList(l);
+												lm.addSelection(lm.get(0));
+												self.setModel(lm);
+												jourFerierWin.objet.annuel = true;
+											]]>
+										</attribute>
+										<attribute name="onChange">
+											<![CDATA[
+												if(self.selectedIndex == 0) {
+													jourFerierWin.objet.annuel = true;
+												} else {
+													jourFerierWin.objet.annuel = false;
+												}
+											]]>
+										</attribute>
+									</combobox>
+								  
+                            </row>
+                        </rows>
+                    </grid>
+                    <separator/>
+                    <button id="btnNew" onClick="jourFerierWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="jourFerierWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="jourFerierWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

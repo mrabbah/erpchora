@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./factureWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="factureWin" height="100%" width="100%" style="margin:auto;" use="${factureWindow}" onCreate='factureWin.verifierDroitAction();'>
+        <zscript>
+        <![CDATA[
+              boolean afficherNumPartenaire = false;
+              String s_partenaire = "client";
+              String uper_s_partenaire = "Client";
+              if((factureWin.type.equals("VENTE") && factureWin.estAvoir) || (factureWin.type.equals("ACHAT") && !factureWin.estAvoir)) {
+                afficherNumPartenaire = true;
+              } else {
+                  afficherNumPartenaire = false;                  
+              }
+              if(factureWin.equals("ACHAT")) {
+                  s_partenaire = "fournisseur";
+                  uper_s_partenaire = "Fournisseur";
+              }
+        ]]>
+        </zscript>
+        <borderlayout>
+            <west id="westPanel" title="Gestion des (factures/Avoirs)" size="100%" flex="true" splittable="true" collapsible="true" open="false">
+                <borderlayout>
+                    <west size="300px" flex="true" border="none">
+                        <groupbox id="gbCrud" width="100%" height="100%">
+                            <grid fixedLayout="true">
+                                <rows>
+                                    <row>
+                                        <label value="Numéro"/>
+                                        <textbox id="fieldNumeroFacture" value="@{factureWin.objet.numeroFacture, save-when='triggerBtn.onClick'}" disabled="true" width="99%"/>
+                                    </row>
+                                    <row if="${afficherNumPartenaire}">
+                                        <label value="Reférence"/>
+                                        <textbox id="fieldReference" value="@{factureWin.objet.reference, save-when='triggerBtn.onClick'}" width="99%"/>
+                                    </row>
+                                    <row>
+                                        <label value="Date"/>
+                                        <datebox id="fieldDate" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{factureWin.objet.date, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                                    </row>												
+                                    <row>
+                                        <label value="${uper_s_partenaire}"/>
+                                        <combobox id="copartenaires" autodrop="true"  constraint="no empty:Veuillez choisir un ${s_partenaire}" model="@{factureWin.partenaires}" selectedItem="@{factureWin.partenaireSelected}" width="99%">                                    
+                                            <attribute name="onSelect">
+                                            <![CDATA[                                                                
+                                                copartenaires.disabled = true;
+                                                btnSave.visible = true;
+                                                factureWin.partenaireChoisi();
+                                            ]]>
+                                            </attribute>
+                                            <attribute name="onOK">
+                                            <![CDATA[
+                                                copartenaires.disabled = true;
+                                                btnSave.visible = true;
+                                                factureWin.partenaireChoisi();
+                                            ]]>
+                                            </attribute>
+                                            <comboitem self="@{each=elementpartenaire}" label="@{elementpartenaire}"/>
+                                        </combobox>
+                                    </row>												
+                                    <row>
+                                        <label value="Paiements" />
+                                        <bandbox    autodrop="true" mold="rounded" width="99%">
+                                            <bandpopup width="500px">
+                                                <listbox id="lstpaiements" model="@{factureWin.paiements}" selectedItem="@{factureWin.paiementsSelected, converter=com.choranet.zk.SelectedItemsConverterV3}" fixedLayout="true" multiple="true" checkmark="true" onSelect="factureWin.paiementSelectionner()">
+                                                    <listhead>
+                                                        <listheader label=""/>							
+                                                    </listhead>
+                                                    <listitem self="@{each=elementpaiements}">
+                                                        <listcell label="@{elementpaiements}"/>							
+                                                    </listitem>								
+                                                </listbox>	
+                                            </bandpopup>
+                                        </bandbox>
+                                    </row>                                    
+                                </rows>
+                            </grid>					
+                            <separator />
+                            <grid fixedLayout="true" span="true" sizedByContent="true">
+                                <rows>
+                                    <row>
+                                        <label value="TOTAL HT" />
+                                        <doublebox id="fieldTotalHt" format="#,##0.##" value="@{factureWin.objet.trans_totalht}" readonly="true" width="99%" style="font-weight:bold;color:#093;"/>
+                                    </row>
+                                    <row>
+                                        <label value="TVA"/>
+                                        <doublebox id="fieldTva" format="#,##0.##" readonly="true" value="@{factureWin.objet.trans_totaltva}" width="99%" style="font-weight:bold;color:#33F;"/>
+                                    </row>
+                                    <row>
+                                        <label value="TTC" />
+                                        <doublebox id="fieldTtc" format="#,##0.##" readonly="true" value="@{factureWin.objet.trans_totalttc}" width="99%" style="font-weight:bold;color:#F93;"/>
+                                    </row>
+                                </rows>
+                            </grid>
+                        </groupbox>
+                    </west>
+                    <center  border="none">
+                        <groupbox height="100%">
+                            <tabbox height="530px">
+                                <tabs>
+                                    <tab id="tabLigneProduit" label="Lignes produits" />
+                                </tabs>
+                                <tabpanels>
+                                    <tabpanel>
+                                        <vbox width="100%">
+                                            <listbox id="lstligneProduits" model="@{factureWin.objet.trans_ligneProduits}"  rows="11" sizedByContent="true" span="true">
+                                                <listhead sizable="true">
+                                                    <listheader id="hproduit" label="Produit" width="300px"/>	
+                                                    <listheader id="hquantite" label="Quantité" width="70px"/>	
+                                                    <listheader id="hum" label="UM" width="70px"/>	
+                                                    <listheader id="hprix" label="Prix vente" width="90px"/>	
+                                                    <listheader id="hprixDeduit" label="Prix déduit" width="90px"/>	
+                                                    <listheader id="hremise" label="Remise %" width="70px"/>	
+                                                    <listheader label="Sous total" width="150px"/>	
+                                                </listhead>
+                                                <listitem value="@{lignepdt}" self="@{each=lignepdt}">    
+                                                    <listcell label="@{lignepdt.produit}" />
+                                                    <listcell label="@{lignepdt.quantite, converter='com.choranet.zk.DoubleConverter'}" />
+                                                    <listcell label="@{lignepdt.produit.uniteMesure.libelle}" />
+                                                    <listcell label="@{lignepdt.produit.prixVenteStandard, converter='com.choranet.zk.DoubleConverter'}" />
+                                                    <listcell label="@{lignepdt.prixDeduit}" />
+                                                    <listcell label="@{lignepdt.remise}" />
+                                                    <listcell label="@{lignepdt.trans_sousTotal}" />
+                                                </listitem>
+                                            </listbox>                                            
+                                        </vbox>
+                                    </tabpanel>
+                                </tabpanels>
+                            </tabbox>
+                            <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));factureWin.add()" label="Sauveguarder" image="/images/skin/database_save.png" visible="false"/>
+                            <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));factureWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                            <button id="btnDocument" label="Imprimer" image="/images/skin/printer_small.png" visible="false" onClick="factureWin.doModalDialogChoix()" />
+                            <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                                <attribute name="onClick">
+                                    <![CDATA[
+                                    Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                        public void onEvent(Event evt) throws InterruptedException {
+                                            if (evt.getName().equals("onOK")) {
+                                                Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                                factureWin.delete();
+                                            } 
+                                        }
+                                    });
+                                    ]]>
+                                </attribute>    
+                            </button>
+                    <!-- <button id="btnNew" onClick="factureWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                            <button id="btnCancel" onClick="factureWin.cancel()" label="Annuler" image="/images/skin/cancel.png"/>
+                            <button id="btnList" onClick="factureWin.fermer()" label="Retour à la liste" image="/images/skin/database_table.png" />
+                            <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                            <button visible="false" id="triggerBtnP" onBindingValidate=""/>
+                        </groupbox>
+                    </center>
+                </borderlayout>
+                
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="factureWin.select()" model="@{factureWin.listeObjets}" selectedItem="@{factureWin.objetSelected}"  width="100%" height="520px" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filterPartenaire" model="@{factureWin.partenaires}" selectedItem="@{factureWin.filtre.partenaire}" autocomplete="true" autodrop="true" mold="rounded" onSelect="factureWin.ofs=0;factureWin.filtrer()" onOK="factureWin.ofs=0;factureWin.filtrer()" width="95%">
+                                    <comboitem self="@{each=elementfiltreprt}" label="@{elementfiltreprt}"/>
+                                </combobox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterNumeroFacture" value="@{factureWin.filtre.numeroFacture}" onChanging="factureWin.ofs; factureWin.filtre.numeroFacture=event.value; factureWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+                            <auxheader colspan="1" if="${afficherNumPartenaire}">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterReference" value="@{factureWin.filtre.reference}" onChanging="factureWin.ofs; factureWin.filtre.reference=event.value; factureWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDate" format="dd/MM/yyyy" value="@{factureWin.filtre.date}" onOK="factureWin.ofs=0; factureWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+                            <auxheader colspan="1" />
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+                            <listheader label="${uper_s_partenaire}" sort="auto(partenaire.raisonSociale)" onSort="factureWin.sort(event)"/>		
+                            <listheader label="Numéro" sort="auto(numeroFacture)" onSort="factureWin.sort(event)"/>	
+                            <listheader label="Reférence" sort="auto(reference)" onSort="factureWin.sort(event)" if="${afficherNumPartenaire}"/>	
+                            <listheader label="Date" sort="auto(date)" onSort="factureWin.sort(event)"/>	
+                            <listheader label="Montant" sort="auto(trans_totalttc)" onSort="factureWin.sort(event)"/>
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            <listcell label="@{element.partenaire}" />
+                            <listcell label="@{element.numeroFacture}" />
+                            <listcell label="@{element.reference}" if="${afficherNumPartenaire}"/>
+                            <listcell>
+                                <datebox format="dd/MM/yyyy" value="@{element.date, save-when='self.onChange'}" inplace="true" onOK="factureWin.objet=self.parent.parent.value; factureWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>	
+                            <listcell label="@{element.trans_totalttc, converter='com.choranet.zk.DoubleConverter'}" />
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{factureWin.tailleListe}" pageSize="@{factureWin.maxNb}" onPaging="factureWin.getNextElements(event);" />
+                    <separator/>
+                    <button id="btnNew" onClick="factureWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="factureWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png" visible="false"/>
+                    <button id="btnExcel" onClick="factureWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png" visible="false"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+        <window id="modalDialogChoix" title="Générer document" border="normal" width="460px"
+                closable="true" action="show: slideDown;hide: slideUp" position="center,center" visible = "false" onClose="self.visible = false; event.stopPropagation();">
+            <vlayout>
+                <div>
+                    <radiogroup id="sv1" />
+                    <radio id="rdefaut" label="Par défaut" radiogroup="sv1" />
+                    <radio id="ravecEntetepied" label="Avec entête et pied" radiogroup="sv1" />
+                    <radio id="rsansEntetepied" label="Sans entête et pied" radiogroup="sv1" />
+                </div>
+                <separator/>
+                <checkbox id="AvecCachet" label="Avec cachet" />
+                <checkbox id="AvecCopie" label="Avec message copie" />
+                <checkbox id="AvecDestinataire" label="Avec destinataire" value=" " >
+        
+                    <attribute name="onCheck">
+                    <![CDATA[
+
+                    if(AvecDestinataire.checked) {
+                    fieldDestinataire.visible = true;
+                    }
+                    else{
+                    fieldDestinataire.visible = false;
+                    fieldDestinataire.constraint="";
+                    }
+                    ]]>
+                    </attribute>
+                </checkbox>
+                <textbox id="fieldDestinataire" hflex = "1" visible = 'false'/>
+           
+                <button hflex="1" label="Générer" onClick='factureWin.genererDocument(rdefaut.selected,ravecEntetepied.selected,rsansEntetepied.selected, AvecCachet.checked, AvecCopie.checked, AvecDestinataire.checked, fieldDestinataire.value)'/> 
+               
+
+            </vlayout>
+        </window>
+    </window>
+</zk>

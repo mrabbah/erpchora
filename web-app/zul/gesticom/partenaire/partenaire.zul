@@ -1,0 +1,732 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./partenaireWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="partenaireWin" height="100%" width="100%" style="margin:auto;" use="${partenaireWindow}" onCreate='partenaireWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/partenaire.zs"/> -->
+        <borderlayout>
+            <north id="northPanel" size="65px" open="false"  title="Recherche avancée" flex="true" splittable="true"  collapsible="true" border="none" >
+                <hlayout spacing="10px" style="margin-top:9px;margin-left:10px">		
+                    <label value="Catégorie :" />
+                    <bandbox    autodrop="true" mold="rounded">
+                        <bandpopup>
+                            <listbox id="filtercategoriePartenaires" model="@{partenaireWin.categoriePartenaires}" 
+                                     selectedItem="@{partenaireWin.filtre.categoriePartenaires, converter=com.choranet.zk.SelectedItemsConverterV3}"
+                                     onSelect="partenaireWin.ofs=0;partenaireWin.filtrer();"
+                                     fixedLayout="true" multiple="true" checkmark="true">
+                                <listhead>
+                                    <listheader label=""/>							
+                                </listhead>
+                                <listitem self="@{each=elementfiltrecategoriePartenaires}">
+                                    <listcell label="@{elementfiltrecategoriePartenaires}"/>							
+                                </listitem>								
+                            </listbox>
+                        </bandpopup>
+                    </bandbox>
+                    <label value="Forme juridique :" />
+                    <combobox id="filterformeJuridique" model="@{partenaireWin.formeJuridiques}" selectedItem="@{partenaireWin.filtre.formeJuridique}" autocomplete="true" autodrop="true" mold="rounded" onSelect="partenaireWin.ofs=0;partenaireWin.filtrer()" onOK="partenaireWin.ofs=0;partenaireWin.filtrer()">
+                        <comboitem self="@{each=elementfiltreformeJuridique}" label="@{elementfiltreformeJuridique}"/>
+                    </combobox>					                    
+                </hlayout>
+            </north>
+            <east id="eastPanel" title="Filtre avancé" size="40%" flex="true" collapsible="true" open="false" >
+                <grid fixedLayout="true">
+                    <rows>
+                        <row>
+                            <label value="Zone" />
+                            <hbox>
+                                <textbox id="filtreZone" value="@{partenaireWin.filtre.zone, access='load'}" disabled="true"/>
+                                <button  onClick='partenaireWin.choisir("zone", filtreZone, partenaireWin.filtre, "zone")' image="/images/skin/search.png"/>
+                                <button  onClick='filtreZone.value=""; partenaireWin.filtre.zone=null; partenaireWin.ofs=0; partenaireWin.filtrer();' image="/images/skin/cancel.png"/>
+                            </hbox>
+                        </row>
+                        <row>
+                            <label value="Ville" />
+                            <hbox>
+                                <textbox id="filtreVille" value="@{partenaireWin.filtre.ville, access='load'}" disabled="true"/>
+                                <button  onClick='partenaireWin.choisir("ville", filtreVille, partenaireWin.filtre, "ville")' image="/images/skin/search.png"/>
+                                <button  onClick='filtreVille.value=""; partenaireWin.filtre.ville=null; partenaireWin.ofs=0; partenaireWin.filtrer();' image="/images/skin/cancel.png"/>
+                            </hbox>
+                        </row>
+                        <row>
+                            <label value="Mode Relance paiement" />
+                            <hbox>
+                                <textbox id="filtreModeRelancePaiement" value="@{partenaireWin.filtre.modeRelancePaiement, access='load'}" disabled="true"/>
+                                <button  onClick='partenaireWin.choisir("modeRelancePaiement", filtreModeRelancePaiement, partenaireWin.filtre, "modeRelancePaiement")' image="/images/skin/search.png"/>
+                                <button  onClick='filtreModeRelancePaiement.value=""; partenaireWin.filtre.modeRelancePaiement=null; partenaireWin.ofs=0; partenaireWin.filtrer();' image="/images/skin/cancel.png"/>
+                            </hbox>
+                        </row>
+                        <row>
+                            <label value="Mode Réglement par défaut" />
+                            <hbox>
+                                <textbox id="filtreModeReglement" value="@{partenaireWin.filtre.modeReglement, access='load'}" disabled="true"/>
+                                <button  onClick='partenaireWin.choisir("modeReglement", filtreModeReglement, partenaireWin.filtre, "modeReglement")' image="/images/skin/search.png"/>
+                                <button  onClick='filtreModeReglement.value=""; partenaireWin.filtre.modeReglement=null; partenaireWin.ofs=0; partenaireWin.filtrer();' image="/images/skin/cancel.png"/>
+                            </hbox>
+                        </row>
+                        <row>
+                            <label value="Echéance" />
+                            <hbox>
+                                <textbox id="filtreEcheance" value="@{partenaireWin.filtre.echeance, access='load'}" disabled="true"/>
+                                <button  onClick='partenaireWin.choisir("echeance", filtreEcheance, partenaireWin.filtre, "echeance")' image="/images/skin/search.png"/>
+                                <button  onClick='filtreEcheance.value=""; partenaireWin.filtre.echeance=null; partenaireWin.ofs=0; partenaireWin.filtrer();' image="/images/skin/cancel.png"/>
+                            </hbox>
+                        </row>
+                        <row>
+                            <label value="Mode livraison par défaut" />
+                            <hbox>
+                                <textbox id="filtreModeLivraison" value="@{partenaireWin.filtre.modeLivraison, access='load'}" disabled="true"/>
+                                <button  onClick='partenaireWin.choisir("modeLivraison", filtreModeLivraison, partenaireWin.filtre, "modeLivraison")' image="/images/skin/search.png"/>
+                                <button  onClick='filtreModeLivraison.value=""; partenaireWin.filtre.modeLivraison=null; partenaireWin.ofs=0; partenaireWin.filtrer();' image="/images/skin/cancel.png"/>
+                            </hbox>
+                        </row>
+                        <row>
+                            <label value="Commercial" />
+                            <hbox>
+                                <textbox id="filtreCommercial" value="@{partenaireWin.filtre.commercial, access='load'}" disabled="true"/>
+                                <button  onClick='partenaireWin.choisir("commercial", filtreCommercial, partenaireWin.filtre, "employe")' image="/images/skin/search.png"/>
+                                <button  onClick='filtreCommercial.value=""; partenaireWin.filtre.commercial=null; partenaireWin.ofs=0; partenaireWin.filtrer();' image="/images/skin/cancel.png"/>
+                            </hbox>
+                        </row>
+                        <row>
+                            <hbox>
+                                <button id="btnDemandeFiltrer" label="Appliquez le filtre" onClick="partenaireWin.ofs=0;partenaireWin.filtrer();" image="/images/skin/funnel.png"/>
+                                <button id="btnFermerFiltrer" label="Fermer" onClick="eastPanel.open=false" image="/images/skin/cancel.png"/>
+                            </hbox>
+                        </row>
+                    </rows>
+                </grid>               
+            </east>
+            <west id="westPanel" title="Gestion des clients et des fournisseurs" size="100%" flex="true" splittable="true" collapsible="true" open="false" border="none">
+                <borderlayout>
+                    <center>
+                        <tabbox>
+                            <tabs>
+                                <tab id="infoPertenaire" label="Informations partenaire" height="100%" />
+                                <tab label="Comptes bancaires" onClick="partenaireWin.chargerComptes()" />
+                                <tab label="Contacts" onClick="partenaireWin.chargerContacts()"/>
+                            </tabs>
+                            <tabpanels>
+                                <tabpanel>
+                                    <grid fixedLayout="true" span="true" sizedByContent="true">
+                                        <rows>
+                                            <row>
+                                                <label value="Code"/>
+                                                <textbox id="fieldCode" constraint="no empty: Veillez indiquez une valeur" value="@{partenaireWin.objet.code, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                                                <label value="(Nom/Raison sociale)"/>
+                                                <textbox id="fieldRaisonSociale" constraint="no empty: Veillez indiquez une valeur" value="@{partenaireWin.objet.raisonSociale, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                                                <label value="Forme juridique " />
+                                                <combobox id="coformeJuridiques" model="@{partenaireWin.formeJuridiques}" selectedItem="@{partenaireWin.formeJuridiqueSelected}" width="99%">
+                                                    <comboitem self="@{each=elementformeJuridique}" label="@{elementformeJuridique}"/>
+                                                </combobox>
+                                            </row>	
+                                            <row>
+                                                <label value="Est un client"/>
+                                                <checkbox id="fieldEstClient" label="?" checked="@{partenaireWin.objet.estClient, save-when='triggerBtn.onClick'}"/>
+                                                <label value="Est un fournisseur"/>
+                                                <checkbox id="fieldEstFournisseur" label="?" checked="@{partenaireWin.objet.estFournisseur, save-when='triggerBtn.onClick'}"/>
+                                                <label value="Est un particulier"/>
+                                                <checkbox id="fieldEstParticulier" label="?" checked="@{partenaireWin.objet.estParticulier, save-when='triggerBtn.onClick'}"/>
+                                            </row>
+                                            <row>
+                                                <label value="Adresse"/>
+                                                <textbox id="fieldAdresse" value="@{partenaireWin.objet.adresse, save-when='triggerBtn.onClick'}" width="99%"/>
+                                                <label value="Adresse facturation"/>
+                                                <textbox id="fieldAdresseFacturation" value="@{partenaireWin.objet.adresseFacturation, save-when='triggerBtn.onClick'}"  width="99%"/>
+                                                <label value="Adresse livraison"/>
+                                                <textbox id="fieldAdresseLivraison" value="@{partenaireWin.objet.adresseLivraison, save-when='triggerBtn.onClick'}" width="99%"/>
+                                            </row>
+                                            <row>
+                                                <label value="Ville " />
+                                                <hbox>
+                                                    <textbox id="fieldVille" value="@{partenaireWin.objet.ville, access='load'}" disabled="true" width="100px"/>
+                                                    <button onClick='partenaireWin.choisir("ville", fieldVille, partenaireWin.objet, "ville");fieldPays.focus();' image="/images/skin/search.png"/>
+                                                </hbox>
+                                                <cell colspan="2">
+                                                    <hlayout>
+                                                        <label value="Pays " />
+                                                        <textbox id="fieldPays" readonly="true" value="@{partenaireWin.objet.ville.pays}" width="99%">
+                                                            <attribute name="onFocus">
+                                                                <![CDATA[
+                                                                    self.value = partenaireWin.objet.ville.pays.intitule;
+                                                                ]]>
+                                                            </attribute>
+                                                        </textbox>                                                    
+                                                        <separator width="18px"/>
+                                                        <label value="Zone"/>
+                                                        <hbox>
+                                                            <textbox id="fieldZone" value="@{partenaireWin.objet.zone, access='load'}" disabled="true" width="100px"/>
+                                                            <button  onClick='partenaireWin.choisir("zone", fieldZone, partenaireWin.objet, "zone")' image="/images/skin/search.png"/>
+                                                        </hbox>
+                                                    </hlayout>
+                                                </cell>
+                                                <label value="Code postal"/>
+                                                <textbox id="fieldCodePostal" value="@{partenaireWin.objet.codePostal, save-when='triggerBtn.onClick'}" width="99%"/>                                                    
+                                            </row>	
+                                        </rows>
+                                    </grid>
+                                    <separator/>
+                                    <separator/>
+                                    <grid fixedLayout="true" span="true" sizedByContent="true">
+                                        <rows>
+                                            <row>
+                                                <label value="Téléphone"/>
+                                                <textbox id="fieldTelephone" value="@{partenaireWin.objet.telephone, save-when='triggerBtn.onClick'}" width="99%"/>
+                                                <label value="Fax"/>
+                                                <textbox id="fieldFax" value="@{partenaireWin.objet.fax, save-when='triggerBtn.onClick'}" width="99%"/>
+                                                <label value="Email"/>
+                                                <textbox id="fieldEmail" value="@{partenaireWin.objet.email, save-when='triggerBtn.onClick'}" width="99%"/>
+                                                <label value="Site web"/>
+                                                <textbox id="fieldSiteWeb" value="@{partenaireWin.objet.siteWeb, save-when='triggerBtn.onClick'}" width="99%"/>
+                                            </row>												
+                                            <row>
+                                                <label value="Id Fiscal"/>
+                                                <textbox id="fieldIdFiscal" value="@{partenaireWin.objet.idFiscal, save-when='triggerBtn.onClick'}" width="99%"/>
+                                                <label value="Patente"/>
+                                                <textbox id="fieldPatente" value="@{partenaireWin.objet.patente, save-when='triggerBtn.onClick'}" width="99%"/>
+                                                <label value="Registre de commerce"/>
+                                                <textbox id="fieldRegistreCommerce" value="@{partenaireWin.objet.registreCommerce, save-when='triggerBtn.onClick'}" width="99%"/>
+                                                <label value="CNSS"/>
+                                                <textbox id="fieldCnss" value="@{partenaireWin.objet.cnss, save-when='triggerBtn.onClick'}" width="99%"/>
+                                            </row>
+                                        </rows>
+                                    </grid>
+                                    <separator/>
+                                    <separator/>
+                                    <grid fixedLayout="true" span="true" sizedByContent="true">
+                                        <rows>
+                                            <row>
+                                                <label value="Catégorie" />
+                                                <bandbox autodrop="true" mold="rounded" width="99%">
+                                                    <bandpopup>
+                                                        <listbox id="lstcategoriePartenaires" model="@{partenaireWin.categoriePartenaires}" selectedItem="@{partenaireWin.categoriePartenairesSelected, converter=com.choranet.zk.SelectedItemsConverterV3}" fixedLayout="true" multiple="true" checkmark="true">
+                                                            <listhead>
+                                                                <listheader label=""/>							
+                                                            </listhead>
+                                                            <listitem self="@{each=elementcategoriePartenaires}">
+                                                                <listcell label="@{elementcategoriePartenaires}"/>							
+                                                            </listitem>								
+                                                        </listbox>	
+                                                    </bandpopup>
+                                                </bandbox>
+                                                <label value="Mode relance Paiement " />
+                                                <hbox>
+                                                    <textbox id="fieldModeRelancePaiement" value="@{partenaireWin.objet.modeRelancePaiement, access='load'}" disabled="true"/>
+                                                    <button  onClick='partenaireWin.choisir("modeRelancePaiement", fieldModeRelancePaiement, partenaireWin.objet, "modeRelancePaiement")' image="/images/skin/search.png"/>
+                                                </hbox>
+                                            </row>
+                                            <row>
+                                                <label value="Mode règlement par défaut " />
+                                                <hbox>
+                                                    <textbox id="fieldModeReglementDefaut" value="@{partenaireWin.objet.modeReglementDefaut, access='load'}" disabled="true"/>
+                                                    <button  onClick='partenaireWin.choisir("modeReglementDefaut", fieldModeReglementDefaut, partenaireWin.objet, "modeReglement")' image="/images/skin/search.png"/>
+                                                </hbox>
+                                                <label value="Echéance " />
+                                                <hbox>
+                                                    <textbox id="fieldEcheance" value="@{partenaireWin.objet.echeance, access='load'}" disabled="true"/>
+                                                    <button  onClick='partenaireWin.choisir("echeance", fieldEcheance, partenaireWin.objet, "echeance")' image="/images/skin/search.png"/>
+                                                </hbox>
+                                            </row>
+                                            <row>
+                                                <label value="Mode livraison par défaut " />
+                                                <hbox>
+                                                    <textbox id="fieldModeLivraison" value="@{partenaireWin.objet.modeLivraison, access='load'}" disabled="true"/>
+                                                    <button  onClick='partenaireWin.choisir("modeLivraison", fieldModeLivraison, partenaireWin.objet, "modeLivraison")' image="/images/skin/search.png"/>
+                                                </hbox>
+                                                <label value="Commercial " />
+                                                <hbox>
+                                                    <textbox id="fieldCommercial" value="@{partenaireWin.objet.commercial, access='load'}" disabled="true"/>
+                                                    <button  onClick='partenaireWin.choisir("commercial", fieldCommercial, partenaireWin.objet, "employe")' image="/images/skin/search.png"/>
+                                                </hbox>
+                                            </row>
+                                        </rows>
+                                    </grid>	
+                                    <separator/>
+                                    <grid fixedLayout="true" span="true" sizedByContent="true">
+                                        <rows>
+                                            <row>
+<!--                                                <label value="Compte" />
+                                                <combobox id="cocomptes" model="@{partenaireWin.comptes}" selectedItem="@{partenaireWin.compteSelected}" width="99%">
+                                                    <comboitem self="@{each=elementcompte}" label="@{elementcompte}"/>
+                                                </combobox>-->
+                                                <cell colspan="2">
+                                                    <hlayout>
+                                                        <label value="Plafond " />
+                                                        <separator width="10px"/>
+                                                        <doublebox id="fieldPlafond" value="@{partenaireWin.objet.plafond, save-when='triggerBtn.onClick'}" constraint="no empty: Veillez indiquez une valeur" width="99%"/>
+                                                        <separator width="20px"/>
+                                                        <label value="Solde " />
+                                                        <separator width="10px"/>
+                                                        <doublebox id="fieldSolde" value="@{partenaireWin.objet.solde}" readonly="true" width="99%"/>
+                                                        <separator width="20px"/>
+                                                        <label value="Compte verrouillé "/>
+                                                        <separator width="10px"/>
+                                                        <checkbox id="fieldCompteVerrouile" label="?" checked="@{partenaireWin.objet.compteVerrouile, save-when='triggerBtn.onClick'}"/>
+                                                    </hlayout>
+                                                </cell>
+                                            </row>   
+                                        </rows>
+                                    </grid>
+                                </tabpanel>
+                                <tabpanel>
+                                    <groupbox width="99%" height="100%">
+                                        <listbox id="lstComptes" onSelect="partenaireWin.selectCompte()" model="@{partenaireWin.listeComptes}" selectedItem="@{partenaireWin.compteSelected}"  width="100%" height="100%" mold="paging" pageSize="10">
+                                            <listhead sizable="true">
+                                                <listheader width="32px" />
+                                                <listheader label="Banque" />	
+                                                <listheader label="Rib" />	
+                                                <listheader label="CodeSwift" />	
+<!--                                                <listheader label="Solde" />	
+                                                <listheader label="Solde prévu" />	-->
+                                                <listheader label="AgenceBancaire" />
+                                                <listheader width="50px" />
+                                            </listhead>
+                                            <listitem value="@{elementcompte}" self="@{each=elementcompte}">    
+                                                <listcell image="/images/skin/icon_selection.png"/>
+                                                <listcell>
+                                                    <textbox value="@{elementcompte.libelle, save-when='self.onChange'}" inplace="true" onOK="partenaireWin.compte=self.parent.parent.value; partenaireWin.updateCompte();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                                </listcell>							
+                                                <listcell>
+                                                    <textbox value="@{elementcompte.rib, save-when='self.onChange'}" inplace="true" onOK="partenaireWin.compte=self.parent.parent.value; partenaireWin.updateCompte();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                                </listcell>							
+                                                <listcell>
+                                                    <textbox value="@{elementcompte.codeSwift, save-when='self.onChange'}" inplace="true" onOK="partenaireWin.compte=self.parent.parent.value; partenaireWin.updateCompte();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                                </listcell>	
+<!--                                                <listcell>
+                                                    <doublebox value="@{elementcompte.solde, save-when='self.onChange'}" format="#,##0.##" inplace="true" onOK="partenaireWin.compte=self.parent.parent.value; partenaireWin.updateCompte();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                                </listcell>	
+                                                <listcell>
+                                                    <doublebox value="@{elementcompte.soldePrevu, save-when='self.onChange'}" format="#,##0.##" readonly="true" width="99%"/>
+                                                </listcell>	-->
+                                                <listcell>
+                                                    <textbox readonly="true" value="@{elementcompte.agenceBancaire, save-when='self.onChange'}" inplace="true" onOK="partenaireWin.compte=self.parent.parent.value; partenaireWin.updateCompte();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                                </listcell>
+                                                <listcell image="/images/skin/database_delete.png">
+                                                    <attribute name="onClick">
+                                                        <![CDATA[
+                                                            partenaireWin.deleteCompte();                                                
+                                                        ]]>
+                                                    </attribute>
+                                                </listcell>
+                                            </listitem>
+                                        </listbox>
+                                        <separator/>
+                                        <grid>
+                                            <columns>
+                                                <column width="32px" />
+                                                <column />
+                                                <column />
+                                                <column />
+<!--                                                <column />
+                                                <column />-->
+                                                <column />
+                                                <column width="50px" />
+                                            </columns>
+                                            <rows>
+                                                <row>
+                                                    <image src="/images/skin/database_edit.png" >
+                                                        <attribute name="onClick">
+                                                            <![CDATA[
+                                                                partenaireWin.newCompte();
+                                                                fieldAgenceBancaire.value = null;
+                                                            ]]>
+                                                        </attribute>
+                                                    </image>
+                                                    <textbox id="fieldlibellebis" constraint="no empty: Veillez indiquez une valeur" value="@{partenaireWin.compte.libelle, save-when='triggerBtnCompte.onClick'}" inplace="true" width="99%"/>
+                                                    <textbox id="fieldribbis" constraint="no empty: Veillez indiquez une valeur" value="@{partenaireWin.compte.rib, save-when='triggerBtnCompte.onClick'}" inplace="true" width="99%"/>
+                                                    <textbox id="fieldcodeSwiftbis" value="@{partenaireWin.compte.codeSwift, save-when='triggerBtnCompte.onClick'}" inplace="true" width="99%"/>
+<!--                                                    <doublebox id="fieldsolde" format="#,##0.##" value="@{partenaireWin.compte.solde, save-when='self.onChange'}" inplace="true" onOK="partenaireWin.addOrUpdateCompte();" width="99%"/>
+                                                    <doublebox id="fieldsoldePrevu" format="#,##0.##" value="@{partenaireWin.compte.soldePrevu, save-when='self.onChange'}" readonly="true" width="99%"/>-->
+                                                    <hbox>
+                                                        <textbox id="fieldAgenceBancaire" value="@{partenaireWin.compte.agenceBancaire.nom, access='load'}" disabled="true" width="100px"/>
+                                                        <button  onClick='partenaireWin.choisir("agenceBancaire", fieldAgenceBancaire, partenaireWin.compte, "agenceBancaire")' image="/images/skin/search.png"/>
+                                                    </hbox>
+                                                    <button id="btnAdd" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtnCompte)); partenaireWin.addOrUpdateCompte();" image="/images/skin/database_add.png" width="99%"/>				  			  
+                                                </row>
+                                            </rows>
+                                        </grid>
+                                    </groupbox>    
+                                </tabpanel>
+                                <tabpanel>
+                                    <groupbox width="99%" height="100%">
+                                        <listbox id="lstContacts" onSelect="partenaireWin.selectContact()" model="@{partenaireWin.listeContacts}" selectedItem="@{partenaireWin.contactSelected}" width="100%" height="100%" mold="paging" pageSize="10">                                    
+                                            <listhead sizable="true">
+                                                <listheader width="32px" />
+                                                <listheader label="Nom" />	
+                                                <listheader label="titre" />	
+                                                <listheader label="fonction" />
+                                                <listheader label="Téléphone fixe" />
+                                                <listheader label="GSM" />
+                                                <listheader label="Email" />
+                                                <listheader width="50px" />
+                                            </listhead>
+                                            <listitem value="@{elementcontact}" self="@{each=elementcontact}">    
+                                                <listcell image="/images/skin/icon_selection.png"/>
+                                                <listcell>
+                                                    <textbox value="@{elementcontact.nom, save-when='self.onChange'}" inplace="true" onOK="partenaireWin.contact=self.parent.parent.value; partenaireWin.updateContact();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                                </listcell>							
+                                                <listcell>
+                                                    <textbox value="@{elementcontact.titre, save-when='self.onChange'}" inplace="true" onOK="partenaireWin.contact=self.parent.parent.value; partenaireWin.updateContact();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                                </listcell>							
+                                                <listcell>
+                                                    <textbox value="@{elementcontact.fonction, save-when='self.onChange'}" inplace="true" onOK="partenaireWin.contact=self.parent.parent.value; partenaireWin.updateContact();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                                </listcell>
+                                                <listcell>
+                                                    <textbox value="@{elementcontact.fixe, save-when='self.onChange'}" inplace="true" onOK="partenaireWin.contact=self.parent.parent.value; partenaireWin.updateContact();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                                </listcell>
+                                                <listcell>
+                                                    <textbox value="@{elementcontact.portable, save-when='self.onChange'}" inplace="true" onOK="partenaireWin.contact=self.parent.parent.value; partenaireWin.updateContact();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                                </listcell>
+                                                <listcell>
+                                                    <textbox value="@{elementcontact.email, save-when='self.onChange'}" inplace="true" onOK="partenaireWin.contact=self.parent.parent.value; partenaireWin.updateContact();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                                </listcell>
+                                                <listcell image="/images/skin/database_delete.png">
+                                                    <attribute name="onClick">
+                                                        <![CDATA[
+                                                            partenaireWin.deleteContact();
+                                                        ]]>
+                                                    </attribute>
+                                                </listcell>
+                                            </listitem>
+                                        </listbox>
+                                        <separator/>
+                                        <grid>
+                                            <columns>
+                                                <column width="32px" />
+                                                <column />
+                                                <column />
+                                                <column />
+                                                <column />
+                                                <column />
+                                                <column />
+                                                <column width="50px" />
+                                            </columns>
+                                            <rows>
+                                                <row>
+                                                    <image src="/images/skin/database_edit.png">
+                                                        <attribute name="onClick">
+                                                            <![CDATA[
+                                                                partenaireWin.newContact();
+                                                                partenaireWin.isUpdateContact = false;
+                                                            ]]>
+                                                        </attribute>
+                                                    </image>
+                                                    <textbox id="fieldnombiscontact" constraint="no empty: Veillez indiquez une valeur" value="@{partenaireWin.contact.nom, save-when='triggerBtnContact.onClick'}" inplace="true" width="99%"/>
+                                                    <textbox id="fieldtitrebiscontact" constraint="no empty: Veillez indiquez une valeur" value="@{partenaireWin.contact.titre, save-when='triggerBtnContact.onClick'}" inplace="true" width="99%"/>
+                                                    <textbox id="fieldfonctionbiscontact" value="@{partenaireWin.contact.fonction, save-when='triggerBtnContact.onClick'}" inplace="true"  width="99%"/>
+                                                    <textbox id="fieldfixebiscontact" value="@{partenaireWin.contact.fixe, save-when='triggerBtnContact.onClick'}" inplace="true" width="99%"/>
+                                                    <textbox id="fieldgsmbiscontact" value="@{partenaireWin.contact.portable, save-when='triggerBtnContact.onClick'}" inplace="true" width="99%"/>
+                                                    <textbox id="fieldemailbiscontact" value="@{partenaireWin.contact.email, save-when='triggerBtnContact.onClick'}" inplace="true" width="99%"/>
+                                                    <button id="btnAddContact" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtnContact)); partenaireWin.addOrUpdateContact()" image="/images/skin/database_add.png" width="99%"/>
+                                                </row>
+                                            </rows>
+                                        </grid>
+                                    </groupbox>    
+                                </tabpanel>
+                            </tabpanels>
+                        </tabbox>
+                    </center>
+                    <south size="40px" border="none">
+                        <hbox>
+                            <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));partenaireWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                            <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));partenaireWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                            <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                                <attribute name="onClick">
+                                    <![CDATA[
+                                    Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                        public void onEvent(Event evt) throws InterruptedException {
+                                            if (evt.getName().equals("onOK")) {
+                                                Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                                partenaireWin.delete();
+                                            } 
+                                        }
+                                    });
+                                    ]]>
+                                </attribute>          
+                            </button>
+                    <!-- <button id="btnNew" onClick="partenaireWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                            <button id="btnCancel" onClick="partenaireWin.cancel()" label="Annuler" image="/images/skin/cancel.png" />
+                            <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                            <button visible="false" id="triggerBtnContact" onBindingValidate=""/>
+                            <button visible="false" id="triggerBtnCompte" onBindingValidate=""/>
+                            
+                        </hbox>                     
+                    </south>
+                </borderlayout>
+            </west>
+            <center border="none" flex="true" >
+                <groupbox width="100%" height="100%">
+                    <borderlayout height="480px" width="100%">
+                        <center border="0">
+                            <listbox id="lstObjet" onSelect="infoPertenaire.selected = true; partenaireWin.select()" model="@{partenaireWin.listeObjets}" selectedItem="@{partenaireWin.objetSelected}"  width="99%" height="100%" mold="paging" paginal="${paging}" vflex="true">
+                                <auxhead sclass="category-center">
+                                    <auxheader colspan="1"/>
+                                    <auxheader colspan="1">
+                                        <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                        <textbox id="filterCode" value="@{partenaireWin.filtre.code}" onChanging="partenaireWin.ofs; partenaireWin.filtre.code=event.value; partenaireWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                                    </auxheader>
+                                    <auxheader colspan="1">
+                                        <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                        <textbox id="filterRaisonSociale" value="@{partenaireWin.filtre.raisonSociale}" onChanging="partenaireWin.ofs; partenaireWin.filtre.raisonSociale=event.value; partenaireWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                                    </auxheader>  
+                                    <auxheader colspan="1">
+                                        <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                        <doublebox id="filterPlafond" value="@{partenaireWin.filtre.plafond}" onChanging="partenaireWin.ofs; partenaireWin.filtre.plafond=event.value; partenaireWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                                    </auxheader>
+                                    <auxheader colspan="1">
+                                        <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                        <textbox id="filterTelephone" value="@{partenaireWin.filtre.telephone}" onChanging="partenaireWin.ofs; partenaireWin.filtre.telephone=event.value; partenaireWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                                    </auxheader>
+                                    <auxheader colspan="1">
+                                        <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                        <textbox id="filterFax" value="@{partenaireWin.filtre.fax}" onChanging="partenaireWin.ofs; partenaireWin.filtre.fax=event.value; partenaireWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                                    </auxheader>
+                                    <auxheader colspan="1">
+                                        <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                        <textbox id="filterEmail" value="@{partenaireWin.filtre.email}" onChanging="partenaireWin.ofs; partenaireWin.filtre.email=event.value; partenaireWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                                    </auxheader>
+                                    <auxheader colspan="1">
+                                        <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                        <combobox id="filterEstClient" readonly="true" onOK="partenaireWin.ofs=0;partenaireWin.filtrer();" >
+                                            <attribute name="onCreate">
+                                        <![CDATA[
+                                            List l = new ArrayList();
+                                            l.add("Oui/Non");
+                                            l.add("Oui");
+                                            l.add("Non");
+                                            ListModelList lm = new ListModelList(l);
+                                            lm.addSelection(lm.get(0));
+                                            self.setModel(lm);
+                                        ]]>
+                                            </attribute>
+                                            <attribute name="onChange">
+                                        <![CDATA[
+                                            if(self.selectedIndex == 0) {
+                                                partenaireWin.filtre.estClient = null;
+                                            } else if(self.selectedIndex == 1) {
+                                                partenaireWin.filtre.estClient = true;
+                                            } else {
+                                                partenaireWin.filtre.estClient = false;
+                                            }
+                                        ]]>
+                                            </attribute>
+                                        </combobox>                                
+                                    </auxheader>
+                                    <auxheader colspan="1">
+                                        <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                        <combobox id="filterEstFournisseur" readonly="true" onOK="partenaireWin.ofs=0;partenaireWin.filtrer();" >
+                                            <attribute name="onCreate">
+                                        <![CDATA[
+                                            List l = new ArrayList();
+                                            l.add("Oui/Non");
+                                            l.add("Oui");
+                                            l.add("Non");
+                                            ListModelList lm = new ListModelList(l);
+                                            lm.addSelection(lm.get(0));
+                                            self.setModel(lm);
+                                        ]]>
+                                            </attribute>
+                                            <attribute name="onChange">
+                                        <![CDATA[
+                                            if(self.selectedIndex == 0) {
+                                                partenaireWin.filtre.estFournisseur = null;
+                                            } else if(self.selectedIndex == 1) {
+                                                partenaireWin.filtre.estFournisseur = true;
+                                            } else {
+                                                partenaireWin.filtre.estFournisseur = false;
+                                            }
+                                        ]]>
+                                            </attribute>
+                                        </combobox>                                
+                                    </auxheader>
+                                    <auxheader colspan="1">
+                                        <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                        <combobox id="filterEstParticulier" readonly="true" onOK="partenaireWin.ofs=0;partenaireWin.filtrer();" >
+                                            <attribute name="onCreate">
+                                        <![CDATA[
+                                            List l = new ArrayList();
+                                            l.add("Oui/Non");
+                                            l.add("Oui");
+                                            l.add("Non");
+                                            ListModelList lm = new ListModelList(l);
+                                            lm.addSelection(lm.get(0));
+                                            self.setModel(lm);
+                                        ]]>
+                                            </attribute>
+                                            <attribute name="onChange">
+                                        <![CDATA[
+                                            if(self.selectedIndex == 0) {
+                                                partenaireWin.filtre.estParticulier = null;
+                                            } else if(self.selectedIndex == 1) {
+                                                partenaireWin.filtre.estParticulier = true;
+                                            } else {
+                                                partenaireWin.filtre.estParticulier = false;
+                                            }
+                                        ]]>
+                                            </attribute>
+                                        </combobox>                                
+                                    </auxheader>
+                                    <auxheader colspan="1"/>
+								 
+                                </auxhead>
+                                <listhead sizable="true">
+                                    <listheader width="32px" />
+                                    <listheader id="hcode" label="Code" sort="auto(code)" onSort="partenaireWin.sort(event)" width="90px"/>	
+                                    <listheader id="hraisonSociale" label="(Nom/Raison sociale)" sort="auto(raisonSociale)" onSort="partenaireWin.sort(event)" />	
+                                    <listheader id="hplafond" label="Plafond" sort="auto(plafond)" onSort="partenaireWin.sort(event)" />	
+                                    <listheader id="htelephone" label="Téléphone" sort="auto(telephone)" onSort="partenaireWin.sort(event)" width="100px"/>	
+                                    <listheader id="hfax" label="Fax" sort="auto(fax)" onSort="partenaireWin.sort(event)" width="100px"/>	
+                                    <listheader id="hemail" label="Email" sort="auto(email)" onSort="partenaireWin.sort(event)" width="150px"/>	
+                                    <listheader label="Client?" sort="auto(estClient)" onSort="partenaireWin.sort(event)" width="90px"/>	
+                                    <listheader label="Fournisseur?" sort="auto(estFournisseur)" onSort="partenaireWin.sort(event)" width="90px"/>	
+                                    <listheader label="Particulier?" sort="auto(estParticulier)" onSort="partenaireWin.sort(event)" width="90px"/>
+                                    <listheader width="32px" />
+                                </listhead>
+                                <listitem value="@{element}" self="@{each=element}">    
+                                    <listcell image="/images/skin/icon_selection.png"/>
+                                    <listcell>
+                                        <textbox value="@{element.code, save-when='self.onChange'}" inplace="true" onOK="partenaireWin.objet=self.parent.parent.value; partenaireWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                    </listcell>							
+                                    <listcell>
+                                        <textbox value="@{element.raisonSociale, save-when='self.onChange'}" inplace="true" onOK="partenaireWin.objet=self.parent.parent.value; partenaireWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                    </listcell>	
+                                    <listcell>
+                                        <doublebox value="@{element.plafond, save-when='self.onChange'}" inplace="true" onOK="partenaireWin.objet=self.parent.parent.value; partenaireWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                    </listcell>
+                                    <listcell>
+                                        <textbox value="@{element.telephone, save-when='self.onChange'}" inplace="true" onOK="partenaireWin.objet=self.parent.parent.value; partenaireWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                    </listcell>							
+                                    <listcell>
+                                        <textbox value="@{element.fax, save-when='self.onChange'}" inplace="true" onOK="partenaireWin.objet=self.parent.parent.value; partenaireWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                    </listcell>							
+                                    <listcell>
+                                        <textbox value="@{element.email, save-when='self.onChange'}" inplace="true" onOK="partenaireWin.objet=self.parent.parent.value; partenaireWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                    </listcell>							
+                                    <listcell>
+                                        <combobox inplace="true" readonly="true" >
+                                            <attribute name="onOK">
+                                        <![CDATA[
+                                            if(self.selectedIndex == 0) {
+                                                self.parent.parent.value.estClient = true;
+                                            } else {
+                                                self.parent.parent.value.estClient = false;
+                                            }
+                                            partenaireWin.objet=self.parent.parent.value; 
+                                            partenaireWin.update();
+                                        ]]>
+                                            </attribute>
+                                            <attribute name="onCreate">
+                                        <![CDATA[
+                                            List l = new ArrayList();
+                                            l.add("Oui");
+                                            l.add("Non");
+                                            ListModelList lm = new ListModelList(l);
+                                            self.setModel(lm);
+                                        ]]>
+                                            </attribute>
+                                            <attribute name="onAfterRender">
+                                        <![CDATA[
+                                            if(self.parent.parent.value.estClient == true) {
+                                                self.selectedIndex = 0;
+                                            } else {
+                                                self.selectedIndex = 1;
+                                            }
+                                        ]]>
+                                            </attribute>
+                                        </combobox>
+                                    </listcell>							
+                                    <listcell>
+                                        <combobox inplace="true" readonly="true" >
+                                            <attribute name="onOK">
+                                        <![CDATA[
+                                            if(self.selectedIndex == 0) {
+                                                self.parent.parent.value.estFournisseur = true;
+                                            } else {
+                                                self.parent.parent.value.estFournisseur = false;
+                                            }
+                                            partenaireWin.objet=self.parent.parent.value; 
+                                            partenaireWin.update();
+                                        ]]>
+                                            </attribute>
+                                            <attribute name="onCreate">
+                                        <![CDATA[
+                                            List l = new ArrayList();
+                                            l.add("Oui");
+                                            l.add("Non");
+                                            ListModelList lm = new ListModelList(l);
+                                            self.setModel(lm);
+                                        ]]>
+                                            </attribute>
+                                            <attribute name="onAfterRender">
+                                        <![CDATA[
+                                            if(self.parent.parent.value.estFournisseur == true) {
+                                                self.selectedIndex = 0;
+                                            } else {
+                                                self.selectedIndex = 1;
+                                            }
+                                        ]]>
+                                            </attribute>
+                                        </combobox>
+                                    </listcell>							
+                                    <listcell>
+                                        <combobox inplace="true" readonly="true" >
+                                            <attribute name="onOK">
+                                        <![CDATA[
+                                            if(self.selectedIndex == 0) {
+                                                self.parent.parent.value.estParticulier = true;
+                                            } else {
+                                                self.parent.parent.value.estParticulier = false;
+                                            }
+                                            partenaireWin.objet=self.parent.parent.value; 
+                                            partenaireWin.update();
+                                        ]]>
+                                            </attribute>
+                                            <attribute name="onCreate">
+                                        <![CDATA[
+                                            List l = new ArrayList();
+                                            l.add("Oui");
+                                            l.add("Non");
+                                            ListModelList lm = new ListModelList(l);
+                                            self.setModel(lm);
+                                        ]]>
+                                            </attribute>
+                                            <attribute name="onAfterRender">
+                                        <![CDATA[
+                                            if(self.parent.parent.value.estParticulier == true) {
+                                                self.selectedIndex = 0;
+                                            } else {
+                                                self.selectedIndex = 1;
+                                            }
+                                        ]]>
+                                            </attribute>
+                                        </combobox>
+                                    </listcell>	
+                                    <listcell image="/images/skin/database_delete.png">
+                                        <attribute name="onClick">
+                                        <![CDATA[
+                                            partenaireWin.delete();
+                                        ]]>
+                                        </attribute>
+                                    </listcell>
+                                </listitem>
+                            </listbox>
+                        </center>
+                    </borderlayout>
+                    <paging id="paging" totalSize="@{partenaireWin.tailleListe}" pageSize="@{partenaireWin.maxNb}" onPaging="partenaireWin.getNextElements(event);" width="99%"/>
+                    <separator/>
+                    <button id="btnNew" unless="${arg.ispopup}" onClick="partenaireWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button onClick="eastPanel.open=true" label="Filtre avancé" image="/images/skin/funnel.png"/>
+                    <button id="btnPdf" unless="${arg.ispopup}" onClick="partenaireWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" unless="${arg.ispopup}" onClick="partenaireWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                    <fileupload id="btnImport" unless="${arg.ispopup}" label="Import en masse" onUpload="partenaireWin.importation(event.getMedia())" image="/images/skin/BriefcaseOpen-16x16.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

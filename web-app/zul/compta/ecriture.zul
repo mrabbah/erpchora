@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./ecritureWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="ecritureWin" height="100%" width="100%" style="margin:auto;" use="${ecritureWindow}" onCreate='ecritureWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/ecriture.zs"/> -->
+        <borderlayout>
+            <north id="eastPanel" size="65px" open="false"  title="Recherche avancee" flex="true" splittable="true"  collapsible="true"  >
+                <hlayout spacing="10px" style="margin-top:9px;margin-left:10px">
+					
+					<label value="devise :" />
+                    <combobox id="filterdevise" model="@{ecritureWin.devises}" selectedItem="@{ecritureWin.filtre.devise}" autocomplete="true" autodrop="true" mold="rounded" onSelect="ecritureWin.ofs=0;ecritureWin.filtrer()" onOK="ecritureWin.ofs=0;ecritureWin.filtrer()">
+                        <comboitem self="@{each=elementfiltredevise}" label="@{elementfiltredevise}"/>
+                    </combobox>
+					
+					<label value="paiement :" />
+                    <combobox id="filterpaiement" model="@{ecritureWin.paiements}" selectedItem="@{ecritureWin.filtre.paiement}" autocomplete="true" autodrop="true" mold="rounded" onSelect="ecritureWin.ofs=0;ecritureWin.filtrer()" onOK="ecritureWin.ofs=0;ecritureWin.filtrer()">
+                        <comboitem self="@{each=elementfiltrepaiement}" label="@{elementfiltrepaiement}"/>
+                    </combobox>
+					
+					<label value="ligneProduit :" />
+                    <combobox id="filterligneProduit" model="@{ecritureWin.ligneProduits}" selectedItem="@{ecritureWin.filtre.ligneProduit}" autocomplete="true" autodrop="true" mold="rounded" onSelect="ecritureWin.ofs=0;ecritureWin.filtrer()" onOK="ecritureWin.ofs=0;ecritureWin.filtrer()">
+                        <comboitem self="@{each=elementfiltreligneProduit}" label="@{elementfiltreligneProduit}"/>
+                    </combobox>
+					
+					<label value="compteComptable :" />
+                    <combobox id="filtercompteComptable" model="@{ecritureWin.compteComptables}" selectedItem="@{ecritureWin.filtre.compteComptable}" autocomplete="true" autodrop="true" mold="rounded" onSelect="ecritureWin.ofs=0;ecritureWin.filtrer()" onOK="ecritureWin.ofs=0;ecritureWin.filtrer()">
+                        <comboitem self="@{each=elementfiltrecompteComptable}" label="@{elementfiltrecompteComptable}"/>
+                    </combobox>
+					
+					<label value="periode :" />
+                    <combobox id="filterperiode" model="@{ecritureWin.periodes}" selectedItem="@{ecritureWin.filtre.periode}" autocomplete="true" autodrop="true" mold="rounded" onSelect="ecritureWin.ofs=0;ecritureWin.filtrer()" onOK="ecritureWin.ofs=0;ecritureWin.filtrer()">
+                        <comboitem self="@{each=elementfiltreperiode}" label="@{elementfiltreperiode}"/>
+                    </combobox>
+										                    
+                </hlayout>
+            </north>
+            <west id="westPanel" title="CRUD" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+						
+							<row>
+                                <label value="Description"/>
+								 
+								<textbox id="fieldDescription" constraint="no empty: Veillez indiquez une valeur" value="@{ecritureWin.objet.description, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="Debit"/>
+								 
+								<doublebox id="fieldDebit" constraint="no empty: Veillez indiquez une valeur" value="@{ecritureWin.objet.debit, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="Reference"/>
+								 
+								<textbox id="fieldReference" constraint="no empty: Veillez indiquez une valeur" value="@{ecritureWin.objet.reference, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="Credit"/>
+								 
+								<doublebox id="fieldCredit" constraint="no empty: Veillez indiquez une valeur" value="@{ecritureWin.objet.credit, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="Date"/>
+								 
+								<datebox id="fieldDate" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{ecritureWin.objet.date, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="Numero"/>
+								 
+								<intbox id="fieldNumero" constraint="no empty: Veillez indiquez une valeur" value="@{ecritureWin.objet.numero, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="DateEcheance"/>
+								 
+								<datebox id="fieldDateEcheance" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{ecritureWin.objet.dateEcheance, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="DateCreance"/>
+								 
+								<datebox id="fieldDateCreance" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{ecritureWin.objet.dateCreance, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="MontantDevise"/>
+								 
+								<doublebox id="fieldMontantDevise" constraint="no empty: Veillez indiquez une valeur" value="@{ecritureWin.objet.montantDevise, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						 
+						
+						<row>
+							<label value="devise " />
+							<combobox id="codevises" model="@{ecritureWin.devises}" selectedItem="@{ecritureWin.deviseSelected}">
+								<comboitem self="@{each=elementdevise}" label="@{elementdevise}"/>
+							</combobox>
+						</row>
+						
+						<row>
+							<label value="paiements" />
+							<combobox id="copaiements" model="@{ecritureWin.paiements}" selectedItem="@{ecritureWin.paiementSelected}">
+								<comboitem self="@{each=elementpaiement}" label="@{elementpaiement}"/>
+							</combobox>
+						</row>
+						
+						<row>
+							<label value="ligneProduits" />
+							<combobox id="coligneProduits" model="@{ecritureWin.ligneProduits}" selectedItem="@{ecritureWin.ligneProduitSelected}">
+								<comboitem self="@{each=elementligneProduit}" label="@{elementligneProduit}"/>
+							</combobox>
+						</row>
+						
+						<row>
+							<label value="compteComptable " />
+							<combobox id="cocompteComptables" model="@{ecritureWin.compteComptables}" selectedItem="@{ecritureWin.compteComptableSelected}">
+								<comboitem self="@{each=elementcompteComptable}" label="@{elementcompteComptable}"/>
+							</combobox>
+						</row>
+						
+						<row>
+							<label value="periode " />
+							<combobox id="coperiodes" model="@{ecritureWin.periodes}" selectedItem="@{ecritureWin.periodeSelected}">
+								<comboitem self="@{each=elementperiode}" label="@{elementperiode}"/>
+							</combobox>
+						</row>
+						
+                        </rows>
+                    </grid>					
+					
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));ecritureWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));ecritureWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        ecritureWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute>    
+                    </button>
+                    <!-- <button id="btnNew" onClick="ecritureWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="ecritureWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="ecritureWin.select()" model="@{ecritureWin.listeObjets}" selectedItem="@{ecritureWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+							<auxheader colspan="1"/>
+							
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterDescription" value="@{ecritureWin.filtre.description}" onChanging="ecritureWin.ofs; ecritureWin.filtre.description=event.value; ecritureWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterDebit" value="@{ecritureWin.filtre.debit}" width="100%">
+									<attribute name="onChanging">
+										<![CDATA[
+											ecritureWin.ofs=0;
+											if(event.value.equals("")) {
+												if(ecritureWin.filtre.debit != null) {
+													ecritureWin.filtre.debit = null;
+												}
+											} else {
+												ecritureWin.filtre.debit=new Double(event.value);
+											}
+											ecritureWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterReference" value="@{ecritureWin.filtre.reference}" onChanging="ecritureWin.ofs; ecritureWin.filtre.reference=event.value; ecritureWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterCredit" value="@{ecritureWin.filtre.credit}" width="100%">
+									<attribute name="onChanging">
+										<![CDATA[
+											ecritureWin.ofs=0;
+											if(event.value.equals("")) {
+												if(ecritureWin.filtre.credit != null) {
+													ecritureWin.filtre.credit = null;
+												}
+											} else {
+												ecritureWin.filtre.credit=new Double(event.value);
+											}
+											ecritureWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDate" format="dd/MM/yyyy" value="@{ecritureWin.filtre.date}" onOK="ecritureWin.ofs=0; ecritureWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterNumero" value="@{ecritureWin.filtre.numero}" width="100%">
+									<attribute name="onChanging">
+										<![CDATA[
+											ecritureWin.ofs=0;
+											if(event.value.equals("")) {
+												if(ecritureWin.filtre.numero != null) {
+													ecritureWin.filtre.numero = null;
+												}
+											} else {
+												ecritureWin.filtre.numero=new Integer(event.value);
+											}
+											ecritureWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+								</intbox>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDateEcheance" format="dd/MM/yyyy" value="@{ecritureWin.filtre.dateEcheance}" onOK="ecritureWin.ofs=0; ecritureWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDateCreance" format="dd/MM/yyyy" value="@{ecritureWin.filtre.dateCreance}" onOK="ecritureWin.ofs=0; ecritureWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterMontantDevise" value="@{ecritureWin.filtre.montantDevise}" width="100%">
+									<attribute name="onChanging">
+										<![CDATA[
+											ecritureWin.ofs=0;
+											if(event.value.equals("")) {
+												if(ecritureWin.filtre.montantDevise != null) {
+													ecritureWin.filtre.montantDevise = null;
+												}
+											} else {
+												ecritureWin.filtre.montantDevise=new Double(event.value);
+											}
+											ecritureWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+								 
+                        </auxhead>
+						<listhead sizable="true">
+							<listheader width="32px" />
+							
+							<listheader label="Description" sort="auto(description)" onSort="ecritureWin.sort(event)"/>	
+							
+							<listheader label="Debit" sort="auto(debit)" onSort="ecritureWin.sort(event)"/>	
+							
+							<listheader label="Reference" sort="auto(reference)" onSort="ecritureWin.sort(event)"/>	
+							
+							<listheader label="Credit" sort="auto(credit)" onSort="ecritureWin.sort(event)"/>	
+							
+							<listheader label="Date" sort="auto(date)" onSort="ecritureWin.sort(event)"/>	
+							
+							<listheader label="Numero" sort="auto(numero)" onSort="ecritureWin.sort(event)"/>	
+							
+							<listheader label="DateEcheance" sort="auto(dateEcheance)" onSort="ecritureWin.sort(event)"/>	
+							
+							<listheader label="DateCreance" sort="auto(dateCreance)" onSort="ecritureWin.sort(event)"/>	
+							
+							<listheader label="MontantDevise" sort="auto(montantDevise)" onSort="ecritureWin.sort(event)"/>	
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+							<listcell image="/images/skin/icon_selection.png"/>
+                            
+							<listcell>
+							
+								<textbox value="@{element.description, save-when='self.onChange'}" inplace="true" onOK="ecritureWin.objet=self.parent.parent.value; ecritureWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<doublebox value="@{element.debit, save-when='self.onChange'}" inplace="true" onOK="ecritureWin.objet=self.parent.parent.value; ecritureWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<textbox value="@{element.reference, save-when='self.onChange'}" inplace="true" onOK="ecritureWin.objet=self.parent.parent.value; ecritureWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<doublebox value="@{element.credit, save-when='self.onChange'}" inplace="true" onOK="ecritureWin.objet=self.parent.parent.value; ecritureWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<datebox format="dd/MM/yyyy" value="@{element.date, save-when='self.onChange'}" inplace="true" onOK="ecritureWin.objet=self.parent.parent.value; ecritureWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<intbox value="@{element.numero, save-when='self.onChange'}" inplace="true" onOK="ecritureWin.objet=self.parent.parent.value; ecritureWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<datebox format="dd/MM/yyyy" value="@{element.dateEcheance, save-when='self.onChange'}" inplace="true" onOK="ecritureWin.objet=self.parent.parent.value; ecritureWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<datebox format="dd/MM/yyyy" value="@{element.dateCreance, save-when='self.onChange'}" inplace="true" onOK="ecritureWin.objet=self.parent.parent.value; ecritureWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<doublebox value="@{element.montantDevise, save-when='self.onChange'}" inplace="true" onOK="ecritureWin.objet=self.parent.parent.value; ecritureWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+							</listcell>							
+							     
+                        </listitem>
+                    </listbox>
+					<paging id="paging" totalSize="@{ecritureWin.tailleListe}" pageSize="@{ecritureWin.maxNb}" onPaging="ecritureWin.getNextElements(event);" />
+					<separator/>
+                    <grid>
+                        <columns>
+                            <column width="32px" />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png"  />
+								
+									<textbox id="fielddescriptionbis" value="@{ecritureWin.objet.description, save-when='self.onChange'}" inplace="true" onOK="ecritureWin.add();" width="99%"/>
+								
+									<doublebox id="fielddebitbis" value="@{ecritureWin.objet.debit, save-when='self.onChange'}" inplace="true" onOK="ecritureWin.add();" width="99%" />
+								
+									<textbox id="fieldreferencebis" value="@{ecritureWin.objet.reference, save-when='self.onChange'}" inplace="true" onOK="ecritureWin.add();" width="99%"/>
+								
+									<doublebox id="fieldcreditbis" value="@{ecritureWin.objet.credit, save-when='self.onChange'}" inplace="true" onOK="ecritureWin.add();" width="99%" />
+								
+									<datebox id="fielddatebis" format="dd/MM/yyyy" value="@{ecritureWin.objet.date, save-when='self.onChange'}" inplace="true" onOK="ecritureWin.add();" width="99%"/>
+								
+									<intbox id="fieldnumerobis" value="@{ecritureWin.objet.numero, save-when='self.onChange'}" inplace="true" onOK="ecritureWin.add();" width="99%" />
+								
+									<datebox id="fielddateEcheancebis" format="dd/MM/yyyy" value="@{ecritureWin.objet.dateEcheance, save-when='self.onChange'}" inplace="true" onOK="ecritureWin.add();" width="99%"/>
+								
+									<datebox id="fielddateCreancebis" format="dd/MM/yyyy" value="@{ecritureWin.objet.dateCreance, save-when='self.onChange'}" inplace="true" onOK="ecritureWin.add();" width="99%"/>
+								
+									<doublebox id="fieldmontantDevisebis" value="@{ecritureWin.objet.montantDevise, save-when='self.onChange'}" inplace="true" onOK="ecritureWin.add();" width="99%" />
+								  
+                            </row>
+                        </rows>
+                    </grid>
+                    <separator/>
+                    <button id="btnNew" onClick="ecritureWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="ecritureWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="ecritureWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

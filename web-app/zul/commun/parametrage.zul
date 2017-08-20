@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./parametrageWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="parametrageWin" height="100%" width="100%" style="margin:auto;" use="${ParametrageWindow}">
+        <borderlayout>
+            <center border="none">
+                <tabbox>
+                    <tabs>
+                        <tab label="Paramètrage de base" />
+                    </tabs>
+                    <tabpanels>
+                        <tabpanel>
+                            <grid fixedLayout="true">
+                                <rows>
+                                    <row>
+                                        <label value="Afficher Remise Facture"/>
+                                        <checkbox id="fieldAfficherRemiseFacture" label="?" checked="@{parametrageWin.objet.afficherRemiseFacture, save-when='triggerBtn.onClick'}"/>
+                                        <label value="Afficher Tva Facture"/>
+                                        <checkbox id="fieldAfficherTvaFacture" label="?" checked="@{parametrageWin.objet.afficherTvaFacture, save-when='triggerBtn.onClick'}"/>
+                                        <label value="Gérer Produits Perissables"/>
+                                        <checkbox id="fieldProduitPerissableManaged" label="?" checked="@{parametrageWin.objet.produitPerissableManaged, save-when='triggerBtn.onClick'}"/>
+                                        <label value="Multi-Entrpôts de Réception"/>
+                                        <checkbox id="fieldMultiEntrepotEnabled" label="?" checked="@{parametrageWin.objet.multiEntrepotEnabled, save-when='triggerBtn.onClick'}"/>
+                                    </row>	 
+                                </rows>
+                            </grid>    
+                        </tabpanel>
+                    </tabpanels>
+                </tabbox>
+            </center>
+            <south border="none" size="50px" flex="true">
+                <hbox>
+                    <button id="btnUpdate"  label="Modifier" image="/images/skin/database_edit.png" visible="true">
+                        <attribute name="onClick"><![CDATA[
+                        Messagebox.show("Voulez-vous enregistrer les modifications apportées ?", "Confirmation", Messagebox.OK | Messagebox.IGNORE  | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                            public void onEvent(Event evt) throws InterruptedException {
+                                if (evt.getName().equals("onOK")) {
+                                TRTOK = true;
+                                try
+                                {
+                                Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                parametrageWin.update();
+                                }
+                                catch (err)
+                                {
+                                alert("Erreur lors de l'enregistrement !");
+                                TRTOK = false;
+                                }
+                                   if (TRTOK){ alert("Modifications enregistrées !");}
+                                } else if (evt.getName().equals("onIgnore")) {
+                                    Messagebox.show("Annuler les modifications", "Attention", Messagebox.OK, Messagebox.EXCLAMATION);
+                                } else {
+                                    alert("Modifications annulées !");
+                                }
+                            }
+                        });
+                        ]]>
+                        </attribute>
+                    </button>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </hbox>
+            </south>
+        </borderlayout>
+    </window>
+</zk>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./villeWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="villeWin" height="100%" width="100%" style="margin:auto;" use="${villeWindow}">
+    <!-- <zscript src="/zs/ville.zs"/> -->
+        <borderlayout>
+            <east id="eastPanel" title="Filtre avancé" size="40%" flex="true" collapsible="true" open="false" >
+                <grid fixedLayout="true">
+                    <rows>
+                        <row>
+                            <label value="Pays" />
+                            <hbox>
+                                <textbox id="filtrePays" value="@{villeWin.filtre.pays, access='load'}" disabled="true"/>
+                                <button  onClick='villeWin.choisir("pays", filtrePays, villeWin.filtre, "pays")' image="/images/skin/search.png"/>
+                                <button  onClick='filtrePays.value=""; villeWin.filtre.pays=null; villeWin.ofs=0; villeWin.filtrer();' image="/images/skin/cancel.png"/>
+                            </hbox>
+                        </row>
+                        <row>
+                            <hbox>
+                                <button id="btnDemandeFiltrer" label="Appliquez le filtre" onClick="villeWin.ofs=0;villeWin.filtrer();" image="/images/skin/funnel.png"/>
+                                <button id="btnFermerFiltrer" label="Fermer" onClick="eastPanel.open=false" image="/images/skin/cancel.png"/>
+                            </hbox>
+                        </row>
+                    </rows>
+                </grid>               
+            </east>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="villeWin.select()" model="@{villeWin.listeObjets}" selectedItem="@{villeWin.objetSelected}" width="100%" height="478px" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterIntitule" value="@{villeWin.filtre.intitule}" onChanging="villeWin.ofs; villeWin.filtre.intitule=event.value; villeWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="90%"/>
+                            </auxheader>
+                            <auxheader colspan="1"/>
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+							
+                            <listheader id="hintitule" label="Intitule" sort="auto(intitule)" onSort="villeWin.sort(event)"/>	
+                            <listheader label="Pays" sort="auto(pays.intitule)" onSort="villeWin.sort(event)"/>	
+                            
+                            <listheader width="32px" />
+                                                
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png">
+
+                            </listcell>
+                            
+                            <listcell>		
+                                <textbox value="@{element.intitule, save-when='self.onChange'}" inplace="true" onOK="villeWin.objet=self.parent.parent.value; villeWin.update();" onChange='self.style="font-weight:bold"' width="48%"/>		
+                            </listcell>	
+                            <listcell>
+                                <textbox readonly="true" inplace="true" self="@{element.pays.intitule}"/>
+                            </listcell>
+                            <listcell image="/images/skin/database_delete.png">
+                                <attribute name="onClick">
+                                    <![CDATA[
+                                    Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                        public void onEvent(Event evt) throws InterruptedException {
+                                            if (evt.getName().equals("onOK")) {
+                                                villeWin.delete();
+                                            } 
+                                        }
+                                    });
+                                    ]]>
+                                </attribute>    
+                            </listcell>
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{villeWin.tailleListe}" pageSize="@{villeWin.maxNb}" onPaging="villeWin.getNextElements(event);" />
+                    <separator/>
+                    <grid>
+                        <columns>
+                            <column width="32px" />			
+                            <column />
+                            <column />
+                            <column width="50px" />		
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png">
+                                    <attribute name="onClick">
+                                        <![CDATA[
+                                            fieldintitulebis.constraint="";
+                                            fieldintitulebis.value = null;
+                                            fieldPays.constraint="";
+                                            fieldPays.value = null;
+                                            fieldPays.constraint="no empty: Veillez indiquez une valeur";
+                                            villeWin.objet = villeWin.clazz.newInstance();
+                                            villeWin.rafraichirField();
+                                            villeWin.rafraichirList();
+                                            fieldintitulebis.constraint="no empty: Veillez indiquez une valeur";
+                                        ]]>
+                                    </attribute>
+                                </image>
+								
+                                <textbox id="fieldintitulebis" value="@{villeWin.objet.intitule, save-when='triggerBtn.onClick'}" constraint="no empty: Veillez indiquez une valeur" inplace="true" width="99%"/>
+                                
+                                <hbox>
+                                    <textbox id="fieldPays" value="@{villeWin.objet.pays.intitule, save-when='triggerBtn.onClick'}" constraint="no empty: Veillez indiquez une valeur" disabled="true" width="180px"/>
+                                    <button  onClick='villeWin.choisir("pays", fieldPays, villeWin.objet, "pays")' image="/images/skin/search.png"/>
+                                </hbox>
+                                
+                                <button id="btnAdd" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn)); villeWin.addOrUpdate()" image="/images/skin/database_add.png"/>
+		  
+                            </row>
+                        </rows>
+                    </grid>
+                    <separator/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                    <button id="btnPdf" unless="${arg.ispopup}" onClick="villeWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" unless="${arg.ispopup}" onClick="villeWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                    <button onClick="eastPanel.open=true" label="Filtre avancé" image="/images/skin/funnel.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

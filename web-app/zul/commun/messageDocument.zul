@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./messageDocumentWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="messageDocumentWin" height="100%" width="100%" style="margin:auto;" use="${messageDocumentWindow}">
+    <!-- <zscript src="/zs/messageDocument.zs"/> -->
+        <borderlayout>
+            <west id="westPanel" title="CRUD" size="100%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+                            <row>
+                                <hbox>
+                                    <label value="Type : "/>
+                                    <label id="fieldType" value="@{messageDocumentWin.objet.type}"/>
+                                    <label id="fieldTypeMouvement" value="@{messageDocumentWin.objet.typeMouvement}"/>
+                                </hbox>
+                            </row>		
+                            <row>
+                                <label value="Entête du document"/>
+                            </row>
+                            <row>
+                                <fckeditor id="fieldEntete" width="100%" value="@{messageDocumentWin.objet.entete,access='both', save-when='self.onChanging'}"/>
+                            </row>												
+                            <row>
+                                <label value="Pied du docuement"/>
+                            </row>
+                            <row>				 
+                                <fckeditor id="fieldPied" value="@{messageDocumentWin.objet.pied,access='both', save-when='self.onChanging'}"/>
+                            </row>												
+                        </rows>
+                    </grid>					
+					
+                    <separator />
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));messageDocumentWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnCancel" onClick="messageDocumentWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="messageDocumentWin.select()" model="@{messageDocumentWin.listeObjets}" selectedItem="@{messageDocumentWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+                            <auxheader colspan="1" width="130px">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterType" value="@{messageDocumentWin.filtre.type}" onChanging="messageDocumentWin.ofs; messageDocumentWin.filtre.type=event.value; messageDocumentWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+                            <auxheader colspan="1" width="130px">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterTypeMvt" value="@{messageDocumentWin.filtre.typeMouvement}" onChanging="messageDocumentWin.ofs; messageDocumentWin.filtre.typeMouvement=event.value; messageDocumentWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+                            <auxheader colspan="2"/>
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+                            <listheader label="Type" sort="auto(type)" onSort="messageDocumentWin.sort(event)" width="130px"/>
+                            <listheader label="Type Mouvement" sort="auto(typeMouvement)" onSort="messageDocumentWin.sort(event)" width="130px"/>
+                            <listheader label="Entête" sort="auto(entete)" onSort="messageDocumentWin.sort(event)"/>	
+                            <listheader label="Pied" sort="auto(pied)" onSort="messageDocumentWin.sort(event)"/>	
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            <listcell>
+                                <label  value="@{element.type}" width="99%"/>			
+                            </listcell>
+                            <listcell>						
+                                <label  value="@{element.typeMouvement}" width="99%"/>			
+                            </listcell>
+                            <listcell>
+                                <html content="@{element.entete}" />
+                            </listcell>							
+                            <listcell>
+                                <html content="@{element.pied}" />
+                            </listcell>							
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{messageDocumentWin.tailleListe}" pageSize="@{messageDocumentWin.maxNb}" onPaging="messageDocumentWin.getNextElements(event);" />
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

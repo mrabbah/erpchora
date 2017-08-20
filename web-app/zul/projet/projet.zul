@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./projetWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="projetWin" height="100%" width="100%" style="margin:auto;" use="${projetWindow}" onCreate='projetWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/projet.zs"/> -->
+        <borderlayout>
+            <north id="eastPanel" size="65px" open="false"  title="Recherche avancée" flex="true" splittable="true"  collapsible="true"  >
+                <hlayout spacing="10px" style="margin-top:9px;margin-left:10px">                   
+                    <label value="Chef de chantier :" />
+                    <combobox id="filterchefChantier" model="@{projetWin.chefChantiers}" selectedItem="@{projetWin.filtre.chefChantier}" autocomplete="true" autodrop="true" mold="rounded" onSelect="projetWin.ofs=0;projetWin.filtrer()" onOK="projetWin.ofs=0;projetWin.filtrer()">
+                        <comboitem self="@{each=elementfiltrechefChantier}" label="@{elementfiltrechefChantier}"/>
+                    </combobox>
+                    <label value="Bon de commande :" />
+                    <combobox id="filterbonCommande" model="@{projetWin.bonCommandes}" selectedItem="@{projetWin.filtre.bonCommande}" autocomplete="true" autodrop="true" mold="rounded" onSelect="projetWin.ofs=0;projetWin.filtrer()" onOK="projetWin.ofs=0;projetWin.filtrer()">
+                        <comboitem self="@{each=elementfiltrebonCommande}" label="@{elementfiltrebonCommande}"/>
+                    </combobox>
+                    <label value="Calendrier :" />
+                    <combobox id="filtercalendrier" model="@{projetWin.calendriers}" selectedItem="@{projetWin.filtre.calendrier}" autocomplete="true" autodrop="true" mold="rounded" onSelect="projetWin.ofs=0;projetWin.filtrer()" onOK="projetWin.ofs=0;projetWin.filtrer()">
+                        <comboitem self="@{each=elementfiltrecalendrier}" label="@{elementfiltrecalendrier}"/>
+                    </combobox>
+                </hlayout>
+            </north>
+            <west id="westPanel" title="CRUD" size="100%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <tabbox width="100%" height="300px" mold="accordion-lite">
+                        <tabs>
+                            <tab label="Informations obligatoires" />
+                            <tab label="Informations supplémentaires" />
+                        </tabs>
+                        <tabpanels>
+                            <tabpanel>
+                                <grid fixedLayout="true">
+                                    <rows>
+                                        <row>
+                                            <label value="Numéro"/>
+                                            <intbox id="fieldNumero" constraint="no empty: Veillez indiquez une valeur" value="@{projetWin.objet.numero, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                                            <label value="Nom"/>								 
+                                            <textbox id="fieldNom" constraint="no empty: Veillez indiquez une valeur" value="@{projetWin.objet.nom, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                                        </row>												                                        
+                                        <row>
+                                            <label value="Date début réelle"/>								 
+                                            <datebox id="fieldDateDebutReelle" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{projetWin.objet.dateDebutReelle, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                                            <label value="Avancement réel"/>
+                                            <doublebox id="fieldAvancementReel" constraint="no empty: Veillez indiquez une valeur" value="@{projetWin.objet.avancementReel, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                                        </row>	
+                                        <row>
+                                            <label value="Bon de commande" />
+                                            <combobox id="cobonCommandes" model="@{projetWin.bonCommandes}" selectedItem="@{projetWin.bonCommandeSelected}" onSelect="projetWin.bonCommandeSelectionner()" width="99%">
+                                                <comboitem self="@{each=elementbonCommande}" label="@{elementbonCommande}"/>
+                                            </combobox>
+                                            <label value="Montant Bon Commande"/>								 
+                                            <doublebox id="fieldMontantBonCommande" constraint="no empty: Veillez indiquez une valeur" value="@{projetWin.objet.montantBonCommande, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                                        </row>												
+                                        <row>
+                                            <label value="Calendrier " />
+                                            <combobox id="cocalendriers" model="@{projetWin.calendriers}" selectedItem="@{projetWin.calendrierSelected}" width="99%">
+                                                <comboitem self="@{each=elementcalendrier}" label="@{elementcalendrier}"/>
+                                            </combobox>
+                                            <label value="Chef du chantier " />
+                                            <combobox id="cochefChantiers" model="@{projetWin.chefChantiers}" selectedItem="@{projetWin.chefChantierSelected}" width="99%">
+                                                <comboitem self="@{each=elementchefChantier}" label="@{elementchefChantier}"/>
+                                            </combobox>
+                                        </row>                                        						
+                                    </rows>
+                                </grid>	    
+                            </tabpanel>
+                            <tabpanel>
+                                <grid fixedLayout="true">
+                                    <rows>                                        											
+                                        <row>
+                                            <label value="Date début prévue"/>
+                                            <datebox id="fieldDateDebutPrevu" format="dd/MM/yyyy" value="@{projetWin.objet.dateDebutPrevu, save-when='triggerBtn.onClick'}" width="99%"/>
+                                            <label value="Date Fin Prévue"/>
+                                            <datebox id="fieldDateFinPrevue" format="dd/MM/yyyy" value="@{projetWin.objet.dateFinPrevue, save-when='triggerBtn.onClick'}" width="99%"/>
+                                        </row>												
+                                        <row>
+                                            <label value="Date Fin Réelle"/>
+                                            <datebox id="fieldDateFinReelle" format="dd/MM/yyyy" value="@{projetWin.objet.dateFinReelle, save-when='triggerBtn.onClick'}" width="99%"/>
+                                            <label value="Charge Prévue"/>
+                                            <doublebox id="fieldChargePrevue" value="@{projetWin.objet.chargePrevue, save-when='triggerBtn.onClick'}" width="99%"/>
+                                        </row>												                                        
+                                        <row>
+                                            <label value="Avancement Prévu"/>
+                                            <doublebox id="fieldAvancementPrevu" value="@{projetWin.objet.avancementPrevu, save-when='triggerBtn.onClick'}" width="99%"/>
+                                            <label value="Adresse chantier"/>
+                                            <textbox id="fieldAdresseProjet" value="@{projetWin.objet.adresseProjet, save-when='triggerBtn.onClick'}" width="99%"/>
+                                        </row>
+                                        <row>
+                                            <label value="Ville"/>
+                                            <textbox id="fieldVille" value="@{projetWin.objet.ville, save-when='triggerBtn.onClick'}" width="99%"/>
+                                            <label value="Code Postal"/>
+                                            <textbox id="fieldCodePostal" value="@{projetWin.objet.codePostal, save-when='triggerBtn.onClick'}" width="99%"/>
+                                        </row>												
+                                        <row>
+                                            <label value="Fax"/>
+                                            <textbox id="fieldFax" value="@{projetWin.objet.fax, save-when='triggerBtn.onClick'}" width="99%"/>
+                                            <label value="Nom Contact"/>
+                                            <textbox id="fieldNomContact" value="@{projetWin.objet.nomContact, save-when='triggerBtn.onClick'}" width="99%"/>
+                                        </row>	
+                                        <row>
+                                            <label value="Téléphone contact"/>
+                                            <textbox id="fieldTelephone" value="@{projetWin.objet.telephone, save-when='triggerBtn.onClick'}" width="99%"/>
+                                            <label value="Email contact"/>
+                                            <textbox id="fieldEmail" value="@{projetWin.objet.email, save-when='triggerBtn.onClick'}" width="99%"/>
+                                        </row>																	                                                                                
+                                    </rows>
+                                </grid>	    
+                            </tabpanel>
+                        </tabpanels>
+                    </tabbox>
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));projetWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));projetWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        projetWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute> 
+                    </button>
+                    <!-- <button id="btnNew" onClick="projetWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="projetWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="projetWin.select()" model="@{projetWin.listeObjets}" selectedItem="@{projetWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterNumero" value="@{projetWin.filtre.numero}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                projetWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(projetWin.filtre.numero != null) {
+                                                                projetWin.filtre.numero = null;
+                                                        }
+                                                } else {
+                                                        projetWin.filtre.numero=new Integer(event.value);
+                                                }
+                                                projetWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterNom" value="@{projetWin.filtre.nom}" onChanging="projetWin.ofs; projetWin.filtre.nom=event.value; projetWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>                            
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDateDebutReelle" format="dd/MM/yyyy" value="@{projetWin.filtre.dateDebutReelle}" onOK="projetWin.ofs=0; projetWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>								                            					
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDateFinReelle" format="dd/MM/yyyy" value="@{projetWin.filtre.dateFinReelle}" onOK="projetWin.ofs=0; projetWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterChargeReelle" value="@{projetWin.filtre.chargeReelle}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                projetWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(projetWin.filtre.chargeReelle != null) {
+                                                                projetWin.filtre.chargeReelle = null;
+                                                        }
+                                                } else {
+                                                        projetWin.filtre.chargeReelle=new Double(event.value);
+                                                }
+                                                projetWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterAvancementReel" value="@{projetWin.filtre.avancementReel}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                projetWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(projetWin.filtre.avancementReel != null) {
+                                                                projetWin.filtre.avancementReel = null;
+                                                        }
+                                                } else {
+                                                        projetWin.filtre.avancementReel=new Double(event.value);
+                                                }
+                                                projetWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterNomContact" value="@{projetWin.filtre.nomContact}" onChanging="projetWin.ofs; projetWin.filtre.nomContact=event.value; projetWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterMontantBonCommande" value="@{projetWin.filtre.montantBonCommande}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                projetWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(projetWin.filtre.montantBonCommande != null) {
+                                                                projetWin.filtre.montantBonCommande = null;
+                                                        }
+                                                } else {
+                                                        projetWin.filtre.montantBonCommande=new Double(event.value);
+                                                }
+                                                projetWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+                            <listheader id="hnumero" label="Numéro" sort="auto(numero)" onSort="projetWin.sort(event)"/>	
+                            <listheader id="hnom" label="Nom" sort="auto(nom)" onSort="projetWin.sort(event)"/>	
+                            <listheader id="hdateDebutReelle" label="Date début réelle" sort="auto(dateDebutReelle)" onSort="projetWin.sort(event)"/>	
+                            <listheader id="hdateFinReelle" label="Date fin réelle" sort="auto(dateFinReelle)" onSort="projetWin.sort(event)"/>	
+                            <listheader id="hchargeReelle" label="Charge réelle" sort="auto(chargeReelle)" onSort="projetWin.sort(event)"/>	
+                            <listheader id="havancementReel" label="Avancement réel" sort="auto(avancementReel)" onSort="projetWin.sort(event)"/>	
+                            <listheader id="hnomContact" label="Nom contact" sort="auto(nomContact)" onSort="projetWin.sort(event)"/>	
+                            <listheader id="hmontantBonCommande" label="Montant Bon Commande" sort="auto(montantBonCommande)" onSort="projetWin.sort(event)"/>	
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            <listcell>
+                                <intbox value="@{element.numero, save-when='self.onChange'}" inplace="true" onOK="projetWin.objet=self.parent.parent.value; projetWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+                            </listcell>							
+                            <listcell>
+                                <textbox value="@{element.nom, save-when='self.onChange'}" inplace="true" onOK="projetWin.objet=self.parent.parent.value; projetWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>							
+                            <listcell>
+                                <datebox format="dd/MM/yyyy" value="@{element.dateDebutReelle, save-when='self.onChange'}" inplace="true" onOK="projetWin.objet=self.parent.parent.value; projetWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>							
+                            <listcell>
+                                <datebox format="dd/MM/yyyy" value="@{element.dateFinReelle, save-when='self.onChange'}" inplace="true" onOK="projetWin.objet=self.parent.parent.value; projetWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>							
+                            <listcell label="@{element.chargeReelle}" />					
+                            <listcell>
+                                <doublebox value="@{element.avancementReel, save-when='self.onChange'}" inplace="true" onOK="projetWin.objet=self.parent.parent.value; projetWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+                            </listcell>							
+                            <listcell>
+                                <textbox value="@{element.nomContact, save-when='self.onChange'}" inplace="true" onOK="projetWin.objet=self.parent.parent.value; projetWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>							
+                            <listcell>
+                                <doublebox value="@{element.montantBonCommande, save-when='self.onChange'}" inplace="true" onOK="projetWin.objet=self.parent.parent.value; projetWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+                            </listcell>							
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{projetWin.tailleListe}" pageSize="@{projetWin.maxNb}" onPaging="projetWin.getNextElements(event);" />
+                    <separator/>                   
+                    <button id="btnNew" onClick="projetWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="projetWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="projetWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

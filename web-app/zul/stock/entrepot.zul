@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./entrepotWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="entrepotWin" height="100%" width="100%" style="margin:auto;" use="${entrepotWindow}" onCreate='entrepotWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/entrepot.zs"/> -->
+        <borderlayout>
+            
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="entrepotWin.select()" model="@{entrepotWin.listeObjets}" selectedItem="@{entrepotWin.objetSelected}"  width="100%" height="480px" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterCode" value="@{entrepotWin.filtre.code}" onChanging="entrepotWin.ofs = 0; entrepotWin.filtre.code=event.value; entrepotWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterIntitule" value="@{entrepotWin.filtre.intitule}" onChanging="entrepotWin.ofs = 0; entrepotWin.filtre.intitule=event.value; entrepotWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterAdresse" value="@{entrepotWin.filtre.adresse}" onChanging="entrepotWin.ofs = 0; entrepotWin.filtre.adresse=event.value; entrepotWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterTel" value="@{entrepotWin.filtre.tel}" onChanging="entrepotWin.ofs = 0; entrepotWin.filtre.tel=event.value; entrepotWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="coModeValorisationfilter" selectedItem="@{entrepotWin.filtre.modeValorisation}" autocomplete="true" autodrop="true" mold="rounded" onSelect="entrepotWin.ofs = 0; entrepotWin.filtrer();" onOK="entrepotWin.ofs = 0; entrepotWin.filtrer();">
+                                    <comboitem label="Prix d'achat" value="PRIX_ACHAT" />
+                                    <comboitem label="Prix de vente" value="PRIX_VENTE" />
+                                    <comboitem label="Prix moyen pendéré" value="PRIX_MOYEN_PENDERE" />
+                                </combobox>
+                            </auxheader>
+                            <auxheader colspan="1" unless="${arg.ispopup}"/>
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+                            <listheader label="Code" sort="auto(code)" onSort="entrepotWin.sort(event)"/>	
+                            <listheader label="Intitule" sort="auto(intitule)" onSort="entrepotWin.sort(event)"/>	
+                            <listheader label="Adresse" sort="auto(adresse)" onSort="entrepotWin.sort(event)"/>	
+                            <listheader label="Téléphone" sort="auto(tel)" onSort="entrepotWin.sort(event)"/>	
+                            <listheader label="Mode valorisation" sort="auto(modeValorisation)" onSort="entrepotWin.sort(event)"/>
+                            <listheader width="50px" unless="${arg.ispopup}"/>
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            <listcell>
+                                <textbox value="@{element.code, save-when='self.onChange'}" inplace="true" onOK="entrepotWin.objet=self.parent.parent.value; entrepotWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>							
+                            <listcell>
+                                <textbox value="@{element.intitule, save-when='self.onChange'}" inplace="true" onOK="entrepotWin.objet=self.parent.parent.value; entrepotWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>							
+                            <listcell>
+                                <textbox value="@{element.adresse, save-when='self.onChange'}" inplace="true" onOK="entrepotWin.objet=self.parent.parent.value; entrepotWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>							
+                            <listcell>
+                                <textbox value="@{element.tel, save-when='self.onChange'}" inplace="true" onOK="entrepotWin.objet=self.parent.parent.value; entrepotWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>							
+                            <listcell label="@{element.modeValorisation, converter=com.choranet.zk.ModeValorisationStockConverter}"/>
+                            <listcell image="/images/skin/database_delete.png" unless="${arg.ispopup}">
+                                <attribute name="onClick">
+                                    <![CDATA[
+                                    Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                        public void onEvent(Event evt) throws InterruptedException {
+                                            if (evt.getName().equals("onOK")) {
+                                                entrepotWin.delete();
+                                            } 
+                                        }
+                                    });
+                                    ]]>
+                                </attribute>      
+                            </listcell>
+                                							
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{entrepotWin.tailleListe}" pageSize="@{entrepotWin.maxNb}" onPaging="entrepotWin.getNextElements(event);" />
+                    <separator/>
+                    <grid>
+                        <columns>
+                            <column width="32px" />			
+                            <column />
+                            <column />
+                            <column />
+                            <column />
+                            <column />
+                            <column width="50px" />			
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png">
+                                    <attribute name="onClick">
+                                        <![CDATA[
+                                            entrepotWin.objet = com.choranet.stock.Entrepot.class.newInstance();
+                                            entrepotWin.rafraichirField();
+                                            entrepotWin.rafraichirList();
+                                            entrepotWin.isUpdate = false;
+                                            entrepotWin.modeValorisationSelected = null;
+                                            entrepotWin.afficherValeurAssociation();
+                                        ]]>
+                                    </attribute>
+                                </image>
+                                
+                                <textbox id="fieldCode" inplace="true"  constraint="no empty: Veillez indiquez une valeur" value="@{entrepotWin.objet.code, save-when='triggerBtn.onClick'}" width="99%"/>
+
+                                <textbox id="fieldIntitule" inplace="true"  constraint="no empty: Veillez indiquez une valeur" value="@{entrepotWin.objet.intitule, save-when='triggerBtn.onClick'}" width="99%"/>
+                            
+                                <textbox id="fieldAdresse" inplace="true"  constraint="no empty: Veillez indiquez une valeur" value="@{entrepotWin.objet.adresse, save-when='triggerBtn.onClick'}" width="99%"/>
+                            
+                                <textbox id="fieldTel" inplace="true"  value="@{entrepotWin.objet.tel, save-when='triggerBtn.onClick'}" width="99%"/>
+                            
+                                <combobox id="coModeValorisation" selectedItem="@{entrepotWin.modeValorisationSelected, save-when='triggerBtn.onClick'}" readonly="true" autodrop="true" constraint="no empty:Veillez choisir la méthode de valorisation" width="99%">
+                                    <comboitem label="Prix d'achat" value="PRIX_ACHAT" />
+                                    <comboitem label="Prix de vente" value="PRIX_VENTE" />
+                                    <comboitem label="Prix moyen pendéré" value="PRIX_MOYEN_PENDERE" />
+                                </combobox>
+                                
+                                <button id="btnAdd" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn)); entrepotWin.addOrUpdate()" image="/images/skin/database_add.png" width="99%"/>
+                            </row>												
+                        </rows>
+                    </grid>
+                    <separator/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                    <button id="btnPdf" unless="${arg.ispopup}" onClick="entrepotWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" unless="${arg.ispopup}" onClick="entrepotWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

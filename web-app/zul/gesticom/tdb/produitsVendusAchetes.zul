@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./produitsVendusAchetesWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+<zk xmlns="http://www.zkoss.org/2005/zul">
+    <window id="produitsVendusAchetesWin" height="100%" width="100%" style="margin:auto;" use="${produitsVendusAchetesWindow}">
+        <box pack="center" align="center" width="100%" height="100%">
+            <vbox>
+                <grid  fixedLayout="true" width="100%">
+                    <rows>
+                        <row>
+                            <label value="Date début"/>
+                            <datebox id="datedebut" value="@{produitsVendusAchetesWin.datedebut}" />
+                            <label value="Date fin"/>
+                            <datebox id="datefin" value="@{produitsVendusAchetesWin.datefin}" />
+                            <button label="Générer" image="" onClick='produitsVendusAchetesWin.genererProduitsvendusAchetes()'/>
+                        </row>
+                    </rows> 
+                </grid>
+                <hbox>
+                    <chart id="mychart1" title="Produits les plus achetés (Valeur)" width="550" height="290"
+                            type="pie" threeD="true" fgAlpha="128" model="@{produitsVendusAchetesWin.etatproduitsachetesvaleur}">
+                                
+                    </chart>
+
+                    <chart id="mychart2" title="Produits les plus vendus (Valeur)" width="550" height="290"
+                            type="pie" threeD="true" fgAlpha="128" model="@{produitsVendusAchetesWin.etatproduitsvendusvaleur}" >                                
+                    </chart>
+                </hbox>
+                <hbox>
+                    <chart id="mychart3" title="Produits les plus achetés (Quantité)" width="550" height="290"
+                            type="pie" threeD="true" fgAlpha="128" model="@{produitsVendusAchetesWin.etatproduitsachetesqte}">                                
+                    </chart>
+                        
+                    <chart id="mychart4" title="Produits les plus vendus (Quantité)" width="550" height="290"
+                            type="pie" threeD="true" fgAlpha="128" model="@{produitsVendusAchetesWin.etatproduitsvendusqte}" />                 
+                </hbox>
+            </vbox>
+        </box>
+    </window>
+</zk>

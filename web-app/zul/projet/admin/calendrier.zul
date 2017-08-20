@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./calendrierWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="calendrierWin" height="100%" width="100%" style="margin:auto;" use="${calendrierWindow}" onCreate='calendrierWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/calendrier.zs"/> -->
+        <borderlayout>
+            
+            <west id="westPanel" title="CRUD" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+                            <row>
+                                <label value="Intitule Calendrier"/>
+                                <textbox id="fieldNom" constraint="no empty: Veillez indiquez une valeur" value="@{calendrierWin.objet.nom, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+                            <row>
+                                <label value="Nombre heures travaillés par jour"/>
+                                <intbox id="fieldNbHeuresTravailParJour" constraint="no empty: Veillez indiquez une valeur" value="@{calendrierWin.objet.nbHeuresTravailParJour, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+                            <row>
+                                <label value="Nombre jours travaillés par mois"/>
+                                <intbox id="fieldNbJoursTravailParMois" constraint="no empty: Veillez indiquez une valeur" value="@{calendrierWin.objet.nbJoursTravailParMois, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+                            <row>
+                                <label value="Les jours Fériers" />
+                                <bandbox    autodrop="true" mold="rounded">
+                                    <bandpopup>
+                                        <listbox id="lstjourFeriers" model="@{calendrierWin.jourFeriers}" selectedItem="@{calendrierWin.jourFeriersSelected, converter=com.choranet.zk.SelectedItemsConverterV3}" fixedLayout="true" multiple="true" checkmark="true">
+                                            <listhead>
+                                                <listheader label=""/>							
+                                            </listhead>
+                                            <listitem self="@{each=elementjourFeriers}">
+                                                <listcell label="@{elementjourFeriers}"/>							
+                                            </listitem>								
+                                        </listbox>	
+                                    </bandpopup>
+                                </bandbox>
+                            </row>	
+						
+                        </rows>
+                    </grid>					
+					
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));calendrierWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));calendrierWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        calendrierWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute>    
+                    </button>
+                    <!-- <button id="btnNew" onClick="calendrierWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="calendrierWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="calendrierWin.select()" model="@{calendrierWin.listeObjets}" selectedItem="@{calendrierWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterNom" value="@{calendrierWin.filtre.nom}" onChanging="calendrierWin.ofs; calendrierWin.filtre.nom=event.value; calendrierWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>		
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterNbHeuresTravailParJour" value="@{calendrierWin.filtre.nbHeuresTravailParJour}" width="100%">
+                                    <attribute name="onChanging">
+										<![CDATA[
+											calendrierWin.ofs=0;
+											if(event.value.equals("")) {
+												if(calendrierWin.filtre.nbHeuresTravailParJour != null) {
+													calendrierWin.filtre.nbHeuresTravailParJour = null;
+												}
+											} else {
+												calendrierWin.filtre.nbHeuresTravailParJour=new Integer(event.value);
+											}
+											calendrierWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+								
+                            
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterNbJoursTravailParMois" value="@{calendrierWin.filtre.nbJoursTravailParMois}" width="100%">
+                                    <attribute name="onChanging">
+										<![CDATA[
+											calendrierWin.ofs=0;
+											if(event.value.equals("")) {
+												if(calendrierWin.filtre.nbJoursTravailParMois != null) {
+													calendrierWin.filtre.nbJoursTravailParMois = null;
+												}
+											} else {
+												calendrierWin.filtre.nbJoursTravailParMois=new Integer(event.value);
+											}
+											calendrierWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+                            <listheader id="hnom" label="Intitule Calendrier" sort="auto(nom)" onSort="calendrierWin.sort(event)"/>	
+							
+                            <listheader id="hnbHeuresTravailParJour" label="Nombre heures travaillés par jour" sort="auto(nbHeuresTravailParJour)" onSort="calendrierWin.sort(event)"/>	
+							
+							
+                            <listheader id="hnbJoursTravailParMois" label="Nombre jours travaillés par mois" sort="auto(nbJoursTravailParMois)" onSort="calendrierWin.sort(event)"/>	
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png">
+                                 <attribute name="onClick">
+                                    <![CDATA[
+                                        if(calendrierWin.objetSelected.nom == "Standard"){
+                                            btnDelete.disabled = true;
+                                            fieldNom.disabled = true;
+                                        }else {
+                                           btnDelete.disabled = false;
+                                           fieldNom.disabled = false;
+                                        }   
+                                    ]]>
+                                </attribute> 
+                            </listcell>    
+                            <listcell>
+							
+                                <textbox value="@{element.nom, save-when='self.onChange'}" inplace="true" onOK="calendrierWin.objet=self.parent.parent.value; calendrierWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>
+                            <listcell>
+							
+                                <intbox value="@{element.nbHeuresTravailParJour, save-when='self.onChange'}" inplace="true" onOK="calendrierWin.objet=self.parent.parent.value; calendrierWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							
+							
+                            							
+							
+                            <listcell>
+							
+                                <intbox value="@{element.nbJoursTravailParMois, save-when='self.onChange'}" inplace="true" onOK="calendrierWin.objet=self.parent.parent.value; calendrierWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{calendrierWin.tailleListe}" pageSize="@{calendrierWin.maxNb}" onPaging="calendrierWin.getNextElements(event);" />
+                    
+                    <separator/>
+                    <button id="btnNew" onClick="calendrierWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="calendrierWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="calendrierWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

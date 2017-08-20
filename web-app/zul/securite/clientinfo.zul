@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./clientinfoWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="clientinfoWin" height="100%" width="100%" style="margin:auto;" use="${choraClientInfoWindow}">
+        <borderlayout>
+            <center border="none">
+                <tabbox>
+                    <tabs>
+                        <tab label="Informations générales" />
+                        <tab label="Agences bancaires" onClick="clientinfoWin.chargerAgences()" />
+                        <tab label="Comptes bancaires" onClick="clientinfoWin.chargerComptes()" />
+                    </tabs>
+                    <tabpanels>
+                        <tabpanel>
+                            <grid fixedLayout="true">
+                                <rows>
+                                    <row>
+                                        <label value="Raison social"/>
+                                        <textbox id="fieldRaisonSociale" hflex="1" constraint="no empty: Veillez indiquez une valeur" value="@{clientinfoWin.objet.raisonSociale, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                                        <label value="Forme Juridique"/>
+                                        <textbox id="fieldFormeJuridique" hflex="1" value="@{clientinfoWin.objet.formeJuridique, save-when='triggerBtn.onClick'}" />
+                                    </row>	
+                                    <row>
+                                        <label value="Adresse"/>
+                                        <textbox id="fieldAdresse" hflex="1"  value="@{clientinfoWin.objet.adresse, save-when='triggerBtn.onClick'}"/>
+                                        <label value="Code postale"/>
+                                        <textbox id="fieldCodePostale" hflex="1" value="@{clientinfoWin.objet.codePostale, save-when='triggerBtn.onClick'}" />
+                                    </row>
+                                    <row>
+                                        <label value="Ville"/>
+                                        <textbox id="fieldville" hflex="1"  value="@{clientinfoWin.objet.ville, save-when='triggerBtn.onClick'}"/>
+                                        <label value="Pays"/>
+                                        <textbox id="fieldpays" hflex="1" value="@{clientinfoWin.objet.pays, save-when='triggerBtn.onClick'}" />
+                                    </row>
+                                    <row>
+                                        <label value="Téléphone"/>
+                                        <textbox id="fieldTelephone" hflex="1"  value="@{clientinfoWin.objet.telephone, save-when='triggerBtn.onClick'}"/>
+                                        <label value="Fax"/>
+                                        <textbox id="fieldFax" hflex="1" value="@{clientinfoWin.objet.fax, save-when='triggerBtn.onClick'}" />
+                                    </row>
+                                    <row>
+                                        <label value="Email"/>
+                                        <textbox id="fieldEmail" hflex="1" value="@{clientinfoWin.objet.email, save-when='triggerBtn.onClick'}"/>
+                                        <label value="Patente"/>
+                                        <textbox id="fieldPatente" hflex="1" value="@{clientinfoWin.objet.patente, save-when='triggerBtn.onClick'}" />
+                                    </row>
+                                    <row>
+                                        <label value="RC"/>
+                                        <textbox id="fieldRC" hflex="1" value="@{clientinfoWin.objet.rc, save-when='triggerBtn.onClick'}" />
+                                        <label value="IDF"/>
+                                        <textbox id="fieldIDF" hflex="1" value="@{clientinfoWin.objet.idF, save-when='triggerBtn.onClick'}"/>
+                                    </row>
+                                    <row>
+                                        <label value="Cnss"/>
+                                        <textbox id="fieldCnss" hflex="1" value="@{clientinfoWin.objet.cnss, save-when='triggerBtn.onClick'}"/>
+                                        <label value="Site"/>
+                                        <textbox id="fieldSite" hflex="1" value="@{clientinfoWin.objet.site, save-when='triggerBtn.onClick'}"/>
+                                    </row>
+                                    <row>
+                                        <label value="Régime déclaration TVA" />
+                                        <combobox id="coregimes" readonly="true" constraint="no empty: Veillez choisir une valeur" model="@{clientinfoWin.regimes}" selectedItem="@{clientinfoWin.objet.regime}">
+                                            <comboitem self="@{each=elementregime}" label="@{elementregime}"/>
+                                        </combobox>                                   
+                                        <label value="Repertoir Backup"/>
+                                        <textbox id="fieldRepertoirBackup" hflex="1" value="@{clientinfoWin.objet.repertoirBackup, save-when='triggerBtn.onClick'}"/>
+                                    </row>
+                                    
+                                    <row>                   
+                                        <fileupload  id="btnUploadLogo" label="Charger logo" onUpload="clientinfoWin.updateLogo(event.getMedia())" />
+                                        <image id="appercuLogo" width="90px" height="90px" content="@{clientinfoWin.objet.trans_logo}" />
+                                        <fileupload  id="btnUploadCachet" label="Charger cachet" onUpload="clientinfoWin.updateCachet(event.getMedia())" />
+                                        <image id="appercuCachet" width="90px" height="90px" content="@{clientinfoWin.objet.trans_cachet}" />
+                                    </row>
+
+                                    <row>                   
+                                        <fileupload  id="btnUploadEntetePied" label="Charger l'arrière plan des documents" onUpload="clientinfoWin.updateEntetepied(event.getMedia())" />
+                                        <image id="appercuEntetepied" width="90px" height="90px" content="@{clientinfoWin.objet.trans_entetepied}" />
+                                        <fileupload  id="btnUploadCopie" label="Charger message copie" onUpload="clientinfoWin.updateCopie(event.getMedia())" />
+                                        <image id="appercuCopie" width="90px" height="90px" content="@{clientinfoWin.objet.trans_copie}" />
+                                    </row>
+
+                                </rows>
+                            </grid>    
+                        </tabpanel>
+                        <tabpanel>
+                            <groupbox width="99%" height="100%">
+                                <listbox id="lstAgences" onSelect="clientinfoWin.selectAgence()" model="@{clientinfoWin.listeAgences}" selectedItem="@{clientinfoWin.agenceSelected}" width="100%" height="100%" mold="paging" pageSize="10">                                    
+                                    <listhead sizable="true">
+                                        <listheader width="32px" />
+                                        <listheader label="Nom" />	
+                                        <listheader label="Adresse" />	
+                                        <listheader label="Téléphone" />
+                                        <listheader width="32px" />
+                                    </listhead>
+                                    <listitem value="@{elementagence}" self="@{each=elementagence}">    
+                                        <listcell image="/images/skin/icon_selection.png"/>
+                                        <listcell>
+                                            <textbox value="@{elementagence.nom, save-when='self.onChange'}" inplace="true" onOK="clientinfoWin.agence=self.parent.parent.value; clientinfoWin.updateAgence();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                        </listcell>							
+                                        <listcell>
+                                            <textbox value="@{elementagence.adresse, save-when='self.onChange'}" inplace="true" onOK="clientinfoWin.agence=self.parent.parent.value; clientinfoWin.updateAgence();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                        </listcell>							
+                                        <listcell>
+                                            <textbox value="@{elementagence.tel, save-when='self.onChange'}" inplace="true" onOK="clientinfoWin.agence=self.parent.parent.value; clientinfoWin.updateAgence();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                        </listcell>		
+                                        <listcell image="/images/skin/database_delete.png">
+                                            <attribute name="onClick">
+                                                <![CDATA[
+                                                    clientinfoWin.deleteAgence();
+                                                ]]>
+                                            </attribute>
+                                        </listcell>
+                                    </listitem>
+                                </listbox>
+                                <separator/>
+                                <grid>
+                                    <columns>
+                                        <column width="32px" />
+                                        <column />
+                                        <column />
+                                        <column />
+                                        <column width="32px" />
+                                    </columns>
+                                    <rows>
+                                        <row>
+                                            <image src="/images/skin/database_edit.png">
+                                                <attribute name="onClick">
+                                                <![CDATA[
+                                                    clientinfoWin.agence = com.choranet.gesticom.AgenceBancaire.class.newInstance();
+                                                    clientinfoWin.rafraichirField();
+                                                    clientinfoWin.rafraichirList();
+                                                    clientinfoWin.isUpdateAgence = false;
+                                                ]]>
+                                                </attribute>
+                                            </image>
+                                            <textbox id="fieldnombisagence" constraint="no empty: Veillez indiquez une valeur" value="@{clientinfoWin.agence.nom, save-when='self.onChange'}" inplace="true" onOK="clientinfoWin.addOrUpdateAgence();" width="99%"/>
+                                            <textbox id="fieldadressebisagence" value="@{clientinfoWin.agence.adresse, save-when='self.onChange'}" inplace="true" onOK="clientinfoWin.addOrUpdateAgence();" width="99%"/>
+                                            <textbox id="fieldtelbisagence" value="@{clientinfoWin.agence.tel, save-when='self.onChange'}" inplace="true" onOK="clientinfoWin.addOrUpdateAgence();" width="99%"/>
+                                            <label/>
+                                        </row>
+                                    </rows>
+                                </grid>
+                            </groupbox>    
+                        </tabpanel>
+                        <tabpanel>
+                            <groupbox width="99%" height="100%">
+                                <listbox id="lstComptes" onSelect="clientinfoWin.selectCompte()" model="@{clientinfoWin.listeComptes}" selectedItem="@{clientinfoWin.compteSelected}"  width="100%" height="100%" mold="paging" pageSize="10">
+                                    <listhead sizable="true">
+                                        <listheader width="32px" />
+                                        <listheader label="Libelle" />	
+                                        <listheader label="Rib" />	
+                                        <listheader label="CodeSwift" />	
+                                        <listheader label="Solde" />	
+                                        <listheader label="Solde prévu" />	
+                                        <listheader label="AgenceBancaire" />
+                                        <listheader width="32px" />
+                                    </listhead>
+                                    <listitem value="@{elementcompte}" self="@{each=elementcompte}">    
+                                        <listcell image="/images/skin/icon_selection.png"/>
+                                        <listcell>
+                                            <textbox value="@{elementcompte.libelle, save-when='self.onChange'}" inplace="true" onOK="clientinfoWin.compte=self.parent.parent.value; clientinfoWin.updateCompte();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                        </listcell>							
+                                        <listcell>
+                                            <textbox value="@{elementcompte.rib, save-when='self.onChange'}" inplace="true" onOK="clientinfoWin.compte=self.parent.parent.value; clientinfoWin.updateCompte();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                        </listcell>							
+                                        <listcell>
+                                            <textbox value="@{elementcompte.codeSwift, save-when='self.onChange'}" inplace="true" onOK="clientinfoWin.compte=self.parent.parent.value; clientinfoWin.updateCompte();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                        </listcell>	
+                                        <listcell>
+                                            <doublebox value="@{elementcompte.solde, save-when='self.onChange'}" format="#,##0.##" inplace="true" onOK="clientinfoWin.compte=self.parent.parent.value; clientinfoWin.updateCompte();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                        </listcell>	
+                                        <listcell>
+                                            <doublebox value="@{elementcompte.soldePrevu, save-when='self.onChange'}" format="#,##0.##" readonly="true" width="99%"/>
+                                        </listcell>	
+                                        <listcell>
+                                            <textbox readonly="true" value="@{elementcompte.agenceBancaire, save-when='self.onChange'}" inplace="true" onOK="clientinfoWin.compte=self.parent.parent.value; clientinfoWin.updateCompte();" onChange='self.style="font-weight:bold"' width="99%"/>
+                                        </listcell>
+                                        <listcell image="/images/skin/database_delete.png">
+                                            <attribute name="onClick">
+                                            <![CDATA[
+                                                clientinfoWin.deleteCompte();                                                
+                                            ]]>
+                                            </attribute>
+                                        </listcell>
+                                    </listitem>
+                                </listbox>
+                                <separator/>
+                                <grid>
+                                    <columns>
+                                        <column width="32px" />
+                                        <column />
+                                        <column />
+                                        <column />
+                                        <column />
+                                        <column />
+                                        <column />
+                                        <column width="32px" />
+                                    </columns>
+                                    <rows>
+                                        <row>
+                                            <image src="/images/skin/database_edit.png" >
+                                                <attribute name="onClick">
+                                                <![CDATA[
+                                                    clientinfoWin.compte = com.choranet.gesticom.CompteBancaireChoraClientInfo.class.newInstance();
+                                                    clientinfoWin.rafraichirField();
+                                                    clientinfoWin.rafraichirList();
+                                                    clientinfoWin.isUpdateCompte = false;
+                                                ]]>
+                                                </attribute>
+                                            </image>
+                                            <textbox id="fieldlibellebis" constraint="no empty: Veillez indiquez une valeur" value="@{clientinfoWin.compte.libelle, save-when='self.onChange'}" inplace="true" onOK="clientinfoWin.addOrUpdateCompte();" width="99%"/>
+                                            <textbox id="fieldribbis" constraint="no empty: Veillez indiquez une valeur" value="@{clientinfoWin.compte.rib, save-when='self.onChange'}" inplace="true" onOK="clientinfoWin.addOrUpdateCompte();" width="99%"/>
+                                            <textbox id="fieldcodeSwiftbis" value="@{clientinfoWin.compte.codeSwift, save-when='self.onChange'}" inplace="true" onOK="clientinfoWin.addOrUpdateCompte();" width="99%"/>
+                                            <doublebox id="fieldsolde" format="#,##0.##" value="@{clientinfoWin.compte.solde, save-when='self.onChange'}" inplace="true" onOK="clientinfoWin.addOrUpdateCompte();" width="99%"/>
+                                            <doublebox id="fieldsoldePrevu" format="#,##0.##" value="@{clientinfoWin.compte.soldePrevu, save-when='self.onChange'}" readonly="true" width="99%"/>
+                                            <combobox id="coagenceBancaires" readonly="true" constraint="no empty: Veillez indiquez une valeur" model="@{clientinfoWin.agenceBancaires}" selectedItem="@{clientinfoWin.agenceBancaireSelected}" onOK="clientinfoWin.addOrUpdateCompte();">
+                                                <comboitem self="@{each=elementcompteagenceBancaire}" label="@{elementcompteagenceBancaire}"/>
+                                            </combobox>
+                                            <label/>				  
+                                        </row>
+                                    </rows>
+                                </grid>
+                            </groupbox>    
+                        </tabpanel>
+                    </tabpanels>
+                </tabbox>
+            </center>
+            <south border="none" size="50px" flex="true">
+                <hbox>
+                    <button id="btnUpdate"  label="Modifier" image="/images/skin/database_edit.png" visible="true">
+                        <attribute name="onClick"><![CDATA[
+                        Messagebox.show("Voulez-vous enregistrer les modifications apportées ?", "Confirmation", Messagebox.OK | Messagebox.IGNORE  | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                            public void onEvent(Event evt) throws InterruptedException {
+                                if (evt.getName().equals("onOK")) {
+                                TRTOK = true;
+                                try
+                                {
+                                Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                clientinfoWin.update();
+                                }
+                                catch (err)
+                                {
+                                alert("Erreur lors de l'enregistrement !");
+                                TRTOK = false;
+                                }
+                                   if (TRTOK){ alert("Modifications enregistrées !");}
+                                } else if (evt.getName().equals("onIgnore")) {
+                                    Messagebox.show("Annuler les modifications", "Attention", Messagebox.OK, Messagebox.EXCLAMATION);
+                                } else {
+                                    alert("Modifications annulées !");
+                                }
+                            }
+                        });
+                        ]]>
+                        </attribute>
+                    </button>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </hbox>
+            </south>
+        </borderlayout>
+    </window>
+</zk>

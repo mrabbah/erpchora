@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./echeanceWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="echeanceWin" height="100%" width="100%" style="margin:auto;" use="${echeanceWindow}" onCreate='echeanceWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/echeance.zs"/> -->
+        <borderlayout>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="echeanceWin.select()" model="@{echeanceWin.listeObjets}" selectedItem="@{echeanceWin.objetSelected}"  width="100%" height="480px" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterCode" value="@{echeanceWin.filtre.code}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                echeanceWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(echeanceWin.filtre.code != null) {
+                                                                echeanceWin.filtre.code = null;
+                                                        }
+                                                } else {
+                                                        echeanceWin.filtre.code=new Integer(event.value);
+                                                }
+                                                echeanceWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterLibelle" value="@{echeanceWin.filtre.libelle}" onChanging="echeanceWin.ofs; echeanceWin.filtre.libelle=event.value; echeanceWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterPeriodicite" value="@{echeanceWin.filtre.periodicite}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                echeanceWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(echeanceWin.filtre.periodicite != null) {
+                                                                echeanceWin.filtre.periodicite = null;
+                                                        }
+                                                } else {
+                                                        echeanceWin.filtre.periodicite=new Integer(event.value);
+                                                }
+                                                echeanceWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterTypeDeclanchement" value="@{echeanceWin.filtre.typeDeclanchement}" onChanging="echeanceWin.ofs; echeanceWin.filtre.typeDeclanchement=event.value; echeanceWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+                            
+                            <auxheader colspan="1"/>
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+							
+                            <listheader label="Code" sort="auto(code)" onSort="echeanceWin.sort(event)"/>	
+							
+                            <listheader label="Libelle" sort="auto(libelle)" onSort="echeanceWin.sort(event)"/>	
+							
+                            <listheader label="Periodicite" sort="auto(periodicite)" onSort="echeanceWin.sort(event)"/>	
+							
+                            <listheader label="TypeDeclanchement" sort="auto(typeDeclanchement)" onSort="echeanceWin.sort(event)"/>
+                            
+                            <listheader width="50px" />
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png">
+                                <attribute name="onClick">
+                                        <![CDATA[
+                                            cotypeDeclanchementbis.disabled = false;
+                                        ]]>
+                                </attribute>
+                            </listcell>
+                            
+                            <listcell>
+							
+                                <intbox readonly="true" constraint="no empty: Veillez indiquez une valeur"  value="@{element.code, save-when='self.onChange'}" inplace="true" onOK="echeanceWin.objet=self.parent.parent.value; echeanceWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox readonly="true" constraint="no empty: Veillez indiquez une valeur"  value="@{element.libelle, save-when='self.onChange'}" inplace="true" onOK="echeanceWin.objet=self.parent.parent.value; echeanceWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <intbox readonly="true" constraint="no empty: Veillez indiquez une valeur"  value="@{element.periodicite, save-when='self.onChange'}" inplace="true" onOK="echeanceWin.objet=self.parent.parent.value; echeanceWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox readonly="true" value="@{element.typeDeclanchement, save-when='self.onChange'}" inplace="true" onOK="echeanceWin.objet=self.parent.parent.value; echeanceWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>		
+                            
+                            <listcell image="/images/skin/database_delete.png" unless="${arg.ispopup}">
+                                <attribute name="onClick">
+                                    <![CDATA[
+                                    Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                        public void onEvent(Event evt) throws InterruptedException {
+                                            if (evt.getName().equals("onOK")) {
+                                                echeanceWin.delete();
+                                                echeanceWin.typeDeclanchemenSelected = null;
+                                                echeanceWin.afficherValeurAssociation();
+                                            } 
+                                        }
+                                    });
+                                    ]]>
+                                </attribute>                                    
+                            </listcell>
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{echeanceWin.tailleListe}" pageSize="@{echeanceWin.maxNb}" onPaging="echeanceWin.getNextElements(event);" />
+                    <separator/>
+                    <grid>
+                        <columns>
+                            <column width="32px" />
+							
+                            <column />
+							
+                            <column />
+							
+                            <column />
+							
+                            <column />
+                            
+                            <column width="50px" />
+							
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png" >
+                                    <attribute name="onClick">
+                                        <![CDATA[
+                                            echeanceWin.objet = com.choranet.gesticom.Echeance.class.newInstance();
+                                            echeanceWin.rafraichirField();
+                                            echeanceWin.rafraichirList();
+                                            echeanceWin.isUpdate = false;
+                                        ]]>
+                                    </attribute>
+                                </image>
+								
+                                <intbox id="fieldcodebis" constraint="no empty: Veillez indiquez une valeur" value="@{echeanceWin.objet.code, save-when='triggerBtn.onClick'}" inplace="true" width="99%" >
+                                    <attribute name="onChange">
+                                        <![CDATA[ 
+                                            if(self.value != null && fieldlibellebis != null){ 
+                                                cotypeDeclanchementbis.disabled = false;
+                                            }
+                                            else cotypeDeclanchementbis.disabled = true; 
+                                        ]]>    
+                                    </attribute>
+                                </intbox>
+								
+                                <textbox id="fieldlibellebis" constraint="no empty: Veillez indiquez une valeur" value="@{echeanceWin.objet.libelle, save-when='triggerBtn.onClick'}" inplace="true" width="99%">
+                                    <attribute name="onChange">
+                                        <![CDATA[ 
+                                            if(self.value != null && fieldcodebis != null){ 
+                                                cotypeDeclanchementbis.disabled = false;
+                                            }
+                                            else cotypeDeclanchementbis.disabled = true; 
+                                        ]]>    
+                                    </attribute>
+                                </textbox>
+								
+                                <intbox id="fieldperiodicitebis" constraint="no empty: Veillez indiquez une valeur" value="@{echeanceWin.objet.periodicite, save-when='triggerBtn.onClick'}" inplace="true" width="99%" />
+								
+<!--                                <textbox id="fieldtypeDeclanchementbis" value="@{echeanceWin.objet.typeDeclanchement, save-when='self.onChange'}" inplace="true" onOK="echeanceWin.addOrUpdate();" width="99%"/>-->
+                                <combobox id="cotypeDeclanchementbis" inplace="true" disabled="true" readonly="true" value="@{echeanceWin.typeDeclanchemenSelected, save-when='triggerBtn.onClick'}" width="130px">
+                                    <comboitem label="DATE_LIVRAISON" value="DATE_LIVRAISON"/>
+                                    <comboitem label="DATE_FACTURATION" value="DATE_FACTURATION"/>
+                                </combobox>
+						
+                                <button id="btnAdd" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn)); echeanceWin.addOrUpdate();" image="/images/skin/database_add.png" width="99%"/>				  			                
+                            </row>
+                        </rows>
+                    </grid>
+                    <separator/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                    <button id="btnPdf" unless="${arg.ispopup}" onClick="echeanceWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" unless="${arg.ispopup}" onClick="echeanceWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

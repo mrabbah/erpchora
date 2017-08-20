@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : zk.xml
+    Created on : 22 juin 2011, 11:52
+    Updated on : 22 Mai 2013, 21:59
+    Author     : RABBAH
+    Description:
+        Zk.xml.
+-->
+<zk>
+    
+    <listener>
+        <description>ThreadLocal Synchronization Listener</description>
+        <listener-class>org.zkoss.zkplus.util.ThreadLocalListener</listener-class>
+    </listener>
+    
+    <zscript-config>
+        <language-name>GroovyGrails</language-name>
+        <interpreter-class>
+            org.zkoss.zkgrails.scripting.GroovyGrailsInterpreter
+        </interpreter-class>
+    </zscript-config>
+    
+    <preference>
+        <name>ThreadLocal</name>
+        <value>
+            org.springframework.transaction.support.TransactionSynchronizationManager=resources,
+            synchronizations,currentTransactionName,currentTransactionReadOnly,actualTransactionActive;
+            org.springframework.orm.hibernate3.SessionFactoryUtils=deferredCloseHolder;
+            org.springframework.transaction.interceptor.TransactionAspectSupport=transactionInfoHolder;
+            org.springframework.web.context.request.RequestContextHolder=requestAttributesHolder,inheritableRequestAttributesHolder;
+        </value>
+    </preference>
+    
+<!--    <library-property>
+        <name>org.zkoss.zk.ui.metainfo.page.Loader.class</name>
+        <value>org.zkoss.web.util.resource.CustomContentLoader</value>
+    </library-property>-->
+    
+    <session-config>
+        <session-timeout>1800</session-timeout>
+        <device-type>ajax</device-type>    
+        <timeout-uri>/logout</timeout-uri> 
+        <timer-keep-alive>false</timer-keep-alive>
+        <max-desktops-per-session>15</max-desktops-per-session>
+        <max-requests-per-session>5</max-requests-per-session>
+        <max-pushes-per-session>3</max-pushes-per-session>
+    </session-config>
+    
+    <library-property>
+        <name>org.zkoss.zul.chart.engine.class</name>
+        <value>org.zkoss.zkex.zul.impl.JFreeChartEngine</value>
+    </library-property>
+    
+    <system-config>
+        <max-upload-size>-1</max-upload-size>
+    </system-config>
+    
+    <system-config>
+        <id-generator-class>com.choranet.zk.ZkIdGenerator</id-generator-class>
+    </system-config>
+</zk>

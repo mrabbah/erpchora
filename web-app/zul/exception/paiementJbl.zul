@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./paiementJblWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="paiementJblWin" height="100%" width="100%" style="margin:auto;" use="${paiementJblWindow}">
+    <!-- <zscript src="/zs/paiementJbl.zs"/> -->
+        <borderlayout>            
+            <west id="westPanel" title="CRUD" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+						
+                            <row>
+                                <label value="Année"/>				 
+                                <intbox id="fieldAnnee" constraint="no empty: Veillez indiquez une valeur" value="@{paiementJblWin.objet.annee, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%" onChange="paiementJblWin.initialiserObjetPaiement(true)"/>
+                            </row>												
+						
+                            <row>
+                                <label value="Mois"/>
+				<combobox id="comois" model="@{paiementJblWin.moisAnnee}" selectedItem="@{paiementJblWin.objet.mois}" width="99%" onSelect="paiementJblWin.initialiserObjetPaiement(true)">
+                                    <comboitem self="@{each=elementmois}" label="@{elementmois}"/>
+                                </combobox>				 
+                            </row>												
+						
+                            <row>
+                                <label value="Employé " />
+                                <combobox id="coemployes" model="@{paiementJblWin.employes}" selectedItem="@{paiementJblWin.employeSelected}" width="99%" onSelect="paiementJblWin.initialiserObjetPaiement(true)">
+                                    <comboitem self="@{each=elementemploye}" label="@{elementemploye}"/>
+                                </combobox>
+                            </row>
+                            <row>
+                                <label value="Jours Travaillés"/>
+								 
+                                <intbox id="fieldJoursTravailles" constraint="no empty: Veillez indiquez une valeur" value="@{paiementJblWin.objet.joursTravailles, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+                            <row>
+                                <label value="Jours Abscence"/>
+								 
+                                <intbox id="fieldJoursAbscences" constraint="no empty: Veillez indiquez une valeur" value="@{paiementJblWin.objet.joursAbscences, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>																								
+						
+                            <row>
+                                <label value="Retenu Vêtement"/>
+								 
+                                <doublebox id="fieldRetenuVetement" constraint="no empty: Veillez indiquez une valeur" value="@{paiementJblWin.objet.retenuVetement, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+						
+                            <row>
+                                <label value="Heures Supplémentaires"/>
+								 
+                                <doublebox id="fieldHeuresSupp" constraint="no empty: Veillez indiquez une valeur" value="@{paiementJblWin.objet.heuresSupp, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+						
+                            <row>
+                                <label value="Retenu Abscence"/>
+								 
+                                <doublebox id="fieldRetenuAbscence" constraint="no empty: Veillez indiquez une valeur" value="@{paiementJblWin.objet.retenuAbscence, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+						
+                            <row>
+                                <label value="Frais Déplacement"/>
+								 
+                                <doublebox id="fieldFraisDeplacement" constraint="no empty: Veillez indiquez une valeur" value="@{paiementJblWin.objet.fraisDeplacement, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+						
+                            <row>
+                                <label value="Rappel"/>
+								 
+                                <doublebox id="fieldRappel" constraint="no empty: Veillez indiquez une valeur" value="@{paiementJblWin.objet.rappel, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+				
+                            <row>
+                                <label value="Avance"/>
+								 
+                                <doublebox id="fieldAvance" constraint="no empty: Veillez indiquez une valeur" value="@{paiementJblWin.objet.avance, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>
+                            
+                            <row>
+                                <label value="Date Avance"/>
+								 
+                                <datebox id="fieldDateAvance" format="dd/MM/yyyy" value="@{paiementJblWin.objet.dateAvance, save-when='triggerBtn.onClick'}" width="99%"/>
+                            </row>												
+								
+                            <row>
+                                <label value="Salaire"/>
+								 
+                                <doublebox id="fieldSalaire" constraint="no empty: Veillez indiquez une valeur" value="@{paiementJblWin.objet.salaire, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>
+                            
+                            <row>
+                                <label value="Date Salaire"/>
+								 
+                                <datebox id="fieldDateSalaire" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{paiementJblWin.objet.dateSalaire, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+				
+                        </rows>
+                    </grid>					
+					
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));paiementJblWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));paiementJblWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        paiementJblWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute> 
+                    </button>
+                    <!-- <button id="btnNew" onClick="paiementJblWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="paiementJblWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="paiementJblWin.select()" model="@{paiementJblWin.listeObjets}" selectedItem="@{paiementJblWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filteremploye" model="@{paiementJblWin.employes}" selectedItem="@{paiementJblWin.filtre.employe}" autocomplete="true" autodrop="true" mold="rounded" onSelect="paiementJblWin.ofs=0;paiementJblWin.filtrer()" onOK="paiementJblWin.ofs=0;paiementJblWin.filtrer()" width="90%">
+                                    <comboitem self="@{each=elementfiltreemploye}" label="@{elementfiltreemploye}"/>
+                                </combobox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterAnnee" value="@{paiementJblWin.filtre.annee}" width="100%">
+                                    <attribute name="onChanging">
+                                            <![CDATA[
+                                                    paiementJblWin.ofs=0;
+                                                    if(event.value.equals("")) {
+                                                            if(paiementJblWin.filtre.annee != null) {
+                                                                    paiementJblWin.filtre.annee = null;
+                                                            }
+                                                    } else {
+                                                            paiementJblWin.filtre.annee=new Integer(event.value);
+                                                    }
+                                                    paiementJblWin.filtrer();
+                                                    self.focus();
+                                                    if(!event.value.equals("")) {
+                                                            self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                    }
+                                            ]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filtermois" model="@{paiementJblWin.moisAnnee}" selectedItem="@{paiementJblWin.filtre.mois}" autocomplete="true" autodrop="true" mold="rounded" onSelect="paiementJblWin.ofs=0;paiementJblWin.filtrer()" onOK="paiementJblWin.ofs=0;paiementJblWin.filtrer()" width="90%">
+                                    <comboitem self="@{each=elementmois}" label="@{elementmois}"/>
+                                </combobox>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterJoursTravailles" value="@{paiementJblWin.filtre.joursTravailles}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                paiementJblWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(paiementJblWin.filtre.joursTravailles != null) {
+                                                                paiementJblWin.filtre.joursTravailles = null;
+                                                        }
+                                                } else {
+                                                        paiementJblWin.filtre.joursTravailles=new Integer(event.value);
+                                                }
+                                                paiementJblWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+<!--                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterJoursAbscences" value="@{paiementJblWin.filtre.joursAbscences}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                paiementJblWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(paiementJblWin.filtre.joursAbscences != null) {
+                                                                paiementJblWin.filtre.joursAbscences = null;
+                                                        }
+                                                } else {
+                                                        paiementJblWin.filtre.joursAbscences=new Integer(event.value);
+                                                }
+                                                paiementJblWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>-->
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterHeuresSupp" value="@{paiementJblWin.filtre.heuresSupp}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                paiementJblWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(paiementJblWin.filtre.heuresSupp != null) {
+                                                                paiementJblWin.filtre.heuresSupp = null;
+                                                        }
+                                                } else {
+                                                        paiementJblWin.filtre.heuresSupp=new Double(event.value);
+                                                }
+                                                paiementJblWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterAvance" value="@{paiementJblWin.filtre.avance}" width="100%">
+                                    <attribute name="onChanging">
+                                            <![CDATA[
+                                                    paiementJblWin.ofs=0;
+                                                    if(event.value.equals("")) {
+                                                            if(paiementJblWin.filtre.avance != null) {
+                                                                    paiementJblWin.filtre.avance = null;
+                                                            }
+                                                    } else {
+                                                            paiementJblWin.filtre.avance=new Double(event.value);
+                                                    }
+                                                    paiementJblWin.filtrer();
+                                                    self.focus();
+                                                    if(!event.value.equals("")) {
+                                                            self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                    }
+                                            ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterSalaire" value="@{paiementJblWin.filtre.salaire}" width="100%">
+                                    <attribute name="onChanging">
+										<![CDATA[
+											paiementJblWin.ofs=0;
+											if(event.value.equals("")) {
+												if(paiementJblWin.filtre.salaire != null) {
+													paiementJblWin.filtre.salaire = null;
+												}
+											} else {
+												paiementJblWin.filtre.salaire=new Double(event.value);
+											}
+											paiementJblWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+<!--                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterFraisDeplacement" value="@{paiementJblWin.filtre.fraisDeplacement}" width="100%">
+                                    <attribute name="onChanging">
+										<![CDATA[
+											paiementJblWin.ofs=0;
+											if(event.value.equals("")) {
+												if(paiementJblWin.filtre.fraisDeplacement != null) {
+													paiementJblWin.filtre.fraisDeplacement = null;
+												}
+											} else {
+												paiementJblWin.filtre.fraisDeplacement=new Double(event.value);
+											}
+											paiementJblWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>-->
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterRappel" value="@{paiementJblWin.filtre.rappel}" width="100%">
+                                    <attribute name="onChanging">
+										<![CDATA[
+											paiementJblWin.ofs=0;
+											if(event.value.equals("")) {
+												if(paiementJblWin.filtre.rappel != null) {
+													paiementJblWin.filtre.rappel = null;
+												}
+											} else {
+												paiementJblWin.filtre.rappel=new Double(event.value);
+											}
+											paiementJblWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+<!--                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterRetenuVetement" value="@{paiementJblWin.filtre.retenuVetement}" width="100%">
+                                    <attribute name="onChanging">
+                                            <![CDATA[
+                                                    paiementJblWin.ofs=0;
+                                                    if(event.value.equals("")) {
+                                                            if(paiementJblWin.filtre.retenuVetement != null) {
+                                                                    paiementJblWin.filtre.retenuVetement = null;
+                                                            }
+                                                    } else {
+                                                            paiementJblWin.filtre.retenuVetement=new Double(event.value);
+                                                    }
+                                                    paiementJblWin.filtrer();
+                                                    self.focus();
+                                                    if(!event.value.equals("")) {
+                                                            self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                    }
+                                            ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>-->
+			
+<!--                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterRetenuAbscence" value="@{paiementJblWin.filtre.retenuAbscence}" width="100%">
+                                    <attribute name="onChanging">
+                                            <![CDATA[
+                                                    paiementJblWin.ofs=0;
+                                                    if(event.value.equals("")) {
+                                                            if(paiementJblWin.filtre.retenuAbscence != null) {
+                                                                    paiementJblWin.filtre.retenuAbscence = null;
+                                                            }
+                                                    } else {
+                                                            paiementJblWin.filtre.retenuAbscence=new Double(event.value);
+                                                    }
+                                                    paiementJblWin.filtrer();
+                                                    self.focus();
+                                                    if(!event.value.equals("")) {
+                                                            self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                    }
+                                            ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>-->
+								
+<!--                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDateAvance" format="dd/MM/yyyy" value="@{paiementJblWin.filtre.dateAvance}" onOK="paiementJblWin.ofs=0; paiementJblWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDateSalaire" format="dd/MM/yyyy" value="@{paiementJblWin.filtre.dateSalaire}" onOK="paiementJblWin.ofs=0; paiementJblWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>-->
+								
+                            
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+							
+                            <listheader id="hemploye" width="150px" label="Employé" sort="auto(employe)" onSort="paiementJblWin.sort(event)"/>	
+                            <listheader id="hannee" label="Annee" sort="auto(annee)" onSort="paiementJblWin.sort(event)"/>	
+							
+                            <listheader id="hmois" label="Mois" sort="auto(mois)" onSort="paiementJblWin.sort(event)"/>	
+							
+                            <listheader id="hjoursTravailles" label="J/T" sort="auto(joursTravailles)" onSort="paiementJblWin.sort(event)"/>	
+<!--                            <listheader id="hjoursAbscences" label="J/Abs" sort="auto(joursAbscences)" onSort="paiementJblWin.sort(event)"/>	-->
+                            <listheader id="hheuresSupp" label="Heures Supp" sort="auto(heuresSupp)" onSort="paiementJblWin.sort(event)"/>	
+                            <listheader id="havance" label="Avance" sort="auto(avance)" onSort="paiementJblWin.sort(event)"/>	
+                            <listheader id="hsalaire" label="Salaire" sort="auto(salaire)" onSort="paiementJblWin.sort(event)"/>	
+<!--                            <listheader id="hfraisDeplacement" label="Frais Dép" sort="auto(fraisDeplacement)" onSort="paiementJblWin.sort(event)"/>	-->
+                            <listheader id="hrappel" label="Rappel" sort="auto(rappel)" onSort="paiementJblWin.sort(event)"/>
+<!--                            <listheader id="hretenuVetement" label="Retenu Vêt" sort="auto(retenuVetement)" onSort="paiementJblWin.sort(event)"/>	-->
+							
+<!--                            <listheader id="hretenuAbscence" label="Retenu Abs" sort="auto(retenuAbscence)" onSort="paiementJblWin.sort(event)"/>	
+							
+                            <listheader id="hdateAvance" label="Date Avance" sort="auto(dateAvance)" onSort="paiementJblWin.sort(event)"/>	-->
+							
+<!--                            <listheader id="hdateSalaire" label="Date Salaire" sort="auto(dateSalaire)" onSort="paiementJblWin.sort(event)"/>	-->
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            <listcell label="@{element.employe}"/>
+                            
+                            <listcell>
+							
+                                <intbox value="@{element.annee, save-when='self.onChange'}" inplace="true" onOK="paiementJblWin.objet=self.parent.parent.value; paiementJblWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.mois, save-when='self.onChange'}" inplace="true" onOK="paiementJblWin.objet=self.parent.parent.value; paiementJblWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <intbox value="@{element.joursTravailles, save-when='self.onChange'}" inplace="true" onOK="paiementJblWin.objet=self.parent.parent.value; paiementJblWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							
+<!--                            <listcell>
+							
+                                <intbox value="@{element.joursAbscences, save-when='self.onChange'}" inplace="true" onOK="paiementJblWin.objet=self.parent.parent.value; paiementJblWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							-->
+                            <listcell>
+							
+                                <doublebox value="@{element.heuresSupp, save-when='self.onChange'}" inplace="true" onOK="paiementJblWin.objet=self.parent.parent.value; paiementJblWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>				
+                            <listcell>
+							
+                                <doublebox value="@{element.avance, save-when='self.onChange'}" inplace="true" onOK="paiementJblWin.objet=self.parent.parent.value; paiementJblWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							
+                            <listcell>
+							
+                                <doublebox value="@{element.salaire, save-when='self.onChange'}" inplace="true" onOK="paiementJblWin.objet=self.parent.parent.value; paiementJblWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>	
+<!--                            <listcell>
+							
+                                <doublebox value="@{element.fraisDeplacement, save-when='self.onChange'}" inplace="true" onOK="paiementJblWin.objet=self.parent.parent.value; paiementJblWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>	-->
+                            <listcell>
+							
+                                <doublebox value="@{element.rappel, save-when='self.onChange'}" inplace="true" onOK="paiementJblWin.objet=self.parent.parent.value; paiementJblWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>	
+<!--                            <listcell>
+							
+                                <doublebox value="@{element.retenuVetement, save-when='self.onChange'}" inplace="true" onOK="paiementJblWin.objet=self.parent.parent.value; paiementJblWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							-->
+									
+<!--                            <listcell>
+							
+                                <doublebox value="@{element.retenuAbscence, save-when='self.onChange'}" inplace="true" onOK="paiementJblWin.objet=self.parent.parent.value; paiementJblWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							-->
+								
+<!--                            <listcell>
+							
+                                <datebox format="dd/MM/yyyy" value="@{element.dateAvance, save-when='self.onChange'}" inplace="true" onOK="paiementJblWin.objet=self.parent.parent.value; paiementJblWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <datebox format="dd/MM/yyyy" value="@{element.dateSalaire, save-when='self.onChange'}" inplace="true" onOK="paiementJblWin.objet=self.parent.parent.value; paiementJblWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							-->					
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{paiementJblWin.tailleListe}" pageSize="@{paiementJblWin.maxNb}" onPaging="paiementJblWin.getNextElements(event);" />
+                    
+                    <separator/>
+                    <button id="btnNew" onClick="paiementJblWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="paiementJblWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="paiementJblWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

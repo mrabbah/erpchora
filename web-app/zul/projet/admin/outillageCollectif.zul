@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./outillageCollectifWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="outillageCollectifWin" height="100%" width="100%" style="margin:auto;" use="${outillageCollectifWindow}" onCreate='outillageCollectifWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/outillageCollectif.zs"/> -->
+        <borderlayout>
+            
+            <west id="westPanel" title="Gestion des outils collectifs" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+						
+                            <row>
+                                <label value="Numéro"/>
+								 
+                                <intbox id="fieldNumero" constraint="no empty: Veillez indiquez une valeur" value="@{outillageCollectifWin.objet.numero, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+                            <row>
+                                <label value="Désignation"/>
+								 
+                                <textbox id="fieldDesignation" constraint="no empty: Veillez indiquez une valeur" value="@{outillageCollectifWin.objet.designation, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+                            <row>
+                                <label value="Date Achat"/>
+								 
+                                <datebox id="fieldDateAchat" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{outillageCollectifWin.objet.dateAchat, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+                            <row>
+                                <label value="Prix Achat"/>
+								 
+                                <doublebox id="fieldPrixAchat" constraint="no empty: Veillez indiquez une valeur" value="@{outillageCollectifWin.objet.prixAchat, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+                            <row>
+                                <label value="Date Mise En Service"/>
+								 
+                                <datebox id="fieldDateMiseEnService" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{outillageCollectifWin.objet.dateMiseEnService, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+                            <row>
+                                <label value="Date Fin Utilisation"/>
+								 
+                                <datebox id="fieldDateFinUtilisation" format="dd/MM/yyyy" value="@{outillageCollectifWin.objet.dateFinUtilisation, save-when='triggerBtn.onClick'}" />
+                            </row>												
+						 
+						
+                        </rows>
+                    </grid>					
+					
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));outillageCollectifWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));outillageCollectifWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        outillageCollectifWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute> 
+                    </button>
+                    <!-- <button id="btnNew" onClick="outillageCollectifWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="outillageCollectifWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="outillageCollectifWin.select()" model="@{outillageCollectifWin.listeObjets}" selectedItem="@{outillageCollectifWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterNumero" value="@{outillageCollectifWin.filtre.numero}" width="100%">
+                                    <attribute name="onChanging">
+										<![CDATA[
+											outillageCollectifWin.ofs=0;
+											if(event.value.equals("")) {
+												if(outillageCollectifWin.filtre.numero != null) {
+													outillageCollectifWin.filtre.numero = null;
+												}
+											} else {
+												outillageCollectifWin.filtre.numero=new Integer(event.value);
+											}
+											outillageCollectifWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterDesignation" value="@{outillageCollectifWin.filtre.designation}" onChanging="outillageCollectifWin.ofs; outillageCollectifWin.filtre.designation=event.value; outillageCollectifWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDateAchat" format="dd/MM/yyyy" value="@{outillageCollectifWin.filtre.dateAchat}" onOK="outillageCollectifWin.ofs=0; outillageCollectifWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterPrixAchat" value="@{outillageCollectifWin.filtre.prixAchat}" width="100%">
+                                    <attribute name="onChanging">
+										<![CDATA[
+											outillageCollectifWin.ofs=0;
+											if(event.value.equals("")) {
+												if(outillageCollectifWin.filtre.prixAchat != null) {
+													outillageCollectifWin.filtre.prixAchat = null;
+												}
+											} else {
+												outillageCollectifWin.filtre.prixAchat=new Double(event.value);
+											}
+											outillageCollectifWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDateMiseEnService" format="dd/MM/yyyy" value="@{outillageCollectifWin.filtre.dateMiseEnService}" onOK="outillageCollectifWin.ofs=0; outillageCollectifWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDateFinUtilisation" format="dd/MM/yyyy" value="@{outillageCollectifWin.filtre.dateFinUtilisation}" onOK="outillageCollectifWin.ofs=0; outillageCollectifWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+							
+                            <listheader id="hnumero" label="Numéro" sort="auto(numero)" onSort="outillageCollectifWin.sort(event)"/>	
+							
+                            <listheader id="hdesignation" label="Désignation" sort="auto(designation)" onSort="outillageCollectifWin.sort(event)"/>	
+							
+                            <listheader id="hdateAchat" label="Date Achat" sort="auto(dateAchat)" onSort="outillageCollectifWin.sort(event)"/>	
+							
+                            <listheader id="hprixAchat" label="Prix Achat" sort="auto(prixAchat)" onSort="outillageCollectifWin.sort(event)"/>	
+							
+                            <listheader id="hdateMiseEnService" label="Date Mise En Service" sort="auto(dateMiseEnService)" onSort="outillageCollectifWin.sort(event)"/>	
+							
+                            <listheader id="hdateFinUtilisation" label="Date Fin Utilisation" sort="auto(dateFinUtilisation)" onSort="outillageCollectifWin.sort(event)"/>	
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            
+                            <listcell>
+							
+                                <intbox value="@{element.numero, save-when='self.onChange'}" inplace="true" onOK="outillageCollectifWin.objet=self.parent.parent.value; outillageCollectifWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.designation, save-when='self.onChange'}" inplace="true" onOK="outillageCollectifWin.objet=self.parent.parent.value; outillageCollectifWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <datebox format="dd/MM/yyyy" value="@{element.dateAchat, save-when='self.onChange'}" inplace="true" onOK="outillageCollectifWin.objet=self.parent.parent.value; outillageCollectifWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <doublebox value="@{element.prixAchat, save-when='self.onChange'}" inplace="true" onOK="outillageCollectifWin.objet=self.parent.parent.value; outillageCollectifWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <datebox format="dd/MM/yyyy" value="@{element.dateMiseEnService, save-when='self.onChange'}" inplace="true" onOK="outillageCollectifWin.objet=self.parent.parent.value; outillageCollectifWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <datebox format="dd/MM/yyyy" value="@{element.dateFinUtilisation, save-when='self.onChange'}" inplace="true" onOK="outillageCollectifWin.objet=self.parent.parent.value; outillageCollectifWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{outillageCollectifWin.tailleListe}" pageSize="@{outillageCollectifWin.maxNb}" onPaging="outillageCollectifWin.getNextElements(event);" />
+                    <separator/>
+                    <grid>
+                        <columns>
+                            <column width="32px" />
+							
+                            <column />
+							
+                            <column />
+							
+                            <column />
+							
+                            <column />
+							
+                            <column />
+							
+                            <column />
+							
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png"  />
+								
+                                <intbox id="fieldnumerobis" value="@{outillageCollectifWin.objet.numero, save-when='self.onChange'}" inplace="true" onOK="outillageCollectifWin.add();" width="99%" />
+								
+                                <textbox id="fielddesignationbis" value="@{outillageCollectifWin.objet.designation, save-when='self.onChange'}" inplace="true" onOK="outillageCollectifWin.add();" width="99%"/>
+								
+                                <datebox id="fielddateAchatbis" format="dd/MM/yyyy" value="@{outillageCollectifWin.objet.dateAchat, save-when='self.onChange'}" inplace="true" onOK="outillageCollectifWin.add();" width="99%"/>
+								
+                                <doublebox id="fieldprixAchatbis" value="@{outillageCollectifWin.objet.prixAchat, save-when='self.onChange'}" inplace="true" onOK="outillageCollectifWin.add();" width="99%" />
+								
+                                <datebox id="fielddateMiseEnServicebis" format="dd/MM/yyyy" value="@{outillageCollectifWin.objet.dateMiseEnService, save-when='self.onChange'}" inplace="true" onOK="outillageCollectifWin.add();" width="99%"/>
+								
+                                <datebox id="fielddateFinUtilisationbis" format="dd/MM/yyyy" value="@{outillageCollectifWin.objet.dateFinUtilisation, save-when='self.onChange'}" inplace="true" onOK="outillageCollectifWin.add();" width="99%"/>
+								  
+                            </row>
+                        </rows>
+                    </grid>
+                    <separator/>
+                    <button id="btnNew" onClick="outillageCollectifWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="outillageCollectifWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="outillageCollectifWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

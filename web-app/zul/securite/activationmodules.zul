@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./activationWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+<!--<?page zscriptLanguage="GroovyGrails"?>-->
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="activationWin" height="100%" width="100%" style="margin:auto;" use="${activationWindow}">
+        <borderlayout>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <grid fixedLayout="true" width="500">
+                        <rows>
+                            <row>
+                                <label value="Société"/>
+                                <combobox id="cosociete" readonly="true" constraint="no empty: Veillez choisir une valeur" model="@{activationWin.societes}" selectedItem="@{activationWin.societe}" onChange="activationWin.societeChanger()" width="99%">
+                                    <comboitem self="@{each=elementsociete}" label="@{elementsociete}"/>
+                                </combobox>
+                            </row>
+                            <row>
+                                <label value="Modules" />
+                                <bandbox    autodrop="true" mold="rounded" width="99%">
+                                    <bandpopup>
+                                        <listbox id="lstmodules" model="@{activationWin.modules}" selectedItem="@{activationWin.societe.modulesActifs, converter=com.choranet.zk.SelectedItemsConverterV3}" fixedLayout="true" multiple="true" checkmark="true">
+                                            <listhead>
+                                                <listheader label=""/>							
+                                            </listhead>
+                                            <listitem self="@{each=elementmodules}">
+                                                <listcell label="@{elementmodules}"/>							
+                                            </listitem>								
+                                        </listbox>	
+                                    </bandpopup>
+                                </bandbox>
+                            </row>
+                        </rows>
+                    </grid>
+                    <separator />
+                    <button id="btnUpdate" onClick="activationWin.update()" label="Modifier" image="/images/skin/database_edit.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>        
+    </window>
+</zk>

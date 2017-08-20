@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./evolutionVentesAchatsWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul">
+    <window id="evolutionVentesAchatsWin" height="100%" width="100%" style="margin:auto;" use="${evolutionVentesAchatsWindow}">
+        <vbox>
+            <hbox>
+                <label value="Choisir exercice" />
+                <combobox id="AnneeExercice" model="@{evolutionVentesAchatsWin.listeannees}" width="120px" selectedItem="@{evolutionVentesAchatsWin.annee}" autocomplete="true">
+                    <comboitem self="@{each=elementannee}" label="@{elementannee}"/>
+                </combobox>
+                <button label="Générer" onClick='evolutionVentesAchatsWin.genererExercice()' image="" />
+            </hbox>
+            <chart id="sbarchart3d" title="Exercice" width="1200"
+                   height="550" type="bar" threeD="true" fgAlpha="128"
+                   model="@{evolutionVentesAchatsWin.etatventesachats}" />
+           
+        </vbox>
+    </window>
+</zk>

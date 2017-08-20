@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./tacheWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="tacheWin" height="100%" width="100%" style="margin:auto;" use="${tacheWindow}" onCreate='tacheWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/tache.zs"/> -->
+        <borderlayout>
+            <north id="eastPanel" size="65px" open="false"  title="Recherche avanc�e" flex="true" splittable="true"  collapsible="true"  >
+                <hlayout spacing="10px" style="margin-top:9px;margin-left:10px">
+					
+					<label value="predecesseur :" />
+                    <bandbox    autodrop="true" mold="rounded">
+                        <bandpopup>
+                            <listbox id="filterpredecesseur" model="@{tacheWin.predecesseur}" 
+                        selectedItem="@{tacheWin.filtre.predecesseurs, converter=com.choranet.zk.SelectedItemsConverterV3}"
+                        onSelect="tacheWin.ofs=0;tacheWin.filtrer();"
+                        fixedLayout="true" multiple="true" checkmark="true">
+                                <listhead>
+                                    <listheader label=""/>							
+                                </listhead>
+                                <listitem self="@{each=elementfiltrepredecesseur}">
+                                    <listcell label="@{elementfiltrepredecesseur}"/>							
+                                </listitem>								
+                            </listbox>
+                        </bandpopup>
+                    </bandbox>
+					
+					<label value="phase :" />
+                    <combobox id="filterphase" model="@{tacheWin.phases}" selectedItem="@{tacheWin.filtre.phase}" autocomplete="true" autodrop="true" mold="rounded" onSelect="tacheWin.ofs=0;tacheWin.filtrer()" onOK="tacheWin.ofs=0;tacheWin.filtrer()">
+                        <comboitem self="@{each=elementfiltrephase}" label="@{elementfiltrephase}"/>
+                    </combobox>
+					
+					<label value="employe :" />
+                    <combobox id="filteremploye" model="@{tacheWin.employes}" selectedItem="@{tacheWin.filtre.employe}" autocomplete="true" autodrop="true" mold="rounded" onSelect="tacheWin.ofs=0;tacheWin.filtrer()" onOK="tacheWin.ofs=0;tacheWin.filtrer()">
+                        <comboitem self="@{each=elementfiltreemploye}" label="@{elementfiltreemploye}"/>
+                    </combobox>
+										                    
+                </hlayout>
+            </north>
+            <west id="westPanel" title="CRUD" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+						
+							<row>
+                                <label value="Numero"/>
+								 
+								<intbox id="fieldNumero" constraint="no empty: Veillez indiquez une valeur" value="@{tacheWin.objet.numero, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="DateDebutPrevue"/>
+								 
+								<datebox id="fieldDateDebutPrevue" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{tacheWin.objet.dateDebutPrevue, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="Designation"/>
+								 
+								<textbox id="fieldDesignation" constraint="no empty: Veillez indiquez une valeur" value="@{tacheWin.objet.designation, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="DateDebutReelle"/>
+								 
+								<datebox id="fieldDateDebutReelle" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{tacheWin.objet.dateDebutReelle, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="DateFinPrevu"/>
+								 
+								<datebox id="fieldDateFinPrevu" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{tacheWin.objet.dateFinPrevu, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="ChargePrevue"/>
+								 
+								<doublebox id="fieldChargePrevue" constraint="no empty: Veillez indiquez une valeur" value="@{tacheWin.objet.chargePrevue, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="DateFinReelle"/>
+								 
+								<datebox id="fieldDateFinReelle" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{tacheWin.objet.dateFinReelle, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="AvancementPrevu"/>
+								 
+								<doublebox id="fieldAvancementPrevu" constraint="no empty: Veillez indiquez une valeur" value="@{tacheWin.objet.avancementPrevu, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="ChargeReelle"/>
+								 
+								<doublebox id="fieldChargeReelle" constraint="no empty: Veillez indiquez une valeur" value="@{tacheWin.objet.chargeReelle, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="AvancementReel"/>
+								 
+								<doublebox id="fieldAvancementReel" constraint="no empty: Veillez indiquez une valeur" value="@{tacheWin.objet.avancementReel, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="Jalon"/>
+								 
+								<checkbox id="fieldJalon" label="?" checked="@{tacheWin.objet.jalon, save-when='triggerBtn.onClick'}"/>
+                            </row>												
+						 
+						
+						<row>
+							<label value="Predecesseur" />
+							<bandbox    autodrop="true" mold="rounded">
+								<bandpopup>
+									<listbox id="lstpredecesseur" model="@{tacheWin.predecesseur}" selectedItem="@{tacheWin.predecesseurSelected, converter=com.choranet.zk.SelectedItemsConverterV3}" fixedLayout="true" multiple="true" checkmark="true">
+										<listhead>
+											<listheader label=""/>							
+										</listhead>
+										<listitem self="@{each=elementpredecesseur}">
+											<listcell label="@{elementpredecesseur}"/>							
+										</listitem>								
+									</listbox>	
+								</bandpopup>
+							</bandbox>
+						</row>	
+						
+						<row>
+							<label value="phase " />
+							<combobox id="cophases" model="@{tacheWin.phases}" selectedItem="@{tacheWin.phaseSelected}">
+								<comboitem self="@{each=elementphase}" label="@{elementphase}"/>
+							</combobox>
+						</row>
+						
+						<row>
+							<label value="employe " />
+							<combobox id="coemployes" model="@{tacheWin.employes}" selectedItem="@{tacheWin.employeSelected}">
+								<comboitem self="@{each=elementemploye}" label="@{elementemploye}"/>
+							</combobox>
+						</row>
+						
+                        </rows>
+                    </grid>					
+					
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));tacheWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));tacheWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        tacheWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute> 
+                    </button>
+                    <!-- <button id="btnNew" onClick="tacheWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="tacheWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="tacheWin.select()" model="@{tacheWin.listeObjets}" selectedItem="@{tacheWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+							<auxheader colspan="1"/>
+							
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterNumero" value="@{tacheWin.filtre.numero}" width="100%">
+									<attribute name="onChanging">
+										<![CDATA[
+											tacheWin.ofs=0;
+											if(event.value.equals("")) {
+												if(tacheWin.filtre.numero != null) {
+													tacheWin.filtre.numero = null;
+												}
+											} else {
+												tacheWin.filtre.numero=new Integer(event.value);
+											}
+											tacheWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+								</intbox>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDateDebutPrevue" format="dd/MM/yyyy" value="@{tacheWin.filtre.dateDebutPrevue}" onOK="tacheWin.ofs=0; tacheWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterDesignation" value="@{tacheWin.filtre.designation}" onChanging="tacheWin.ofs; tacheWin.filtre.designation=event.value; tacheWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDateDebutReelle" format="dd/MM/yyyy" value="@{tacheWin.filtre.dateDebutReelle}" onOK="tacheWin.ofs=0; tacheWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDateFinPrevu" format="dd/MM/yyyy" value="@{tacheWin.filtre.dateFinPrevu}" onOK="tacheWin.ofs=0; tacheWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterChargePrevue" value="@{tacheWin.filtre.chargePrevue}" width="100%">
+									<attribute name="onChanging">
+										<![CDATA[
+											tacheWin.ofs=0;
+											if(event.value.equals("")) {
+												if(tacheWin.filtre.chargePrevue != null) {
+													tacheWin.filtre.chargePrevue = null;
+												}
+											} else {
+												tacheWin.filtre.chargePrevue=new Double(event.value);
+											}
+											tacheWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDateFinReelle" format="dd/MM/yyyy" value="@{tacheWin.filtre.dateFinReelle}" onOK="tacheWin.ofs=0; tacheWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterAvancementPrevu" value="@{tacheWin.filtre.avancementPrevu}" width="100%">
+									<attribute name="onChanging">
+										<![CDATA[
+											tacheWin.ofs=0;
+											if(event.value.equals("")) {
+												if(tacheWin.filtre.avancementPrevu != null) {
+													tacheWin.filtre.avancementPrevu = null;
+												}
+											} else {
+												tacheWin.filtre.avancementPrevu=new Double(event.value);
+											}
+											tacheWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterChargeReelle" value="@{tacheWin.filtre.chargeReelle}" width="100%">
+									<attribute name="onChanging">
+										<![CDATA[
+											tacheWin.ofs=0;
+											if(event.value.equals("")) {
+												if(tacheWin.filtre.chargeReelle != null) {
+													tacheWin.filtre.chargeReelle = null;
+												}
+											} else {
+												tacheWin.filtre.chargeReelle=new Double(event.value);
+											}
+											tacheWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterAvancementReel" value="@{tacheWin.filtre.avancementReel}" width="100%">
+									<attribute name="onChanging">
+										<![CDATA[
+											tacheWin.ofs=0;
+											if(event.value.equals("")) {
+												if(tacheWin.filtre.avancementReel != null) {
+													tacheWin.filtre.avancementReel = null;
+												}
+											} else {
+												tacheWin.filtre.avancementReel=new Double(event.value);
+											}
+											tacheWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+								<combobox id="filterJalon" readonly="true" onOK="tacheWin.ofs=0;tacheWin.filtrer();" >
+                                    <attribute name="onCreate">
+                                        <![CDATA[
+                                            List l = new ArrayList();
+                                            l.add("Oui/Non");
+                                            l.add("Oui");
+                                            l.add("Non");
+                                            ListModelList lm = new ListModelList(l);
+                                            lm.addSelection(lm.get(0));
+                                            self.setModel(lm);
+                                        ]]>
+                                    </attribute>
+                                    <attribute name="onChange">
+                                        <![CDATA[
+                                            if(self.selectedIndex == 0) {
+                                                tacheWin.filtre.jalon = null;
+                                            } else if(self.selectedIndex == 1) {
+                                                tacheWin.filtre.jalon = true;
+                                            } else {
+                                                tacheWin.filtre.jalon = false;
+                                            }
+                                        ]]>
+                                    </attribute>
+                                </combobox>                                
+                            </auxheader>
+								 
+                        </auxhead>
+						<listhead sizable="true">
+							<listheader width="32px" />
+							
+							<listheader id="hnumero" label="Numero" sort="auto(numero)" onSort="tacheWin.sort(event)"/>	
+							
+							<listheader id="hdateDebutPrevue" label="DateDebutPrevue" sort="auto(dateDebutPrevue)" onSort="tacheWin.sort(event)"/>	
+							
+							<listheader id="hdesignation" label="Designation" sort="auto(designation)" onSort="tacheWin.sort(event)"/>	
+							
+							<listheader id="hdateDebutReelle" label="DateDebutReelle" sort="auto(dateDebutReelle)" onSort="tacheWin.sort(event)"/>	
+							
+							<listheader id="hdateFinPrevu" label="DateFinPrevu" sort="auto(dateFinPrevu)" onSort="tacheWin.sort(event)"/>	
+							
+							<listheader id="hchargePrevue" label="ChargePrevue" sort="auto(chargePrevue)" onSort="tacheWin.sort(event)"/>	
+							
+							<listheader id="hdateFinReelle" label="DateFinReelle" sort="auto(dateFinReelle)" onSort="tacheWin.sort(event)"/>	
+							
+							<listheader id="havancementPrevu" label="AvancementPrevu" sort="auto(avancementPrevu)" onSort="tacheWin.sort(event)"/>	
+							
+							<listheader id="hchargeReelle" label="ChargeReelle" sort="auto(chargeReelle)" onSort="tacheWin.sort(event)"/>	
+							
+							<listheader id="havancementReel" label="AvancementReel" sort="auto(avancementReel)" onSort="tacheWin.sort(event)"/>	
+							
+							<listheader id="hjalon" label="Jalon" sort="auto(jalon)" onSort="tacheWin.sort(event)"/>	
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+							<listcell image="/images/skin/icon_selection.png"/>
+                            
+							<listcell>
+							
+								<intbox value="@{element.numero, save-when='self.onChange'}" inplace="true" onOK="tacheWin.objet=self.parent.parent.value; tacheWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<datebox format="dd/MM/yyyy" value="@{element.dateDebutPrevue, save-when='self.onChange'}" inplace="true" onOK="tacheWin.objet=self.parent.parent.value; tacheWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<textbox value="@{element.designation, save-when='self.onChange'}" inplace="true" onOK="tacheWin.objet=self.parent.parent.value; tacheWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<datebox format="dd/MM/yyyy" value="@{element.dateDebutReelle, save-when='self.onChange'}" inplace="true" onOK="tacheWin.objet=self.parent.parent.value; tacheWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<datebox format="dd/MM/yyyy" value="@{element.dateFinPrevu, save-when='self.onChange'}" inplace="true" onOK="tacheWin.objet=self.parent.parent.value; tacheWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<doublebox value="@{element.chargePrevue, save-when='self.onChange'}" inplace="true" onOK="tacheWin.objet=self.parent.parent.value; tacheWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<datebox format="dd/MM/yyyy" value="@{element.dateFinReelle, save-when='self.onChange'}" inplace="true" onOK="tacheWin.objet=self.parent.parent.value; tacheWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<doublebox value="@{element.avancementPrevu, save-when='self.onChange'}" inplace="true" onOK="tacheWin.objet=self.parent.parent.value; tacheWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<doublebox value="@{element.chargeReelle, save-when='self.onChange'}" inplace="true" onOK="tacheWin.objet=self.parent.parent.value; tacheWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<doublebox value="@{element.avancementReel, save-when='self.onChange'}" inplace="true" onOK="tacheWin.objet=self.parent.parent.value; tacheWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<combobox inplace="true" readonly="true" >
+                                    <attribute name="onOK">
+                                        <![CDATA[
+                                            if(self.selectedIndex == 0) {
+                                                self.parent.parent.value.jalon = true;
+                                            } else {
+                                                self.parent.parent.value.jalon = false;
+                                            }
+                                            tacheWin.objet=self.parent.parent.value; 
+                                            tacheWin.update();
+                                        ]]>
+                                    </attribute>
+                                    <attribute name="onCreate">
+                                        <![CDATA[
+                                            List l = new ArrayList();
+                                            l.add("Oui");
+                                            l.add("Non");
+                                            ListModelList lm = new ListModelList(l);
+                                            self.setModel(lm);
+                                        ]]>
+                                    </attribute>
+                                    <attribute name="onAfterRender">
+                                        <![CDATA[
+                                            if(self.parent.parent.value.jalon == true) {
+                                                self.selectedIndex = 0;
+                                            } else {
+                                                self.selectedIndex = 1;
+                                            }
+                                        ]]>
+                                    </attribute>
+                                </combobox>
+							
+							</listcell>							
+							     
+                        </listitem>
+                    </listbox>
+					<paging id="paging" totalSize="@{tacheWin.tailleListe}" pageSize="@{tacheWin.maxNb}" onPaging="tacheWin.getNextElements(event);" />
+					<separator/>
+                    <grid>
+                        <columns>
+                            <column width="32px" />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png"  />
+								
+									<intbox id="fieldnumerobis" value="@{tacheWin.objet.numero, save-when='self.onChange'}" inplace="true" onOK="tacheWin.add();" width="99%" />
+								
+									<datebox id="fielddateDebutPrevuebis" format="dd/MM/yyyy" value="@{tacheWin.objet.dateDebutPrevue, save-when='self.onChange'}" inplace="true" onOK="tacheWin.add();" width="99%"/>
+								
+									<textbox id="fielddesignationbis" value="@{tacheWin.objet.designation, save-when='self.onChange'}" inplace="true" onOK="tacheWin.add();" width="99%"/>
+								
+									<datebox id="fielddateDebutReellebis" format="dd/MM/yyyy" value="@{tacheWin.objet.dateDebutReelle, save-when='self.onChange'}" inplace="true" onOK="tacheWin.add();" width="99%"/>
+								
+									<datebox id="fielddateFinPrevubis" format="dd/MM/yyyy" value="@{tacheWin.objet.dateFinPrevu, save-when='self.onChange'}" inplace="true" onOK="tacheWin.add();" width="99%"/>
+								
+									<doublebox id="fieldchargePrevuebis" value="@{tacheWin.objet.chargePrevue, save-when='self.onChange'}" inplace="true" onOK="tacheWin.add();" width="99%" />
+								
+									<datebox id="fielddateFinReellebis" format="dd/MM/yyyy" value="@{tacheWin.objet.dateFinReelle, save-when='self.onChange'}" inplace="true" onOK="tacheWin.add();" width="99%"/>
+								
+									<doublebox id="fieldavancementPrevubis" value="@{tacheWin.objet.avancementPrevu, save-when='self.onChange'}" inplace="true" onOK="tacheWin.add();" width="99%" />
+								
+									<doublebox id="fieldchargeReellebis" value="@{tacheWin.objet.chargeReelle, save-when='self.onChange'}" inplace="true" onOK="tacheWin.add();" width="99%" />
+								
+									<doublebox id="fieldavancementReelbis" value="@{tacheWin.objet.avancementReel, save-when='self.onChange'}" inplace="true" onOK="tacheWin.add();" width="99%" />
+								
+									<combobox id="fieldjalonbis" inplace="true" readonly="true" onOK="tacheWin.add();" >
+										<attribute name="onCreate">
+											<![CDATA[
+												List l = new ArrayList();
+												l.add("Oui");
+												l.add("Non");
+												ListModelList lm = new ListModelList(l);
+												lm.addSelection(lm.get(0));
+												self.setModel(lm);
+												tacheWin.objet.jalon = true;
+											]]>
+										</attribute>
+										<attribute name="onChange">
+											<![CDATA[
+												if(self.selectedIndex == 0) {
+													tacheWin.objet.jalon = true;
+												} else {
+													tacheWin.objet.jalon = false;
+												}
+											]]>
+										</attribute>
+									</combobox>
+								  
+                            </row>
+                        </rows>
+                    </grid>
+                    <separator/>
+                    <button id="btnNew" onClick="tacheWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="tacheWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="tacheWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

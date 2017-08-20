@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./rapportWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+        
+    <window id="rapportWin" height="100%" width="100%" style="margin:auto;" use="${rapportWindow}">
+        <box pack="center" align="center" width="100%" height="100%">
+            <tabbox mold="accordion-lite" width="1000px" height="500px">
+                <tabs>
+                    <tab label="Chiffre d'affaire par fournisseur" />
+                    <tab label="Chiffre d'affaire par client" />
+                    <tab label="Chiffre affaire des fournisseurs [liste]" />
+                    <tab label="Chiffre affaire des clients [liste]" />
+                    <tab label="Paiement par facture" />
+                    <tab label="Paiement par facture et partenaire" />
+<!--                    <tab label="Rapport des ventes" />
+                    <tab label="Rapport des achats" />
+                    <tab label="Ventes par client" />
+                    <tab label="Ventes par fournisseur" />-->
+                </tabs>
+                <tabpanels>
+                    <tabpanel>
+                        <grid>
+                            <rows>
+                                <row>
+                                    <label value="Choisir fournisseur" />
+                                    <combobox id="coFournisseurs" model="@{rapportWin.fournisseurs}" width="120px" selectedItem="@{rapportWin.partenaireF}" autocomplete="true">
+                                        <comboitem self="@{each=elementpartenaireF}" label="@{elementpartenaireF}"/>
+                                    </combobox>
+                                    <label value="Date début" />
+                                    <datebox id="datedebutCAFournisseur" width="100%" value="@{rapportWin.datedebutCAFournisseur}" />
+                                    <label value="Date fin" />
+                                    <datebox id="datefinCAFournisseur" width="100%" value="@{rapportWin.datefinCAFournisseur}" />
+                                    <button label="Imprimer" image="/images/skin/printer_small.png" onClick='rapportWin.genererCA(true,"ACHAT")'/>
+                                </row>
+                            </rows>
+                        </grid>
+                    </tabpanel>
+                    <tabpanel>
+                        <grid>
+                            <rows>
+                                <row>
+                                    <label value="Choisir client" />
+                                    <combobox id="coClients" model="@{rapportWin.clients}" width="120px" selectedItem="@{rapportWin.partenaireC}" autocomplete="true">
+                                        <comboitem self="@{each=elementpartenaireC}" label="@{elementpartenaireC}"/>
+                                    </combobox>
+                                    <label value="Date début" />
+                                    <datebox id="datedebutCAClient" width="100%" value="@{rapportWin.datedebutCAClient}" />
+                                    <label value="Date fin" />
+                                    <datebox id="datefinCAClient" width="100%" value="@{rapportWin.datefinCAClient}" />
+                                    <button label="Imprimer" onClick='rapportWin.genererCA(true,"VENTE")' image="/images/skin/printer_small.png" />
+                                </row>
+                            </rows>
+                        </grid>    
+                    </tabpanel>
+                    <tabpanel>
+                        <grid>
+                            <rows>
+                                <row>
+                                    <label value="Choisir Période:" />
+                                
+                                    <label value="Date début" />
+                                    <datebox id="datedebutCAFournisseurs" width="100%" value="@{rapportWin.datedebutCAFournisseurs}" />
+                                    <label value="Date fin" />
+                                    <datebox id="datefinCAFournisseurs" width="100%" value="@{rapportWin.datefinCAFournisseurs}" />
+                                    <button label="Imprimer" image="/images/skin/printer_small.png" onClick='rapportWin.genererCA(false,"ACHAT")'/>
+                                </row>
+                            </rows>
+                        </grid>
+                    </tabpanel>
+                    <tabpanel>
+                        <grid>
+                            <rows>
+                                <row>
+                                    <label value="Choisir Période:" />
+                                
+                                    <label value="Date début" />
+                                    <datebox id="datedebutCAClients" width="100%" value="@{rapportWin.datedebutCAClients}" />
+                                    <label value="Date fin" />
+                                    <datebox id="datefinCAClients" width="100%" value="@{rapportWin.datefinCAClients}" />
+                                    <button label="Imprimer" image="/images/skin/printer_small.png" onClick='rapportWin.genererCA(false,"VENTE")'/>
+                                </row>
+                            </rows>
+                        </grid>    
+                    </tabpanel>
+                    <tabpanel>
+                        <grid>
+                            <rows>
+                                <row>
+                                    <label value="Choisir Période:" />
+                                
+                                    <label value="Date début" />
+                                    <datebox id="datedebutFacture" width="100%" value="@{rapportWin.datedebutFacture}" />
+                                    <label value="Date fin" />
+                                    <datebox id="datefinFacture" width="100%" value="@{rapportWin.datefinFacture}" />
+                                    <label value="Type paiement" />
+                                    <combobox id="coTypepaiements" model="@{rapportWin.typePaiements}" width="100px" selectedItem="@{rapportWin.typePaiementSelected}" autocomplete="true">
+                                        <comboitem self="@{each=elementtypePaiementSelected}" label="@{elementtypePaiementSelected}"/>
+                                    </combobox>
+                                    <button label="Imprimer" image="/images/skin/printer_small.png" onClick='rapportWin.genererPaiementFacture();'/>
+                                </row>
+                            </rows>
+                        </grid>    
+                    </tabpanel>
+                    <tabpanel>
+                        <grid>
+                            <rows>
+                                <row>
+<!--                                    <label value="Choisir Période:" />-->
+                                    <label value="Partenaire " />
+                                    <combobox id="coClientsFacture" model="@{rapportWin.clients}" width="110px" selectedItem="@{rapportWin.partenaireFacture}" autocomplete="true">
+                                        <comboitem self="@{each=elementpartenaireFacture}" label="@{elementpartenaireFacture}"/>
+                                    </combobox>
+                                
+                                    <label value="Date début" />
+                                    <datebox id="datedebutFactureP" width="100%" value="@{rapportWin.datedebutFacturePartenaire}" />
+                                    <label value="Date fin" />
+                                    <datebox id="datefinFactureP" width="100%" value="@{rapportWin.datefinFacturePartenaire}" />
+                                    <combobox id="coTypepaiementsP" model="@{rapportWin.typePaiements}" width="100px" selectedItem="@{rapportWin.typePaiementSelected}" autocomplete="true">
+                                        <comboitem self="@{each=elementtypePaiementSelected}" label="@{elementtypePaiementSelected}"/>
+                                    </combobox>
+                                    <button label="Imprimer" image="/images/skin/printer_small.png" onClick='rapportWin.genererPaiementFactureEtPartenaire();'/>
+                                </row>
+                            </rows>
+                        </grid>    
+                    </tabpanel>
+<!--                    <tabpanel>
+                        <grid>
+                            <rows>
+                                <row>
+                                    <label value="Choisir Période:" />
+                                
+                                    <label value="Date début" />
+                                    <datebox id="datedebutVAClients" width="100%" value="@{rapportWin.datedebutVAClients}" />
+                                    <label value="Date fin" />
+                                    <datebox id="datefinVAClients" width="100%" value="@{rapportWin.datefinVAClients}" />
+                                    <button label="Imprimer" image="/images/skin/printer_small.png" onClick='rapportWin.genererVentesAchats(false,"VENTE")'/>
+                                </row>
+                            </rows>
+                        </grid>    
+                    </tabpanel>-->
+<!--                    <tabpanel>
+                        <grid>
+                            <rows>
+                                <row>
+                                    <label value="Choisir Période:" />
+                                
+                                    <label value="Date début" />
+                                    <datebox id="datedebutVAFournisseurs" width="100%" value="@{rapportWin.datedebutVAFournisseurs}" />
+                                    <label value="Date fin" />
+                                    <datebox id="datefinVAFournisseurs" width="100%" value="@{rapportWin.datefinVAFournisseurs}" />
+                                    <button label="Imprimer" image="/images/skin/printer_small.png" onClick='rapportWin.genererVentesAchats(false,"ACHAT")'/>
+                                </row>
+                            </rows>
+                        </grid>    
+                    </tabpanel>                
+                    <tabpanel>
+                        <grid>
+                            <rows>
+                                <row>
+                                    <label value="Choisir fournisseur" />
+                                    <combobox id="coFournisseursVA" model="@{rapportWin.fournisseurs}" width="120px" selectedItem="@{rapportWin.partenaire}" autocomplete="true">
+                                        <comboitem self="@{each=elementpartenaire}" label="@{elementpartenaire}"/>
+                                    </combobox>
+                                    <label value="Date début" />
+                                    <datebox id="datedebutVAFournisseur" width="100%" value="@{rapportWin.datedebutVAFournisseur}" />
+                                    <label value="Date fin" />
+                                    <datebox id="datefinVAFournisseur" width="100%" value="@{rapportWin.datefinVAFournisseur}" />
+                                    <button label="Imprimer" image="/images/skin/printer_small.png" onClick='rapportWin.genererVentesAchats(true,"ACHAT")'/>
+                                </row>
+                            </rows>
+                        </grid>
+                    </tabpanel>
+                    <tabpanel>
+                        <grid>
+                            <rows>
+                                <row>
+                                    <label value="Choisir client" />
+                                    <combobox id="coClientsVA" model="@{rapportWin.clients}" width="120px" selectedItem="@{rapportWin.partenaire}" autocomplete="true">
+                                        <comboitem self="@{each=elementpartenaire}" label="@{elementpartenaire}"/>
+                                    </combobox>
+                                    <label value="Date début" />
+                                    <datebox id="datedebutVAClient" width="100%" value="@{rapportWin.datedebutVAClient}" />
+                                    <label value="Date fin" />
+                                    <datebox id="datefinVAClient" width="100%" value="@{rapportWin.datefinVAClient}" />
+                                    <button label="Imprimer" image="/images/skin/printer_small.png" onClick='rapportWin.genererVentesAchats(true,"VENTE")' />
+                                </row>
+                            </rows>
+                        </grid>
+                    </tabpanel>-->
+                </tabpanels>
+            </tabbox>
+        </box>
+    </window>
+</zk>

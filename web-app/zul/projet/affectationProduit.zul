@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./affectationProduitWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="affectationProduitWin" height="100%" width="100%" style="margin:auto;" use="${affectationProduitWindow}" onCreate='affectationProduitWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/affectationProduit.zs"/> -->
+        <borderlayout>            
+            <west id="westPanel" title="CRUD" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+                            <row>
+                                <label value="Projet " />
+                                <combobox id="coprojets" model="@{affectationProduitWin.projets}" selectedItem="@{affectationProduitWin.projetSelected}" width="99%">
+                                    <comboitem self="@{each=elementprojet}" label="@{elementprojet}"/>
+                                </combobox>
+                            </row>
+                            <row>
+                                <label value="Produit " />
+                                <combobox id="coproduits" model="@{affectationProduitWin.produits}" selectedItem="@{affectationProduitWin.produitSelected}" onSelect="affectationProduitWin.produitChanger()" width="99%">
+                                    <comboitem self="@{each=elementproduit}" label="@{elementproduit}"/>
+                                </combobox>
+                            </row>
+                            <row>
+                                <label value="Date"/>
+                                <datebox id="fieldDate" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{affectationProduitWin.objet.date, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+                            <row>
+                                <label value="Quantité"/>
+                                <intbox id="fieldQuantite" constraint="no empty: Veillez indiquez une valeur" value="@{affectationProduitWin.objet.quantite, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+                            <row>
+                                <label value="Prix Unitaire"/>
+                                <doublebox id="fieldPrixUnitaire" constraint="no empty: Veillez indiquez une valeur" value="@{affectationProduitWin.objet.prixUnitaire, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+                            <row>
+                                <label value="Bon Livraison " />
+                                <combobox id="cobonLivraisons" model="@{affectationProduitWin.bonLivraisons}" selectedItem="@{affectationProduitWin.bonLivraisonSelected}" width="99%" onSelect="affectationProduitWin.blChoisi()">
+                                    <comboitem self="@{each=elementbonLivraison}" label="@{elementbonLivraison}"/>
+                                </combobox>
+                            </row>
+                        </rows>
+                    </grid>					
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));affectationProduitWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));affectationProduitWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        affectationProduitWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute> 
+                    </button>
+                    <!-- <button id="btnNew" onClick="affectationProduitWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="affectationProduitWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="affectationProduitWin.select()" model="@{affectationProduitWin.listeObjets}" selectedItem="@{affectationProduitWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filterprojet" model="@{affectationProduitWin.projetsFiltre}" selectedItem="@{affectationProduitWin.filtre.projet}" autocomplete="true" autodrop="true" mold="rounded" onSelect="affectationProduitWin.ofs=0;affectationProduitWin.filtrer()" onOK="affectationProduitWin.ofs=0;affectationProduitWin.filtrer()">
+                                    <comboitem self="@{each=elementfiltreprojet}" label="@{elementfiltreprojet}"/>
+                                </combobox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filterproduit" model="@{affectationProduitWin.produits}" selectedItem="@{affectationProduitWin.filtre.produit}" autocomplete="true" autodrop="true" mold="rounded" onSelect="affectationProduitWin.ofs=0;affectationProduitWin.filtrer()" onOK="affectationProduitWin.ofs=0;affectationProduitWin.filtrer()">
+                                    <comboitem self="@{each=elementfiltreproduit}" label="@{elementfiltreproduit}"/>
+                                </combobox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDate" format="dd/MM/yyyy" value="@{affectationProduitWin.filtre.date}" onOK="affectationProduitWin.ofs=0; affectationProduitWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterQuantite" value="@{affectationProduitWin.filtre.quantite}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                affectationProduitWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(affectationProduitWin.filtre.quantite != null) {
+                                                                affectationProduitWin.filtre.quantite = null;
+                                                        }
+                                                } else {
+                                                        affectationProduitWin.filtre.quantite=new Integer(event.value);
+                                                }
+                                                affectationProduitWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterPrixUnitaire" value="@{affectationProduitWin.filtre.prixUnitaire}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                affectationProduitWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(affectationProduitWin.filtre.prixUnitaire != null) {
+                                                                affectationProduitWin.filtre.prixUnitaire = null;
+                                                        }
+                                                } else {
+                                                        affectationProduitWin.filtre.prixUnitaire=new Double(event.value);
+                                                }
+                                                affectationProduitWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filterbonLivraison" model="@{affectationProduitWin.bonLivraisons}" selectedItem="@{affectationProduitWin.filtre.bonLivraison}" autocomplete="true" autodrop="true" mold="rounded" onSelect="affectationProduitWin.ofs=0;affectationProduitWin.filtrer()" onOK="affectationProduitWin.ofs=0;affectationProduitWin.filtrer()">
+                                    <comboitem self="@{each=elementfiltrebonLivraison}" label="@{elementfiltrebonLivraison}"/>
+                                </combobox> 
+                            </auxheader>
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+                            <listheader id="hprojet" label="Projet" sort="auto(projet)" onSort="affectationProduitWin.sort(event)"/>	
+                            <listheader id="hproduit" label="Produit" sort="auto(produit)" onSort="affectationProduitWin.sort(event)"/>	
+                            <listheader id="hdate" label="Date" sort="auto(date)" onSort="affectationProduitWin.sort(event)"/>	
+                            <listheader id="hquantite" label="Quantité" sort="auto(quantite)" onSort="affectationProduitWin.sort(event)"/>	
+                            <listheader id="hprixUnitaire" label="Prix Unitaire" sort="auto(prixUnitaire)" onSort="affectationProduitWin.sort(event)"/>	
+                            <listheader id="hbonLivraison" label="Bon Livraison" sort="auto(bonLivraison)" onSort="affectationProduitWin.sort(event)"/>	
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            <listcell label="@{element.projet}" />
+                            <listcell>
+                                <textbox value="@{element.produit}" inplace="true" hflex="1"/>
+                            </listcell>
+                            <listcell>
+                                <datebox format="dd/MM/yyyy" value="@{element.date, save-when='self.onChange'}" inplace="true" onOK="affectationProduitWin.objet=self.parent.parent.value; affectationProduitWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>							
+                            <listcell>
+                                <intbox value="@{element.quantite, save-when='self.onChange'}" inplace="true" onOK="affectationProduitWin.objet=self.parent.parent.value; affectationProduitWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+                            </listcell>							
+                            <listcell>
+                                <doublebox value="@{element.prixUnitaire, save-when='self.onChange'}" inplace="true" onOK="affectationProduitWin.objet=self.parent.parent.value; affectationProduitWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+                            </listcell>							
+                            <listcell label="@{element.bonLivraison}" />
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{affectationProduitWin.tailleListe}" pageSize="@{affectationProduitWin.maxNb}" onPaging="affectationProduitWin.getNextElements(event);" />
+                    <separator/>                   
+                    <button id="btnNew" onClick="affectationProduitWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="affectationProduitWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="affectationProduitWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./outilLouableWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="outilLouableWin" height="100%" width="100%" style="margin:auto;" use="${outilLouableWindow}" onCreate='outilLouableWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/outilLouable.zs"/> -->
+        <borderlayout>
+            
+            <west id="westPanel" title="Gestion des outils louables" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+						
+                            <row>
+                                <label value="Désignation"/>
+								 
+                                <textbox id="fieldDesignation" constraint="no empty: Veillez indiquez une valeur" value="@{outilLouableWin.objet.designation, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+                            <row>
+                                <label value="Prix Par Heure de Location"/>
+								 
+                                <doublebox id="fieldPrixHeureLocation" constraint="no empty: Veillez indiquez une valeur" value="@{outilLouableWin.objet.prixHeureLocation, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						 
+						
+                            <row>
+                                <label value="loueur " />
+                                <combobox id="coloueurs" model="@{outilLouableWin.loueurs}" selectedItem="@{outilLouableWin.loueurSelected}">
+                                    <comboitem self="@{each=elementloueur}" label="@{elementloueur}"/>
+                                </combobox>
+                            </row>
+						
+                        </rows>
+                    </grid>					
+					
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));outilLouableWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));outilLouableWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        outilLouableWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute> 
+                    </button>
+                    <!-- <button id="btnNew" onClick="outilLouableWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="outilLouableWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="outilLouableWin.select()" model="@{outilLouableWin.listeObjets}" selectedItem="@{outilLouableWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterDesignation" value="@{outilLouableWin.filtre.designation}" onChanging="outilLouableWin.ofs; outilLouableWin.filtre.designation=event.value; outilLouableWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterPrixHeureLocation" value="@{outilLouableWin.filtre.prixHeureLocation}" width="100%">
+                                    <attribute name="onChanging">
+										<![CDATA[
+											outilLouableWin.ofs=0;
+											if(event.value.equals("")) {
+												if(outilLouableWin.filtre.prixHeureLocation != null) {
+													outilLouableWin.filtre.prixHeureLocation = null;
+												}
+											} else {
+												outilLouableWin.filtre.prixHeureLocation=new Double(event.value);
+											}
+											outilLouableWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+                            
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filterloueur" model="@{outilLouableWin.loueurs}" selectedItem="@{outilLouableWin.filtre.loueur}" autocomplete="true" autodrop="true" mold="rounded" onSelect="outilLouableWin.ofs=0;outilLouableWin.filtrer()" onOK="outilLouableWin.ofs=0;outilLouableWin.filtrer()">
+                                    <comboitem self="@{each=elementfiltreloueur}" label="@{elementfiltreloueur}"/>
+                                </combobox>
+                            </auxheader>
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+							
+                            <listheader id="hdesignation" label="Désignation" sort="auto(designation)" onSort="outilLouableWin.sort(event)"/>	
+							
+                            <listheader id="hprixHeureLocation" label="Prix Par Heure de Location" sort="auto(prixHeureLocation)" onSort="outilLouableWin.sort(event)"/>	
+                            
+                            <listheader id="hloueur" label="Loueur" sort="auto(loueur.nom)" onSort="outilLouableWin.sort(event)"/>	
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            
+                            <listcell>
+							
+                                <textbox value="@{element.designation, save-when='self.onChange'}" inplace="true" onOK="outilLouableWin.objet=self.parent.parent.value; outilLouableWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <doublebox value="@{element.prixHeureLocation, save-when='self.onChange'}" inplace="true" onOK="outilLouableWin.objet=self.parent.parent.value; outilLouableWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>
+                            
+                            <listcell>
+							
+                                <textbox value="@{element.loueur.nom}" inplace="true"  width="99%"/>
+							
+                            </listcell>
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{outilLouableWin.tailleListe}" pageSize="@{outilLouableWin.maxNb}" onPaging="outilLouableWin.getNextElements(event);" />
+                    <separator/>
+                    <grid>
+                        <columns>
+                            <column width="32px" />
+							
+                            <column />
+							
+                            <column />
+                            
+                            <column />
+							
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png"  />
+								
+                                <textbox id="fielddesignationbis" value="@{outilLouableWin.objet.designation, save-when='self.onChange'}" inplace="true" onFocus="coloueursbis.disabled=false;" onOK="outilLouableWin.add();" width="99%"/>
+								
+                                <doublebox id="fieldprixHeureLocationbis" value="@{outilLouableWin.objet.prixHeureLocation, save-when='self.onChange'}" inplace="true" onFocus="coloueursbis.disabled=false;" onOK="outilLouableWin.add();" width="99%" />
+				
+                                 <combobox id="coloueursbis" disabled="true" model="@{outilLouableWin.loueurs}" selectedItem="@{outilLouableWin.loueurSelected}">
+                                    <comboitem self="@{each=elementloueurbis}" label="@{elementloueurbis}"/>
+                                </combobox>
+                                
+                            </row>
+                        </rows>
+                    </grid>
+                    <separator/>
+                    <button id="btnNew" onClick="outilLouableWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="outilLouableWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="outilLouableWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

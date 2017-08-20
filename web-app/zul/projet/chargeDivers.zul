@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./chargeDiversWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="chargeDiversWin" height="100%" width="100%" style="margin:auto;" use="${chargeDiversWindow}" onCreate='chargeDiversWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/chargeDivers.zs"/> -->
+        <borderlayout>            
+            <west id="westPanel" title="CRUD" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+                            <row>
+                                <label value="Projet " />
+                                <combobox id="coprojets" model="@{chargeDiversWin.projets}" selectedItem="@{chargeDiversWin.projetSelected}" width="99%">
+                                    <comboitem self="@{each=elementprojet}" label="@{elementprojet}"/>
+                                </combobox>
+                            </row>		
+                            <row>
+                                <label value="Date"/>
+								 
+                                <datebox id="fieldDate" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{chargeDiversWin.objet.date, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+						
+                            <row>
+                                <label value="Intitulé"/>
+								 
+                                <textbox id="fieldNom" constraint="no empty: Veillez indiquez une valeur" value="@{chargeDiversWin.objet.nom, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+						
+                            <row>
+                                <label value="Coût"/>
+								 
+                                <doublebox id="fieldCout" constraint="no empty: Veillez indiquez une valeur" value="@{chargeDiversWin.objet.cout, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+						
+                        </rows>
+                    </grid>					
+					
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));chargeDiversWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));chargeDiversWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        chargeDiversWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute> 
+                    </button>
+                    <!-- <button id="btnNew" onClick="chargeDiversWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="chargeDiversWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="chargeDiversWin.select()" model="@{chargeDiversWin.listeObjets}" selectedItem="@{chargeDiversWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filterprojet" model="@{chargeDiversWin.projetsFilter}" selectedItem="@{chargeDiversWin.filtre.projet}" autocomplete="true" autodrop="true" mold="rounded" onSelect="chargeDiversWin.ofs=0;chargeDiversWin.filtrer()" onOK="chargeDiversWin.ofs=0;chargeDiversWin.filtrer()" width="90%">
+                                    <comboitem self="@{each=elementfiltreprojet}" label="@{elementfiltreprojet}"/>
+                                </combobox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDate" format="dd/MM/yyyy" value="@{chargeDiversWin.filtre.date}" onOK="chargeDiversWin.ofs=0; chargeDiversWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterNom" value="@{chargeDiversWin.filtre.nom}" onChanging="chargeDiversWin.ofs; chargeDiversWin.filtre.nom=event.value; chargeDiversWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterCout" value="@{chargeDiversWin.filtre.cout}" width="100%">
+                                    <attribute name="onChanging">
+                                            <![CDATA[
+                                                    chargeDiversWin.ofs=0;
+                                                    if(event.value.equals("")) {
+                                                            if(chargeDiversWin.filtre.cout != null) {
+                                                                    chargeDiversWin.filtre.cout = null;
+                                                            }
+                                                    } else {
+                                                            chargeDiversWin.filtre.cout=new Double(event.value);
+                                                    }
+                                                    chargeDiversWin.filtrer();
+                                                    self.focus();
+                                                    if(!event.value.equals("")) {
+                                                            self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                    }
+                                            ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+							
+                            <listheader id="hprojet" label="Projet" sort="auto(projet)" onSort="chargeDiversWin.sort(event)"/>	
+                            <listheader id="hdate" label="Date" sort="auto(date)" onSort="chargeDiversWin.sort(event)"/>	
+							
+                            <listheader id="hnom" label="Intitulé" sort="auto(nom)" onSort="chargeDiversWin.sort(event)"/>	
+							
+                            <listheader id="hcout" label="Coût" sort="auto(cout)" onSort="chargeDiversWin.sort(event)"/>	
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            <listcell label="@{element.projet}"/>
+                            
+                            <listcell>
+							
+                                <datebox format="dd/MM/yyyy" value="@{element.date, save-when='self.onChange'}" inplace="true" onOK="chargeDiversWin.objet=self.parent.parent.value; chargeDiversWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.nom, save-when='self.onChange'}" inplace="true" onOK="chargeDiversWin.objet=self.parent.parent.value; chargeDiversWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <doublebox value="@{element.cout, save-when='self.onChange'}" inplace="true" onOK="chargeDiversWin.objet=self.parent.parent.value; chargeDiversWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{chargeDiversWin.tailleListe}" pageSize="@{chargeDiversWin.maxNb}" onPaging="chargeDiversWin.getNextElements(event);" />
+                    <separator/>
+<!--                    <grid>
+                        <columns>
+                            <column width="32px" />
+							
+                            <column />
+							
+                            <column />
+							
+                            <column />
+							
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png"  />
+								
+                                <datebox id="fielddatebis" format="dd/MM/yyyy" value="@{chargeDiversWin.objet.date, save-when='self.onChange'}" inplace="true" onOK="chargeDiversWin.add();" width="99%"/>
+								
+                                <textbox id="fieldnombis" value="@{chargeDiversWin.objet.nom, save-when='self.onChange'}" inplace="true" onOK="chargeDiversWin.add();" width="99%"/>
+								
+                                <doublebox id="fieldcoutbis" value="@{chargeDiversWin.objet.cout, save-when='self.onChange'}" inplace="true" onOK="chargeDiversWin.add();" width="99%" />
+								  
+                            </row>
+                        </rows>
+                    </grid>
+                    <separator/>-->
+                    <button id="btnNew" onClick="chargeDiversWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="chargeDiversWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="chargeDiversWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./livraisonWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="livraisonWin" height="100%" width="100%" style="margin:auto;" use="${livraisonWindow}" onCreate='livraisonWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/livraison.zs"/> -->
+        <borderlayout>
+            <north id="eastPanel" size="65px" open="false"  title="Recherche avancée" flex="true" splittable="true"  collapsible="true"  >
+                <hlayout spacing="10px" style="margin-top:9px;margin-left:10px">
+                    					
+                    <label value="modeLivraison :" />
+                    <combobox id="filtermodeLivraison" model="@{livraisonWin.modeLivraisons}" selectedItem="@{livraisonWin.filtre.modeLivraison}" autocomplete="true" autodrop="true" mold="rounded" onSelect="livraisonWin.ofs=0;livraisonWin.filtrer()" onOK="livraisonWin.ofs=0;livraisonWin.filtrer()">
+                        <comboitem self="@{each=elementfiltremodeLivraison}" label="@{elementfiltremodeLivraison}"/>
+                    </combobox>
+										                    
+                </hlayout>
+            </north>
+            <west id="westPanel" title="CRUD" size="100%" flex="true" splittable="true" collapsible="true" open="false" border="none">
+                <borderlayout>
+                    <west size="40%">
+                        <groupbox id="gbCrud" height="100%">
+                            <grid fixedLayout="true">
+                                <rows>
+                                    <row>
+                                        <label value="Partenaire"/>
+                                        <combobox id="comodePartenaires" model="@{livraisonWin.partenaires}" selectedItem="@{livraisonWin.objet.partenaire,livraisonWin.partenaireSelected}" onSelect="livraisonWin.partenaireSelectionner()" width="99%">
+                                            <comboitem self="@{each=elementpartenaire}" label="@{elementpartenaire}"/>
+                                        </combobox>
+                                    </row>
+                                    <row>
+                                        <label value="Numéro expédition"/>
+                                        <textbox id="fieldNumExpedition" disabled="true"  value="@{livraisonWin.objet.numExpedition, save-when='triggerBtn.onClick'}" width="99%"/>
+                                    </row>
+                                    <row>
+                                        <label value="Intitulé véhicule"/>
+                                        <textbox id="fieldIntituleVehicule" disabled="true"  value="@{livraisonWin.objet.intituleVehicule, save-when='triggerBtn.onClick'}" width="99%"/>
+                                    </row>
+                                    <row>
+                                        <label value="Immatriculation"/>
+                                        <textbox id="fieldImmatriculation" disabled="true"  value="@{livraisonWin.objet.immatriculation, save-when='triggerBtn.onClick'}" width="99%"/>
+                                    </row>
+                                    <row>
+                                        <label value="Date"/>
+                                        <datebox id="fieldDate" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{livraisonWin.objet.date, save-when='triggerBtn.onClick'}" width="99%"/>
+                                    </row>
+                                    <row>
+                                        <label value="Nombre de colis"/>
+                                        <intbox id="fieldNbrColis" constraint="no empty, no negative: Veillez indiquez une valeur positive" value="@{livraisonWin.objet.nbrColis, save-when='triggerBtn.onClick'}" width="99%"/>
+                                    </row>												
+                                    <row>
+                                        <label value="Poid total"/>
+                                        <doublebox id="fieldPoidTotal" constraint="no empty, no negative: Veillez indiquez une valeur positive" value="@{livraisonWin.objet.PoidTotal, save-when='triggerBtn.onClick'}" width="99%"/>
+                                    </row>												
+                                    <row>
+                                        <label value="Frais"/>
+                                        <doublebox id="fieldFrais" constraint="no empty, no negative: Veillez indiquez une valeur positive" value="@{livraisonWin.objet.frais, save-when='triggerBtn.onClick'}" width="99%"/>
+                                    </row>												
+                                    <row>
+                                        <label value="Bons (Livraison/Retour)" />
+                                        <bandbox    autodrop="true" mold="rounded" width="99%">
+                                            <bandpopup>
+                                                <listbox id="lstbonLivraisons" model="@{livraisonWin.bonLivraisons}" selectedItem="@{livraisonWin.bonLivraisonsSelected, converter=com.choranet.zk.SelectedItemsConverterV3}" fixedLayout="true" multiple="true" checkmark="true" onSelect="livraisonWin.blSelectionner(event)">
+                                                    <listhead>
+                                                        <listheader label=""/>							
+                                                    </listhead>
+                                                    <listitem self="@{each=elementbonLivraisons}" value="@{elementbonLivraisons}">
+                                                        <listcell label="@{elementbonLivraisons}"/>							
+                                                    </listitem>								
+                                                </listbox>	
+                                            </bandpopup>
+                                        </bandbox>
+                                    </row>						
+                                    <row>
+                                        <label value="Mode livraison " />
+                                        <combobox id="comodeLivraisons" model="@{livraisonWin.modeLivraisons}" selectedItem="@{livraisonWin.modeLivraisonSelected}" width="99%">
+                                            <comboitem self="@{each=elementmodeLivraison}" label="@{elementmodeLivraison}"/>
+                                        </combobox>
+                                    </row>
+                                </rows>
+                            </grid>					
+                            <separator />
+                            <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));livraisonWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                            <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));livraisonWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                            <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                                <attribute name="onClick">
+                                    <![CDATA[
+                                    Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                        public void onEvent(Event evt) throws InterruptedException {
+                                            if (evt.getName().equals("onOK")) {
+                                                Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                                livraisonWin.delete();
+                                            } 
+                                        }
+                                    });
+                                    ]]>
+                                </attribute>    
+                            </button>
+                            <button id="btnCancel" onClick="livraisonWin.cancel()" label="Annuler" image="/images/skin/cancel.png"/>
+                            <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                        </groupbox>
+                    </west>
+                    <center>
+                        <listbox id="lstligneProduits" multiple="true" vflex="true" model="@{livraisonWin.ligneProduits}" rows="11" sizedByContent="true" span="true"   height="100%" width="100%" >
+                            <listhead sizable="true">
+                                <listheader label="Code" width="30%"  />
+                                <listheader label="Libelle" width="40%" />
+                                <listheader label="Quantité" width="10%" />	
+                                <listheader label="Quantité à livrer" width="10%" />	
+                                <listheader label="Quantité à retourner" width="10%" />	
+                            </listhead>
+                            <listitem self="@{each=elementlp}">
+                                <listcell label="@{elementlp.produit.code}">  </listcell>
+                                <listcell label="@{elementlp.produit.designation}"  />
+                                <listcell label="@{elementlp.quantite}"  />
+                                <listcell label="@{elementlp.quantiteLivree}"  />
+                                <listcell label="@{elementlp.quantiteRetournee}"  />
+                            </listitem>
+                        </listbox>
+                    </center>
+                </borderlayout>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="99%">
+                    
+                    <listbox id="lstObjet" onSelect="livraisonWin.select()" model="@{livraisonWin.listeObjets}" selectedItem="@{livraisonWin.objetSelected}"  width="100%" height="99%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterNumExpedition" value="@{livraisonWin.filtre.numExpedition}" onChanging="livraisonWin.ofs; livraisonWin.filtre.numExpedition=event.value; livraisonWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterIntituleVehicule" value="@{livraisonWin.filtre.intituleVehicule}" onChanging="livraisonWin.ofs; livraisonWin.filtre.intituleVehicule=event.value; livraisonWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterImmatriculation" value="@{livraisonWin.filtre.immatriculation}" onChanging="livraisonWin.ofs; livraisonWin.filtre.immatriculation=event.value; livraisonWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterNbrColis" value="@{livraisonWin.filtre.nbrColis}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                livraisonWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(livraisonWin.filtre.nbrColis != null) {
+                                                                livraisonWin.filtre.nbrColis = null;
+                                                        }
+                                                } else {
+                                                        livraisonWin.filtre.nbrColis=new Integer(event.value);
+                                                }
+                                                livraisonWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterPoidTotal" value="@{livraisonWin.filtre.PoidTotal}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                livraisonWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(livraisonWin.filtre.PoidTotal != null) {
+                                                                livraisonWin.filtre.PoidTotal = null;
+                                                        }
+                                                } else {
+                                                        livraisonWin.filtre.PoidTotal=new Double(event.value);
+                                                }
+                                                livraisonWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterFrais" value="@{livraisonWin.filtre.frais}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                livraisonWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(livraisonWin.filtre.frais != null) {
+                                                                livraisonWin.filtre.frais = null;
+                                                        }
+                                                } else {
+                                                        livraisonWin.filtre.frais=new Double(event.value);
+                                                }
+                                                livraisonWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDate" format="dd/MM/yyyy" value="@{livraisonWin.filtre.date}" onOK="livraisonWin.ofs=0; livraisonWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+                            <listheader label="NumExpedition" sort="auto(numExpedition)" onSort="livraisonWin.sort(event)"/>	
+                            <listheader label="IntituleVehicule" sort="auto(intituleVehicule)" onSort="livraisonWin.sort(event)"/>
+                            <listheader label="Immatriculation" sort="auto(immatriculation)" onSort="livraisonWin.sort(event)"/>
+                            <listheader label="NbrColis" sort="auto(nbrColis)" onSort="livraisonWin.sort(event)"/>	
+                            <listheader label="PoidTotal" sort="auto(PoidTotal)" onSort="livraisonWin.sort(event)"/>	
+                            <listheader label="Frais" sort="auto(frais)" onSort="livraisonWin.sort(event)"/>	
+                            <listheader label="Date" sort="auto(date)" onSort="livraisonWin.sort(event)"/>	
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            <listcell>
+                                <textbox value="@{element.numExpedition, save-when='self.onChange'}" inplace="true" onOK="livraisonWin.objet=self.parent.parent.value; livraisonWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>	
+                            <listcell>
+                                <textbox value="@{element.intituleVehicule, save-when='self.onChange'}" inplace="true" onOK="livraisonWin.objet=self.parent.parent.value; livraisonWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>
+                            <listcell>
+                                <textbox value="@{element.immatriculation, save-when='self.onChange'}" inplace="true" onOK="livraisonWin.objet=self.parent.parent.value; livraisonWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>
+                            <listcell>
+                                <intbox value="@{element.nbrColis, save-when='self.onChange'}" inplace="true" onOK="livraisonWin.objet=self.parent.parent.value; livraisonWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+                            </listcell>							
+                            <listcell>
+                                <doublebox value="@{element.PoidTotal, save-when='self.onChange'}" inplace="true" onOK="livraisonWin.objet=self.parent.parent.value; livraisonWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+                            </listcell>							
+                            <listcell>						
+                                <doublebox value="@{element.frais, save-when='self.onChange'}" inplace="true" onOK="livraisonWin.objet=self.parent.parent.value; livraisonWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+                            </listcell>							
+                            <listcell>
+                                <datebox format="dd/MM/yyyy" value="@{element.date, save-when='self.onChange'}" inplace="true" onOK="livraisonWin.objet=self.parent.parent.value; livraisonWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>							
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{livraisonWin.tailleListe}" pageSize="@{livraisonWin.maxNb}" onPaging="livraisonWin.getNextElements(event);" />
+                    <separator/>
+                    
+                    <button id="btnNew" onClick="livraisonWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png" />
+                    <button id="btnPdf" onClick="livraisonWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="livraisonWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                    
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

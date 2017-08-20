@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./boiteOutilsWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+<zk xmlns="http://www.zkoss.org/2005/zul">
+    <window id="boiteOutilsWin" height="100%" width="100%" style="margin:auto;" use="${boiteOutilsWindow}">
+        <box pack="center" align="center" width="100%" height="100%">
+            <tabbox mold="accordion-lite" width="1000px" height="550px">
+                <tabs>
+                    <tab label="Etat des produits périssables" />
+<!--                    <tab label="Chercher meilleur fournisseur" />
+                    <tab label="Liste noire clients" />-->
+                    <tab label="Etat des bons de commande" />
+<!--                    <tab label="Evolution prix achat et vente produits" />
+                    <tab label="TVA" />-->
+                    <tab label="Rapport des paiements" />
+                </tabs>
+                <tabpanels>
+                    <tabpanel>
+                        <grid>
+                            <rows>
+                                <row>
+                                    <label value="Choisir un produit" />
+                                    <combobox id="coProduitsPerissable" model="@{boiteOutilsWin.produitPerissables}" width="120px" selectedItem="@{boiteOutilsWin.produitPerissableSelected}">
+                                        <comboitem self="@{each=elementproduitperissable}" label="@{elementproduitperissable}"/>
+                                    </combobox>
+                                    <cell colspan="1">
+                                        <label value="Expirera dans : " />
+                                        <spinner id="nbrDeJourRestAvantExpiration" constraint="min 1" width="45px"/>
+                                        <label value=" Jour(s)" />
+                                    </cell>
+                                    <button id="consulterEtatStock" onClick="boiteOutilsWin.getExpirationsProduitsParDuree(nbrDeJourRestAvantExpiration.value); lstligneProduitsPerissable.visible = true;" label="Consulter état stock produit"/>
+                                </row>
+                            </rows>
+                        </grid>
+                        <separator/>
+                        <listbox id="lstligneProduitsPerissable" model="@{boiteOutilsWin.listExpirationProduit}" visible="false" rows="13" sizedByContent="true" span="true">
+                            <listhead sizable="true">
+                                <listheader label="Entrepôt" sort="auto(entrepot.code)" onSort="securitestockWin.sort(event)"/>	
+                                <listheader label="Produit" sort="auto(produit.code)" onSort="securitestockWin.sort(event)"/>
+                                <listheader label="Date préremption" sort="auto(date_preremption)" onSort="securitestockWin.sort(event)"/>	
+                                <listheader label="Stock Réel" sort="auto(stockReel)" onSort="securitestockWin.sort(event)"/>	
+                                <listheader label="Prix Liquidation" />	
+                            </listhead>
+                            <listitem value="@{element}" self="@{each=element}">    
+                                <listcell>
+                                    <textbox readonly="true" value="@{element.entrepot, save-when='self.onChange'}" inplace="true" width="99%"/>
+                                </listcell>
+                                <listcell>
+                                    <textbox readonly="true" value="@{element.produit, save-when='self.onChange'}" inplace="true" width="99%"/>
+                                </listcell>
+                                <listcell>
+                                    <datebox format="dd/MM/yyyy" readonly="true"  value="@{element.date_preremption, save-when='self.onChange'}" inplace="true" width="99%"/>			
+                                </listcell>
+                                <listcell label="@{element.stockReel}" />	
+                                <listcell label="@{boiteOutilsWin.prixLiquidationProduitSelected}" />	
+                            </listitem>
+                        </listbox>
+<!--                        <paging id="paging" totalSize="@{boiteOutilsWin.tailleListe}" pageSize="@{boiteOutilsWin.maxNb}" onPaging="boiteOutilsWin.getNextElements(event);" />-->
+                      <!--  </groupbox> -->
+                    </tabpanel>
+<!--                    <tabpanel>
+                        <grid>
+                            <rows>
+                                <row>
+                                    <label value="Choisir un produit" />
+                                    <listbox id = "coProduits" model="@{boiteOutilsWin.produits}" width="120px" selectedItem="@{boiteOutilsWin.produit}" mold="select" onSelect="boiteOutilsWin.getlisteMeilleursFournisseurs()">
+                                        <listitem
+                                            self="@{each=elementproduit}" label="@{elementproduit}"/>
+                                    </listbox>
+                                </row>
+                            </rows>
+                        </grid>
+                        <separator/>
+                        <listbox id="colisteMeilleursFournisseurs" model="@{boiteOutilsWin.listeMeilleursFournisseurs}"  rows="6" sizedByContent="true" span="true">
+                            <listhead sizable="true">
+                                <listheader label="Fournisseur" width="250px"/>	
+                                <listheader label="Prix" width="90px"/>	
+                            </listhead>
+                            <listitem value="@{lignepdt}" self="@{each=lignepdt}"> 
+                                <listcell>
+                                    <label value="@{lignepdt.it[0]}"/>
+                                </listcell>
+                                <listcell>
+                                    <label value="@{lignepdt.[1]}"/>
+                                </listcell>	
+                            </listitem>
+                        </listbox>
+                    </tabpanel>
+                    <tabpanel>
+                        <vbox>
+                            <hbox>
+                                <listbox id = "coClients" model="@{boiteOutilsWin.clients}" width="120px" selectedItem="@{boiteOutilsWin.client}" mold="select">
+                                    <listitem self="@{each=elementclient}" label="@{elementclient}"/>
+                                </listbox>
+                                <button label="Ajouter ce client à la liste noire"  onClick='boiteOutilsWin.addToBlacklist()'/>
+                            </hbox>
+                            <listbox id = "coblacklists" model="@{boiteOutilsWin.blacklists}"  rows="6" sizedByContent="true" span="true">
+                                <listhead sizable="true">
+                                    <listheader label="Raison social" width="250px"/>	
+                                </listhead>
+                                <listitem value="@{lignelst}" self="@{each=lignelst}"> 
+                                    <listcell>
+                                        <label value="@{lignelst.fournisseur}"/>
+                                    </listcell>
+                                </listitem>
+                            </listbox>
+                        </vbox>
+
+                    </tabpanel>-->
+                    <tabpanel>
+                       <!-- <groupbox width="99%" height="99%"> -->
+                        <listbox id="lstligneProduits" model="@{boiteOutilsWin.bonCommandes}"  rows="13" sizedByContent="true" span="true">
+<!--                            <auxhead sclass="category-center">
+                                <auxheader colspan="1"/>
+                                <auxheader colspan="1"/>
+                                <auxheader colspan="1">
+                                    <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                    <combobox id="filterpartenaire" model="@{boiteOutilsWin.bonCommandes.partenaires}" selectedItem="@{boiteOutilsWin.filtre.partenaire}" autocomplete="true" autodrop="true" mold="rounded" onSelect="boiteOutilsWin.ofs=0;boiteOutilsWin.filtrer()" onOK="boiteOutilsWin.ofs=0;boiteOutilsWin.filtrer()" width="90%">
+                                        <comboitem self="@{each=elementfiltrepartenaire}" label="@{elementfiltrepartenaire}"/>
+                                    </combobox>
+                                </auxheader>
+                                <auxheader colspan="1">
+                                    <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                    <textbox id="filterNumBC" value="@{boiteOutilsWin.filtre.numBC}" onChanging="boiteOutilsWin.ofs; boiteOutilsWin.filtre.numBC=event.value; boiteOutilsWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                                </auxheader>
+                                <auxheader colspan="1">
+                                    <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                    <datebox id="filterDate" format="dd/MM/yyyy" value="@{boiteOutilsWin.filtre.date}" onOK="boiteOutilsWin.ofs=0; boiteOutilsWin.filtrer(); self.focus();" width="90%"/>
+                                </auxheader>
+                                <auxheader colspan="1">
+                                    <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                    <combobox id="filterLivree" readonly="true" onOK="boiteOutilsWin.ofs=0;boiteOutilsWin.filtrer();"  width="90%">
+                                        <attribute name="onCreate">
+                                        <![CDATA[
+                                            List l = new ArrayList();
+                                            l.add("Oui/Non");
+                                            l.add("Oui");
+                                            l.add("Non");
+                                            ListModelList lm = new ListModelList(l);
+                                            lm.addSelection(lm.get(0));
+                                            self.setModel(lm);
+                                        ]]>
+                                        </attribute>
+                                        <attribute name="onChange">
+                                        <![CDATA[
+                                            if(self.selectedIndex == 0) {
+                                                boiteOutilsWin.filtre.livree = null;
+                                            } else if(self.selectedIndex == 1) {
+                                                boiteOutilsWin.filtre.livree = true;
+                                            } else {
+                                                boiteOutilsWin.filtre.livree = false;
+                                            }
+                                        ]]>
+                                        </attribute>
+                                    </combobox>                                
+                                </auxheader>
+                                <auxheader colspan="1">
+                                    <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                    <combobox id="filterPaye" readonly="true" onOK="boiteOutilsWin.ofs=0;boiteOutilsWin.filtrer();"  width="90%">
+                                        <attribute name="onCreate">
+                                        <![CDATA[
+                                            List l = new ArrayList();
+                                            l.add("Oui/Non");
+                                            l.add("Oui");
+                                            l.add("Non");
+                                            ListModelList lm = new ListModelList(l);
+                                            lm.addSelection(lm.get(0));
+                                            self.setModel(lm);
+                                        ]]>
+                                        </attribute>
+                                        <attribute name="onChange">
+                                        <![CDATA[
+                                            if(self.selectedIndex == 0) {
+                                                boiteOutilsWin.filtre.paye = null;
+                                            } else if(self.selectedIndex == 1) {
+                                                boiteOutilsWin.filtre.paye = true;
+                                            } else {
+                                                boiteOutilsWin.filtre.paye = false;
+                                            }
+                                        ]]>
+                                        </attribute>
+                                    </combobox>                                
+                                </auxheader>
+                                <auxheader colspan="1"/>
+                                <auxheader />
+                            </auxhead>-->
+                            <listhead sizable="true">
+                                <listheader label="Type BC" sort="auto(type)" onSort="boiteOutilsWin.sort(event)"/>	
+                                <listheader label="Partenaire" sort="auto(partenaire)" onSort="boiteOutilsWin.sort(event)"/>	
+                                <listheader label="Numéro" sort="auto(numBC)" onSort="boiteOutilsWin.sort(event)"/>	
+                                <listheader label="Date" sort="auto(date)" onSort="boiteOutilsWin.sort(event)"/>	
+                                <listheader label="Livré?"/>	
+                                <listheader label="Payé?"/>	
+<!--                                <listheader label="Montant"/>	-->
+                            </listhead>
+                            <listitem value="@{element}" self="@{each=element}">    
+                                <listcell label="@{element.type}"/>
+                                <listcell label="@{element.partenaire}" />
+                                <listcell label="@{element.numBC}" />
+                                <listcell>
+                                    <datebox format="dd/MM/yyyy" value="@{element.date}" inplace="true" width="99%"/>
+                                </listcell>			
+                                <listcell label="@{element.livree, converter='com.choranet.zk.TrueFalseConverter'}" />
+                                <listcell label="@{element.paye, converter='com.choranet.zk.TrueFalseConverter'}" />
+<!--                                <listcell label="@{element.trans_totalttc, converter='com.choranet.zk.DoubleConverter'}" />-->
+                            </listitem>
+                        </listbox>
+<!--                        <paging id="paging" totalSize="@{boiteOutilsWin.tailleListe}" pageSize="@{boiteOutilsWin.maxNb}" onPaging="boiteOutilsWin.getNextElements(event);" />-->
+                      <!--  </groupbox> -->
+                    </tabpanel>
+<!--                    <tabpanel>
+                        <vlayout>
+                            <hlayout>Selectionner un produit : 
+                                <listbox id = "coProduitsEvolution" model="@{boiteOutilsWin.produits}" width="120px" selectedItem="@{boiteOutilsWin.produitevolution}" mold="select" onSelect="">
+                                    <listitem
+                                        self="@{each=elementproduitevolution}" label="@{elementproduitevolution}"/>
+                                </listbox>
+                            </hlayout> 
+                            <chart id="linechart3d" title="Evolution prix achat" width="500" height="250" type="line" threeD="true" fgAlpha="128">
+                                <zscript><![CDATA[
+                                CategoryModel catmodel = new SimpleCategoryModel();
+                                catmodel.setValue("Achat", "Janvier", new Integer(20));
+                                catmodel.setValue("Achat", "Février", new Integer(35));
+                                catmodel.setValue("Achat", "Mars", new Integer(40));
+                                catmodel.setValue("Achat", "Avril", new Integer(55));
+                                catmodel.setValue("Achat", "Mai", new Integer(55));
+                                catmodel.setValue("Achat", "Juin", new Integer(55));
+                                catmodel.setValue("Achat", "Juillet", new Integer(55));
+                                catmodel.setValue("Achat", "Août", new Integer(57));
+                                catmodel.setValue("Vente", "Janvier", new Integer(40));
+                                catmodel.setValue("Vente", "Février", new Integer(60));
+                                catmodel.setValue("Vente", "Mars", new Integer(60));
+                                catmodel.setValue("Vente", "Avril", new Integer(60));
+                                catmodel.setValue("Vente", "Mai", new Integer(60));
+                                catmodel.setValue("Vente", "Juin", new Integer(60));
+                                catmodel.setValue("Vente", "Juillet", new Integer(80));
+                                catmodel.setValue("Vente", "Août", new Integer(80));
+                                linechart3d.setModel(catmodel);
+                            ]]>
+                                </zscript>
+                            </chart>
+                        </vlayout>                    
+                    </tabpanel> 
+                    <tabpanel>
+                        <vbox>
+                            <hbox>Choisir un excercice 
+                                <listbox id = "colisteannees" model="@{boiteOutilsWin.listeannees}" width="120px" selectedItem="@{boiteOutilsWin.annee}" mold="select">
+                                    <listitem
+                                        self="@{each=elementannee}" label="@{elementannee}"/>
+                                </listbox>
+                            </hbox>
+                            <separator />
+                            <hbox>Choisir un trimèstre 
+                                <listbox mold="select">
+                                    <listitem>
+                                        <listcell label="Trimèstre 1/4" />
+                                    </listitem>
+                                </listbox>
+                            </hbox>
+                            <separator />
+                            <grid>
+                                <columns>
+                                    <column label="TVA ACHAT"/>
+                                    <column label="TVA VENTE"/>
+                                </columns>
+                                <rows>
+                                    <row>	
+                                        <label value="2509,45" />
+                                        <label value="3750" />
+                                    </row>
+                                </rows>
+                            </grid>
+                        </vbox>
+                    </tabpanel>-->
+                    
+                    <tabpanel>
+                        <hlayout sclass="z-valign-center">
+                            <label value="Partenaire : " width="150px" />
+                            <listbox id = "coPartenaires" model="@{boiteOutilsWin.partenaires}" width="120px" selectedItem="@{boiteOutilsWin.partenaireSelected}" mold="select">
+                                <listitem self="@{each=elementpartenaire}" label="@{elementpartenaire}"/>
+                            </listbox>
+                            <label value="Date début : " width="150px" />
+                            <datebox id="dateDebutPaiement" width="100%" value="@{boiteOutilsWin.dateDebutPaiement}"/>
+                            <label value="Date fin : " width="50px" />
+                            <datebox id="dateFinPaiement" value="@{boiteOutilsWin.dateFinPaiement}" />
+                            <button image="/images/skin/pdf-soubor-logo.png" onClick="boiteOutilsWin.genererRapportPaiements()" />
+                        </hlayout>
+                    </tabpanel>
+
+                </tabpanels>
+            </tabbox>
+        </box>  
+    </window>         
+
+</zk>

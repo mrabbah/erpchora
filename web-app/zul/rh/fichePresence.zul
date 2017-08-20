@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./fichePresenceWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="fichePresenceWin" height="100%" width="100%" style="margin:auto;" use="${fichePresenceWindow}" onCreate='fichePresenceWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/fichePresence.zs"/> -->
+        <borderlayout>            
+            <west id="westPanel" title="CRUD" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+                            <row>
+                                <label value="Projet " />
+                                <combobox id="coprojets" model="@{fichePresenceWin.projets}" selectedItem="@{fichePresenceWin.projetSelected}" width="99%">
+                                    <comboitem self="@{each=elementprojet}" label="@{elementprojet}"/>
+                                </combobox>
+                            </row>
+						
+                            <row>
+                                <label value="Employé " />
+                                <combobox id="coemployes" model="@{fichePresenceWin.employes}" selectedItem="@{fichePresenceWin.employeSelected}" onSelect="fichePresenceWin.employeChanger()" width="99%">
+                                    <comboitem self="@{each=elementemploye}" label="@{elementemploye}"/>
+                                </combobox>
+                            </row>
+                            <row>
+                                <label value="Date"/>
+                                <datebox id="fieldDate" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{fichePresenceWin.objet.date, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+                            <row>
+                                <label value="Heures Présence"/>
+                                <doublebox id="fieldHeuresPresence" constraint="no empty: Veillez indiquez une valeur" value="@{fichePresenceWin.objet.heuresPresence, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+                            <row>
+                                <label value="Heures Abscence"/>
+                                <doublebox id="fieldHeuresAbscence" constraint="no empty: Veillez indiquez une valeur" value="@{fichePresenceWin.objet.heuresAbscence, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+                            <row>
+                                <label value="Durée Trajet"/>
+                                <doublebox id="fieldDureeTrajet" constraint="no empty: Veillez indiquez une valeur" value="@{fichePresenceWin.objet.dureeTrajet, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+                            <row>
+                                <label value="Taux Horaire"/>
+                                <doublebox id="fieldTauxHoraire" constraint="no empty: Veillez indiquez une valeur" value="@{fichePresenceWin.objet.tauxHoraire, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												                            
+                        </rows>
+                    </grid>					
+					
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));fichePresenceWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));fichePresenceWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        fichePresenceWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute> 
+                    </button>
+                    <!-- <button id="btnNew" onClick="fichePresenceWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="fichePresenceWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="fichePresenceWin.select()" model="@{fichePresenceWin.listeObjets}" selectedItem="@{fichePresenceWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filterprojet" model="@{fichePresenceWin.projetsFilter}" selectedItem="@{fichePresenceWin.filtre.projet}" autocomplete="true" autodrop="true" mold="rounded" onSelect="fichePresenceWin.ofs=0;fichePresenceWin.filtrer()" onOK="fichePresenceWin.ofs=0;fichePresenceWin.filtrer()" width="90%">
+                                    <comboitem self="@{each=elementfiltreprojet}" label="@{elementfiltreprojet}"/>
+                                </combobox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filteremploye" model="@{fichePresenceWin.employes}" selectedItem="@{fichePresenceWin.filtre.employe}" autocomplete="true" autodrop="true" mold="rounded" onSelect="fichePresenceWin.ofs=0;fichePresenceWin.filtrer()" onOK="fichePresenceWin.ofs=0;fichePresenceWin.filtrer()" width="90%">
+                                    <comboitem self="@{each=elementfiltreemploye}" label="@{elementfiltreemploye}"/>
+                                </combobox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDate" format="dd/MM/yyyy" value="@{fichePresenceWin.filtre.date}" onOK="fichePresenceWin.ofs=0; fichePresenceWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterHeuresPresence" value="@{fichePresenceWin.filtre.heuresPresence}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                fichePresenceWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(fichePresenceWin.filtre.heuresPresence != null) {
+                                                                fichePresenceWin.filtre.heuresPresence = null;
+                                                        }
+                                                } else {
+                                                        fichePresenceWin.filtre.heuresPresence=new Double(event.value);
+                                                }
+                                                fichePresenceWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterHeuresAbscence" value="@{fichePresenceWin.filtre.heuresAbscence}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                fichePresenceWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(fichePresenceWin.filtre.heuresAbscence != null) {
+                                                                fichePresenceWin.filtre.heuresAbscence = null;
+                                                        }
+                                                } else {
+                                                        fichePresenceWin.filtre.heuresAbscence=new Double(event.value);
+                                                }
+                                                fichePresenceWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterDureeTrajet" value="@{fichePresenceWin.filtre.dureeTrajet}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                fichePresenceWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(fichePresenceWin.filtre.dureeTrajet != null) {
+                                                                fichePresenceWin.filtre.dureeTrajet = null;
+                                                        }
+                                                } else {
+                                                        fichePresenceWin.filtre.dureeTrajet=new Double(event.value);
+                                                }
+                                                fichePresenceWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterTauxHoraire" value="@{fichePresenceWin.filtre.tauxHoraire}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                fichePresenceWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(fichePresenceWin.filtre.tauxHoraire != null) {
+                                                                fichePresenceWin.filtre.tauxHoraire = null;
+                                                        }
+                                                } else {
+                                                        fichePresenceWin.filtre.tauxHoraire=new Double(event.value);
+                                                }
+                                                fichePresenceWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+                            <listheader id="hprojet" label="Projet" sort="auto(projet)" onSort="fichePresenceWin.sort(event)"/>	
+                            <listheader id="hemploye" label="Employé" sort="auto(employe)" onSort="fichePresenceWin.sort(event)"/>	
+                            <listheader id="hdate" label="Date" sort="auto(date)" onSort="fichePresenceWin.sort(event)"/>	
+                            <listheader id="hheuresPresence" label="Heures Présence" sort="auto(heuresPresence)" onSort="fichePresenceWin.sort(event)"/>	
+                            <listheader id="hheuresAbscence" label="Heures Abscence" sort="auto(heuresAbscence)" onSort="fichePresenceWin.sort(event)"/>	
+                            <listheader id="hdureeTrajet" label="Durée Trajet" sort="auto(dureeTrajet)" onSort="fichePresenceWin.sort(event)"/>	
+                            <listheader id="htauxHoraire" label="Taux Horaire" sort="auto(tauxHoraire)" onSort="fichePresenceWin.sort(event)"/>	
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            <listcell label="@{element.projet}"/>
+                            <listcell label="@{element.employe}"/>
+                            <listcell>
+                                <datebox format="dd/MM/yyyy" value="@{element.date, save-when='self.onChange'}" inplace="true" onOK="fichePresenceWin.objet=self.parent.parent.value; fichePresenceWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>							
+                            <listcell>
+                                <doublebox value="@{element.heuresPresence, save-when='self.onChange'}" inplace="true" onOK="fichePresenceWin.objet=self.parent.parent.value; fichePresenceWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>							
+                            <listcell>
+                                <doublebox value="@{element.heuresAbscence, save-when='self.onChange'}" inplace="true" onOK="fichePresenceWin.objet=self.parent.parent.value; fichePresenceWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>							
+                            <listcell>
+                                <doublebox value="@{element.dureeTrajet, save-when='self.onChange'}" inplace="true" onOK="fichePresenceWin.objet=self.parent.parent.value; fichePresenceWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>							
+                            <listcell>
+                                <doublebox value="@{element.tauxHoraire, save-when='self.onChange'}" inplace="true" onOK="fichePresenceWin.objet=self.parent.parent.value; fichePresenceWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+                            </listcell>							
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{fichePresenceWin.tailleListe}" pageSize="@{fichePresenceWin.maxNb}" onPaging="fichePresenceWin.getNextElements(event);" />
+                    <separator/>
+                    <button id="btnNew" onClick="fichePresenceWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png" />
+                    <button id="btnPdf" onClick="fichePresenceWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="fichePresenceWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

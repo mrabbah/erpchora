@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./locationOutilWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="locationOutilWin" height="100%" width="100%" style="margin:auto;" use="${locationOutilWindow}" onCreate='locationOutilWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/locationOutil.zs"/> -->
+        <borderlayout>            
+            <west id="westPanel" title="CRUD" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+                            <row>
+                                <label value="Projet " />
+                                <combobox id="coprojets" model="@{locationOutilWin.projets}" selectedItem="@{locationOutilWin.projetSelected}" width="99%">
+                                    <comboitem self="@{each=elementprojet}" label="@{elementprojet}"/>
+                                </combobox>
+                            </row>
+                            <row>
+                                <label value="Outil Louable " />
+                                <combobox id="cooutilLouables" model="@{locationOutilWin.outilLouables}" selectedItem="@{locationOutilWin.outilLouableSelected}" width="99%" onSelect="locationOutilWin.outilLouableSelectionner()">
+                                    <comboitem self="@{each=elementoutilLouable}" label="@{elementoutilLouable}"/>
+                                </combobox>
+                            </row>	
+                            <row>
+                                <label value="Loueur " />
+                                <combobox id="coloueurs" model="@{locationOutilWin.loueurs}" selectedItem="@{locationOutilWin.loueurSelected}" width="99%">
+                                    <comboitem self="@{each=elementloueur}" label="@{elementloueur}"/>
+                                </combobox>
+                            </row>		                            	
+                            <row>
+                                <label value="Date"/>
+								 
+                                <datebox id="fieldDate" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{locationOutilWin.objet.date, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+						
+                            <row>
+                                <label value="Durée Location"/>
+								 
+                                <intbox id="fieldDureeLocation" constraint="no empty: Veillez indiquez une valeur" value="@{locationOutilWin.objet.dureeLocation, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+						
+                            <row>
+                                <label value="Prix Heure Location"/>
+								 
+                                <doublebox id="fieldPrixHeureLocation" constraint="no empty: Veillez indiquez une valeur" value="@{locationOutilWin.objet.prixHeureLocation, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+						
+                            <row>
+                                <label value="Prix Forfait"/>
+								 
+                                <doublebox id="fieldPrixForfait" constraint="no empty: Veillez indiquez une valeur" value="@{locationOutilWin.objet.prixForfait, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>														
+                        </rows>
+                    </grid>					
+					
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));locationOutilWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));locationOutilWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        locationOutilWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute> 
+                    </button>
+                    <!-- <button id="btnNew" onClick="locationOutilWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="locationOutilWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="locationOutilWin.select()" model="@{locationOutilWin.listeObjets}" selectedItem="@{locationOutilWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filterprojet" model="@{locationOutilWin.projetsFilter}" selectedItem="@{locationOutilWin.filtre.projet}" autocomplete="true" autodrop="true" mold="rounded" onSelect="locationOutilWin.ofs=0;locationOutilWin.filtrer()" onOK="locationOutilWin.ofs=0;locationOutilWin.filtrer()" width="90%">
+                                    <comboitem self="@{each=elementfiltreprojet}" label="@{elementfiltreprojet}"/>
+                                </combobox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filterloueur" model="@{locationOutilWin.loueurs}" selectedItem="@{locationOutilWin.filtre.loueur}" autocomplete="true" autodrop="true" mold="rounded" onSelect="locationOutilWin.ofs=0;locationOutilWin.filtrer()" onOK="locationOutilWin.ofs=0;locationOutilWin.filtrer()" width="90%">
+                                    <comboitem self="@{each=elementfiltreloueur}" label="@{elementfiltreloueur}"/>
+                                </combobox>	
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filteroutilLouable" model="@{locationOutilWin.outilLouables}" selectedItem="@{locationOutilWin.filtre.outilLouable}" autocomplete="true" autodrop="true" mold="rounded" onSelect="locationOutilWin.ofs=0;locationOutilWin.filtrer()" onOK="locationOutilWin.ofs=0;locationOutilWin.filtrer()" width="90%">
+                                    <comboitem self="@{each=elementfiltreoutilLouable}" label="@{elementfiltreoutilLouable}"/>
+                                </combobox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDate" format="dd/MM/yyyy" value="@{locationOutilWin.filtre.date}" onOK="locationOutilWin.ofs=0; locationOutilWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterDureeLocation" value="@{locationOutilWin.filtre.dureeLocation}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                locationOutilWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(locationOutilWin.filtre.dureeLocation != null) {
+                                                                locationOutilWin.filtre.dureeLocation = null;
+                                                        }
+                                                } else {
+                                                        locationOutilWin.filtre.dureeLocation=new Integer(event.value);
+                                                }
+                                                locationOutilWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterPrixHeureLocation" value="@{locationOutilWin.filtre.prixHeureLocation}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                locationOutilWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(locationOutilWin.filtre.prixHeureLocation != null) {
+                                                                locationOutilWin.filtre.prixHeureLocation = null;
+                                                        }
+                                                } else {
+                                                        locationOutilWin.filtre.prixHeureLocation=new Double(event.value);
+                                                }
+                                                locationOutilWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterPrixForfait" value="@{locationOutilWin.filtre.prixForfait}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                locationOutilWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(locationOutilWin.filtre.prixForfait != null) {
+                                                                locationOutilWin.filtre.prixForfait = null;
+                                                        }
+                                                } else {
+                                                        locationOutilWin.filtre.prixForfait=new Double(event.value);
+                                                }
+                                                locationOutilWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+							
+                            <listheader id="hprojet" label="Projet" sort="auto(projet)" onSort="locationOutilWin.sort(event)"/>	
+                            <listheader id="hloueur" label="Loueur" sort="auto(loueur)" onSort="locationOutilWin.sort(event)"/>	
+                            <listheader id="houtilLouable" label="Outil louable" sort="auto(outilLouable)" onSort="locationOutilWin.sort(event)"/>	
+                            <listheader id="hdate" label="Date" sort="auto(date)" onSort="locationOutilWin.sort(event)"/>	
+							
+                            <listheader id="hdureeLocation" label="Durée Location" sort="auto(dureeLocation)" onSort="locationOutilWin.sort(event)"/>	
+							
+                            <listheader id="hprixHeureLocation" label="Prix Heure Location" sort="auto(prixHeureLocation)" onSort="locationOutilWin.sort(event)"/>	
+							
+                            <listheader id="hprixForfait" label="Prix Forfait" sort="auto(prixForfait)" onSort="locationOutilWin.sort(event)"/>	
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            <listcell label="@{element.projet}"/>
+                            <listcell label="@{element.loueur}"/>
+                            <listcell label="@{element.outilLouable}"/>
+                            
+                            <listcell>
+							
+                                <datebox format="dd/MM/yyyy" value="@{element.date, save-when='self.onChange'}" inplace="true" onOK="locationOutilWin.objet=self.parent.parent.value; locationOutilWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <intbox value="@{element.dureeLocation, save-when='self.onChange'}" inplace="true" onOK="locationOutilWin.objet=self.parent.parent.value; locationOutilWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <doublebox value="@{element.prixHeureLocation, save-when='self.onChange'}" inplace="true" onOK="locationOutilWin.objet=self.parent.parent.value; locationOutilWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <doublebox value="@{element.prixForfait, save-when='self.onChange'}" inplace="true" onOK="locationOutilWin.objet=self.parent.parent.value; locationOutilWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{locationOutilWin.tailleListe}" pageSize="@{locationOutilWin.maxNb}" onPaging="locationOutilWin.getNextElements(event);" />
+                    
+                    <separator/>
+                    <button id="btnNew" onClick="locationOutilWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="locationOutilWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="locationOutilWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

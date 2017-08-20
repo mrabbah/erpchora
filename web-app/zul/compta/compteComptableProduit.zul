@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./compteComptableProduitWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="compteComptableProduitWin" height="100%" width="100%" style="margin:auto;" use="${compteComptableProduitWindow}" onCreate='compteComptableProduitWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/compteComptableProduit.zs"/> -->
+        <borderlayout>
+            <north id="eastPanel" size="65px" open="false"  title="Recherche avancee" flex="true" splittable="true"  collapsible="true"  >
+                <hlayout spacing="10px" style="margin-top:9px;margin-left:10px">
+					
+                    <label value="compteComptable :" />
+                    <combobox id="filtercompteComptable" model="@{compteComptableProduitWin.compteComptables}" selectedItem="@{compteComptableProduitWin.filtre.compteComptable}" autocomplete="true" autodrop="true" mold="rounded" onSelect="compteComptableProduitWin.ofs=0;compteComptableProduitWin.filtrer()" onOK="compteComptableProduitWin.ofs=0;compteComptableProduitWin.filtrer()">
+                        <comboitem self="@{each=elementfiltrecompteComptable}" label="@{elementfiltrecompteComptable}"/>
+                    </combobox>
+					
+                    <label value="categorieProduit :" />
+                    <combobox id="filtercategorieProduit" model="@{compteComptableProduitWin.categorieProduits}" selectedItem="@{compteComptableProduitWin.filtre.categorieProduit}" autocomplete="true" autodrop="true" mold="rounded" onSelect="compteComptableProduitWin.ofs=0;compteComptableProduitWin.filtrer()" onOK="compteComptableProduitWin.ofs=0;compteComptableProduitWin.filtrer()">
+                        <comboitem self="@{each=elementfiltrecategorieProduit}" label="@{elementfiltrecategorieProduit}"/>
+                    </combobox>
+										                    
+                </hlayout>
+            </north>
+            <west id="westPanel" title="CRUD" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+						
+                            <row>
+                                <label value="Type"/>
+								 
+                                <textbox id="fieldType" constraint="no empty: Veillez indiquez une valeur" value="@{compteComptableProduitWin.objet.type, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						 
+						
+                            <row>
+                                <label value="compteComptable " />
+                                <combobox id="cocompteComptables" model="@{compteComptableProduitWin.compteComptables}" selectedItem="@{compteComptableProduitWin.compteComptableSelected}">
+                                    <comboitem self="@{each=elementcompteComptable}" label="@{elementcompteComptable}"/>
+                                </combobox>
+                            </row>
+						
+                            <row>
+                                <label value="categorieProduit " />
+                                <combobox id="cocategorieProduits" model="@{compteComptableProduitWin.categorieProduits}" selectedItem="@{compteComptableProduitWin.categorieProduitSelected}">
+                                    <comboitem self="@{each=elementcategorieProduit}" label="@{elementcategorieProduit}"/>
+                                </combobox>
+                            </row>
+						
+                        </rows>
+                    </grid>					
+					
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));compteComptableProduitWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));compteComptableProduitWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        compteComptableProduitWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute> 
+                    </button>
+                    <!-- <button id="btnNew" onClick="compteComptableProduitWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="compteComptableProduitWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="compteComptableProduitWin.select()" model="@{compteComptableProduitWin.listeObjets}" selectedItem="@{compteComptableProduitWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterType" value="@{compteComptableProduitWin.filtre.type}" onChanging="compteComptableProduitWin.ofs; compteComptableProduitWin.filtre.type=event.value; compteComptableProduitWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+							
+                            <listheader label="Type" sort="auto(type)" onSort="compteComptableProduitWin.sort(event)"/>	
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            
+                            <listcell>
+							
+                                <textbox value="@{element.type, save-when='self.onChange'}" inplace="true" onOK="compteComptableProduitWin.objet=self.parent.parent.value; compteComptableProduitWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{compteComptableProduitWin.tailleListe}" pageSize="@{compteComptableProduitWin.maxNb}" onPaging="compteComptableProduitWin.getNextElements(event);" />
+                    <separator/>
+                    <grid>
+                        <columns>
+                            <column width="32px" />
+							
+                            <column />
+							
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png"  />
+								
+                                <textbox id="fieldtypebis" value="@{compteComptableProduitWin.objet.type, save-when='self.onChange'}" inplace="true" onOK="compteComptableProduitWin.add();" width="99%"/>
+								  
+                            </row>
+                        </rows>
+                    </grid>
+                    <separator/>
+                    <button id="btnNew" onClick="compteComptableProduitWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="compteComptableProduitWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="compteComptableProduitWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

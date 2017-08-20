@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./contactWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="contactWin" height="100%" width="100%" style="margin:auto;" use="${contactWindow}" onCreate='contactWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/contact.zs"/> -->
+        <borderlayout>
+            <east id="eastPanel" title="Filtre avancé" size="40%" flex="true" collapsible="true" open="false" >
+                <grid fixedLayout="true">
+                    <rows>
+                        <row>
+                            <label value="Partenaire" />
+                            <hbox>
+                                <textbox id="filtrePartenaire" value="@{contactWin.filtre.partenaire, access='load'}" disabled="true"/>
+                                <button  onClick='contactWin.choisir("partenaire", filtrePartenaire, contactWin.filtre, "partenaire")' image="/images/skin/search.png"/>
+                                <button  onClick='filtrePartenaire.value=""; contactWin.filtre.partenaire=null; contactWin.ofs=0; contactWin.filtrer();' image="/images/skin/cancel.png"/>
+                            </hbox>
+                        </row>
+                        <row>
+                            <hbox>
+                                <button id="btnDemandeFiltrer" label="Appliquez le filtre" onClick="contactWin.ofs=0; contactWin.filtrer();" image="/images/skin/funnel.png"/>
+                                <button id="btnFermerFiltrer" label="Fermer" onClick="eastPanel.open=false" image="/images/skin/cancel.png"/>
+                            </hbox>
+                        </row>
+                    </rows>
+                </grid>               
+            </east>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="contactWin.select()" model="@{contactWin.listeObjets}" selectedItem="@{contactWin.objetSelected}"  width="100%" height="478px" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterNom" value="@{contactWin.filtre.nom}" onChanging="contactWin.ofs; contactWin.filtre.nom=event.value; contactWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterTitre" value="@{contactWin.filtre.titre}" onChanging="contactWin.ofs; contactWin.filtre.titre=event.value; contactWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterFonction" value="@{contactWin.filtre.fonction}" onChanging="contactWin.ofs; contactWin.filtre.fonction=event.value; contactWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterFixe" value="@{contactWin.filtre.fixe}" onChanging="contactWin.ofs; contactWin.filtre.fixe=event.value; contactWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterPortable" value="@{contactWin.filtre.portable}" onChanging="contactWin.ofs; contactWin.filtre.portable=event.value; contactWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterEmail" value="@{contactWin.filtre.email}" onChanging="contactWin.ofs; contactWin.filtre.email=event.value; contactWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+                            
+                            <auxheader colspan="1"/>
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+							
+                            <listheader label="Nom" sort="auto(nom)" onSort="contactWin.sort(event)"/>	
+							
+                            <listheader label="Titre" sort="auto(titre)" onSort="contactWin.sort(event)"/>	
+							
+                            <listheader label="Fonction" sort="auto(fonction)" onSort="contactWin.sort(event)"/>	
+							
+                            <listheader label="Fixe" sort="auto(fixe)" onSort="contactWin.sort(event)"/>	
+							
+                            <listheader label="Portable" sort="auto(portable)" onSort="contactWin.sort(event)"/>	
+							
+                            <listheader label="Email" sort="auto(email)" onSort="contactWin.sort(event)"/>	
+                            
+                            <listheader label="Partenaire" sort="auto(partenaire.raisonSocial)" onSort="contactWin.sort(event)"/>
+                            
+                            <listheader width="50px" />
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            
+                            <listcell>
+							
+                                <textbox value="@{element.nom, save-when='self.onChange'}" inplace="true" onOK="contactWin.objet=self.parent.parent.value; contactWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.titre, save-when='self.onChange'}" inplace="true" onOK="contactWin.objet=self.parent.parent.value; contactWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.fonction, save-when='self.onChange'}" inplace="true" onOK="contactWin.objet=self.parent.parent.value; contactWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.fixe, save-when='self.onChange'}" inplace="true" onOK="contactWin.objet=self.parent.parent.value; contactWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.portable, save-when='self.onChange'}" inplace="true" onOK="contactWin.objet=self.parent.parent.value; contactWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.email, save-when='self.onChange'}" inplace="true" onOK="contactWin.objet=self.parent.parent.value; contactWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>
+                            
+                            <listcell>
+							
+                                <textbox readonly="true" value="@{element.partenaire.raisonSociale, save-when='self.onChange'}" inplace="true" onOK="contactWin.objet=self.parent.parent.value; contactWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>
+                            
+                            <listcell image="/images/skin/database_delete.png">
+                                <attribute name="onClick">
+                                    <![CDATA[
+                                    Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                        public void onEvent(Event evt) throws InterruptedException {
+                                            if (evt.getName().equals("onOK")) {
+                                                contactWin.delete();
+                                                contactWin.objet = com.choranet.gesticom.Contact.class.newInstance();
+                                                contactWin.rafraichirField();
+                                                contactWin.rafraichirList();
+                                                contactWin.isUpdate = false;
+                                            } 
+                                        }
+                                    });
+                                    ]]>
+                                </attribute>                                   
+                            </listcell>
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{contactWin.tailleListe}" pageSize="@{contactWin.maxNb}" onPaging="contactWin.getNextElements(event);" />
+                    <separator/>
+                    <grid>
+                        <columns>
+                            <column width="32px" />
+							
+                            <column />
+							
+                            <column />
+							
+                            <column />
+							
+                            <column />
+							
+                            <column />
+							
+                            <column />
+                            
+                            <column />
+                            
+                            <column width="50px" />
+							
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png" >
+                                    <attribute name="onClick">
+                                        <![CDATA[
+                                            contactWin.objet = com.choranet.gesticom.Contact.class.newInstance();
+                                            contactWin.rafraichirField();
+                                            contactWin.rafraichirList();
+                                            contactWin.isUpdate = false;
+                                        ]]>
+                                    </attribute>
+                                </image>
+								
+                                <textbox id="fieldnombis" constraint="no empty: Veillez indiquez une valeur" value="@{contactWin.objet.nom, save-when='triggerBtn.onClick'}" inplace="true" width="99%"/>
+								
+                                <textbox id="fieldtitrebis" constraint="no empty: Veillez indiquez une valeur" value="@{contactWin.objet.titre, save-when='triggerBtn.onClick'}" inplace="true" width="99%"/>
+								
+                                <textbox id="fieldfonctionbis" value="@{contactWin.objet.fonction, save-when='triggerBtn.onClick'}" inplace="true" width="99%"/>
+								
+                                <textbox id="fieldfixebis" value="@{contactWin.objet.fixe, save-when='triggerBtn.onClick'}" inplace="true" width="99%"/>
+								
+                                <textbox id="fieldportablebis" value="@{contactWin.objet.portable, save-when='triggerBtn.onClick'}" inplace="true" width="99%"/>
+								
+                                <textbox id="fieldemailbis" value="@{contactWin.objet.email, save-when='triggerBtn.onClick'}" inplace="true" width="99%"/>
+                                
+                                <hbox>
+                                    <textbox id="fieldPartenaire" value="@{contactWin.objet.partenaire.raisonSociale, save-when='triggerBtn.onClick'}" constraint="no empty: Veillez indiquez une valeur" disabled="true" width="100px"/>
+                                    <button  onClick='contactWin.choisir("partenaire", fieldPartenaire, contactWin.objet, "partenaire")' image="/images/skin/search.png"/>
+                                </hbox>
+                                
+                                <button id="btnAdd" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn)); contactWin.addOrUpdate()" image="/images/skin/database_add.png"/>
+                                			  
+                            </row>
+                        </rows>
+                    </grid>
+                    <separator/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                    <button id="btnPdf" unless="${arg.ispopup}" onClick="contactWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" unless="${arg.ispopup}" onClick="contactWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                    <button onClick="eastPanel.open=true" label="Filtre avancé" image="/images/skin/funnel.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./declarationTvaWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="declarationTvaWin" height="100%" width="100%" style="margin:auto;" use="${declarationTvaWindow}" onCreate='declarationTvaWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/declarationTva.zs"/> -->
+        <borderlayout>
+            <north id="eastPanel" size="65px" open="false"  title="Recherche avanc�e" flex="true" splittable="true"  collapsible="true"  >
+                <hlayout spacing="10px" style="margin-top:9px;margin-left:10px">
+					
+					<label value="paiements :" />
+                    <bandbox    autodrop="true" mold="rounded">
+                        <bandpopup>
+                            <listbox id="filterpaiements" model="@{declarationTvaWin.paiements}" 
+                        selectedItem="@{declarationTvaWin.filtre.paiementss, converter=com.choranet.zk.SelectedItemsConverterV3}"
+                        onSelect="declarationTvaWin.ofs=0;declarationTvaWin.filtrer();"
+                        fixedLayout="true" multiple="true" checkmark="true">
+                                <listhead>
+                                    <listheader label=""/>							
+                                </listhead>
+                                <listitem self="@{each=elementfiltrepaiements}">
+                                    <listcell label="@{elementfiltrepaiements}"/>							
+                                </listitem>								
+                            </listbox>
+                        </bandpopup>
+                    </bandbox>
+					
+					<label value="factures :" />
+                    <bandbox    autodrop="true" mold="rounded">
+                        <bandpopup>
+                            <listbox id="filterfactures" model="@{declarationTvaWin.factures}" 
+                        selectedItem="@{declarationTvaWin.filtre.facturess, converter=com.choranet.zk.SelectedItemsConverterV3}"
+                        onSelect="declarationTvaWin.ofs=0;declarationTvaWin.filtrer();"
+                        fixedLayout="true" multiple="true" checkmark="true">
+                                <listhead>
+                                    <listheader label=""/>							
+                                </listhead>
+                                <listitem self="@{each=elementfiltrefactures}">
+                                    <listcell label="@{elementfiltrefactures}"/>							
+                                </listitem>								
+                            </listbox>
+                        </bandpopup>
+                    </bandbox>
+					
+					<label value="regimeDeclarationTva :" />
+                    <combobox id="filterregimeDeclarationTva" model="@{declarationTvaWin.regimeDeclarationTvas}" selectedItem="@{declarationTvaWin.filtre.regimeDeclarationTva}" autocomplete="true" autodrop="true" mold="rounded" onSelect="declarationTvaWin.ofs=0;declarationTvaWin.filtrer()" onOK="declarationTvaWin.ofs=0;declarationTvaWin.filtrer()">
+                        <comboitem self="@{each=elementfiltreregimeDeclarationTva}" label="@{elementfiltreregimeDeclarationTva}"/>
+                    </combobox>
+										                    
+                </hlayout>
+            </north>
+            <west id="westPanel" title="CRUD" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+						
+							<row>
+                                <label value="NumDeclaration"/>
+								 
+								<textbox id="fieldNumDeclaration" constraint="no empty: Veillez indiquez une valeur" value="@{declarationTvaWin.objet.numDeclaration, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="Date"/>
+								 
+								<datebox id="fieldDate" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{declarationTvaWin.objet.date, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="Periode"/>
+								 
+								<textbox id="fieldPeriode" constraint="no empty: Veillez indiquez une valeur" value="@{declarationTvaWin.objet.periode, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						
+							<row>
+                                <label value="Exercise"/>
+								 
+								<intbox id="fieldExercise" constraint="no empty: Veillez indiquez une valeur" value="@{declarationTvaWin.objet.exercise, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						 
+						
+						<row>
+							<label value="Paiements" />
+							<bandbox    autodrop="true" mold="rounded">
+								<bandpopup>
+									<listbox id="lstpaiements" model="@{declarationTvaWin.paiements}" selectedItem="@{declarationTvaWin.paiementsSelected, converter=com.choranet.zk.SelectedItemsConverterV3}" fixedLayout="true" multiple="true" checkmark="true">
+										<listhead>
+											<listheader label=""/>							
+										</listhead>
+										<listitem self="@{each=elementpaiements}">
+											<listcell label="@{elementpaiements}"/>							
+										</listitem>								
+									</listbox>	
+								</bandpopup>
+							</bandbox>
+						</row>						
+						
+						<row>
+							<label value="Factures" />
+							<bandbox    autodrop="true" mold="rounded">
+								<bandpopup>
+									<listbox id="lstfactures" model="@{declarationTvaWin.factures}" selectedItem="@{declarationTvaWin.facturesSelected, converter=com.choranet.zk.SelectedItemsConverterV3}" fixedLayout="true" multiple="true" checkmark="true">
+										<listhead>
+											<listheader label=""/>							
+										</listhead>
+										<listitem self="@{each=elementfactures}">
+											<listcell label="@{elementfactures}"/>							
+										</listitem>								
+									</listbox>	
+								</bandpopup>
+							</bandbox>
+						</row>						
+						
+						<row>
+							<label value="regimeDeclarationTva " />
+							<combobox id="coregimeDeclarationTvas" model="@{declarationTvaWin.regimeDeclarationTvas}" selectedItem="@{declarationTvaWin.regimeDeclarationTvaSelected}">
+								<comboitem self="@{each=elementregimeDeclarationTva}" label="@{elementregimeDeclarationTva}"/>
+							</combobox>
+						</row>
+						
+                        </rows>
+                    </grid>					
+					
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));declarationTvaWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));declarationTvaWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        declarationTvaWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute> 
+                    </button>
+                    <!-- <button id="btnNew" onClick="declarationTvaWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="declarationTvaWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="declarationTvaWin.select()" model="@{declarationTvaWin.listeObjets}" selectedItem="@{declarationTvaWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+							<auxheader colspan="1"/>
+							
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterNumDeclaration" value="@{declarationTvaWin.filtre.numDeclaration}" onChanging="declarationTvaWin.ofs; declarationTvaWin.filtre.numDeclaration=event.value; declarationTvaWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDate" format="dd/MM/yyyy" value="@{declarationTvaWin.filtre.date}" onOK="declarationTvaWin.ofs=0; declarationTvaWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterPeriode" value="@{declarationTvaWin.filtre.periode}" onChanging="declarationTvaWin.ofs; declarationTvaWin.filtre.periode=event.value; declarationTvaWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterExercise" value="@{declarationTvaWin.filtre.exercise}" width="100%">
+									<attribute name="onChanging">
+										<![CDATA[
+											declarationTvaWin.ofs=0;
+											if(event.value.equals("")) {
+												if(declarationTvaWin.filtre.exercise != null) {
+													declarationTvaWin.filtre.exercise = null;
+												}
+											} else {
+												declarationTvaWin.filtre.exercise=new Integer(event.value);
+											}
+											declarationTvaWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+								</intbox>
+                            </auxheader>
+								 
+                        </auxhead>
+						<listhead sizable="true">
+							<listheader width="32px" />
+							
+							<listheader label="NumDeclaration" sort="auto(numDeclaration)" onSort="declarationTvaWin.sort(event)"/>	
+							
+							<listheader label="Date" sort="auto(date)" onSort="declarationTvaWin.sort(event)"/>	
+							
+							<listheader label="Periode" sort="auto(periode)" onSort="declarationTvaWin.sort(event)"/>	
+							
+							<listheader label="Exercise" sort="auto(exercise)" onSort="declarationTvaWin.sort(event)"/>	
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+							<listcell image="/images/skin/icon_selection.png"/>
+                            
+							<listcell>
+							
+								<textbox value="@{element.numDeclaration, save-when='self.onChange'}" inplace="true" onOK="declarationTvaWin.objet=self.parent.parent.value; declarationTvaWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<datebox format="dd/MM/yyyy" value="@{element.date, save-when='self.onChange'}" inplace="true" onOK="declarationTvaWin.objet=self.parent.parent.value; declarationTvaWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<textbox value="@{element.periode, save-when='self.onChange'}" inplace="true" onOK="declarationTvaWin.objet=self.parent.parent.value; declarationTvaWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+							</listcell>							
+							
+							<listcell>
+							
+								<intbox value="@{element.exercise, save-when='self.onChange'}" inplace="true" onOK="declarationTvaWin.objet=self.parent.parent.value; declarationTvaWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+							</listcell>							
+							     
+                        </listitem>
+                    </listbox>
+					<paging id="paging" totalSize="@{declarationTvaWin.tailleListe}" pageSize="@{declarationTvaWin.maxNb}" onPaging="declarationTvaWin.getNextElements(event);" />
+					<separator/>
+                    <grid>
+                        <columns>
+                            <column width="32px" />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+							<column />
+							
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png"  />
+								
+									<textbox id="fieldnumDeclarationbis" value="@{declarationTvaWin.objet.numDeclaration, save-when='self.onChange'}" inplace="true" onOK="declarationTvaWin.add();" width="99%"/>
+								
+									<datebox id="fielddatebis" format="dd/MM/yyyy" value="@{declarationTvaWin.objet.date, save-when='self.onChange'}" inplace="true" onOK="declarationTvaWin.add();" width="99%"/>
+								
+									<textbox id="fieldperiodebis" value="@{declarationTvaWin.objet.periode, save-when='self.onChange'}" inplace="true" onOK="declarationTvaWin.add();" width="99%"/>
+								
+									<intbox id="fieldexercisebis" value="@{declarationTvaWin.objet.exercise, save-when='self.onChange'}" inplace="true" onOK="declarationTvaWin.add();" width="99%" />
+								  
+                            </row>
+                        </rows>
+                    </grid>
+                    <separator/>
+                    <button id="btnNew" onClick="declarationTvaWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="declarationTvaWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="declarationTvaWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

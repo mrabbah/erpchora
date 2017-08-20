@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./employeWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="employeWin" height="100%" width="100%" style="margin:auto;" use="${employeWindow}" onCreate='employeWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/employe.zs"/> -->
+        <borderlayout>
+            <east id="eastPanel" title="Filtre avancé" size="40%" flex="true" collapsible="true" open="false" >
+                <grid fixedLayout="true">
+                    <rows>
+                        <row>
+                            <label value="Calendrier" />
+                            <hbox>
+                                <textbox id="filtreCalendrier" value="@{employeWin.filtre.calendrier, access='load'}" disabled="true"/>
+                                <button  onClick='employeWin.choisir("calendrier", filtreCalendrier, employeWin.filtre, "calendrier")' image="/images/skin/search.png"/>
+                                <button  onClick='filtreCalendrier.value=""; employeWin.filtre.calendrier=null; employeWin.ofs=0; employeWin.filtrer();' image="/images/skin/cancel.png"/>
+                            </hbox>
+                        </row>
+                        <row>
+                            <label value="Fonction" />
+                            <hbox>
+                                <textbox id="filtreFonction" value="@{employeWin.filtre.fonction, access='load'}" disabled="true"/>
+                                <button  onClick='employeWin.choisir("fonction", filtreFonction, employeWin.filtre, "fonction")' image="/images/skin/search.png"/>
+                                <button  onClick='filtreFonction.value=""; employeWin.filtre.fonction=null; employeWin.ofs=0; employeWin.filtrer();' image="/images/skin/cancel.png"/>
+                            </hbox>
+                        </row>
+                        <row>
+                            <hbox>
+                                <button id="btnDemandeFiltrer" label="Appliquez le filtre" onClick="employeWin.ofs=0;employeWin.filtrer();" image="/images/skin/funnel.png"/>
+                                <button id="btnFermerFiltrer" label="Fermer" onClick="eastPanel.open=false" image="/images/skin/cancel.png"/>
+                            </hbox>
+                        </row>
+                    </rows>
+                </grid>               
+            </east>
+            <west id="westPanel" title="Gestion des employés" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+                            <row>
+                                <label value="Numéro"/>		 
+                                <intbox id="fieldNumero" constraint="no empty: Veillez indiquez une valeur" value="@{employeWin.objet.numero, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>														
+                            <row>
+                                <label value="Nom"/>			 
+                                <textbox id="fieldNom" constraint="no empty: Veillez indiquez une valeur" value="@{employeWin.objet.nom, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>														
+                            <row>
+                                <label value="Prénom"/>
+                                <textbox id="fieldPrenom" constraint="no empty: Veillez indiquez une valeur" value="@{employeWin.objet.prenom, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>														
+                            <row>
+                                <label value="Téléphone"/>			 
+                                <textbox id="fieldTelephone" constraint="no empty: Veillez indiquez une valeur" value="@{employeWin.objet.telephone, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>
+                            <row>
+                                <label value="Calendrier " />
+                                <hbox>
+                                    <textbox id="fieldCalendrier" value="@{employeWin.objet.calendrier.nom, save-when='triggerBtn.onClick'}" disabled="true" width="100px">
+                                        <attribute name="onChange">
+                                            <![CDATA[
+                                                fieldSalaire.value = employeWin.objet.calendrier.nbHeuresTravailParJour * employeWin.objet.calendrier.nbJoursTravailParMois * fieldTauxHoraire.value;
+                                                fieldTauxHoraire.value  = fieldSalaire.value / (employeWin.objet.calendrier.nbHeuresTravailParJour * employeWin.objet.calendrier.nbJoursTravailParMois);
+                                            ]]>
+                                        </attribute>
+                                    </textbox>
+                                    <button onClick='employeWin.choisir("calendrier", fieldCalendrier, employeWin.objet, "calendrier"); fieldSalaire.readonly = false; fieldTauxHoraire.readonly = false;' image="/images/skin/search.png"/>
+                                </hbox>
+                            </row>
+                            <row>
+                                <label value="Taux Horaire"/>		 
+                                <doublebox id="fieldTauxHoraire" readonly="true" format="#,##0.##" constraint="no empty: Veillez indiquez une valeur" value="@{employeWin.objet.tauxHoraire, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'>
+                                    <attribute name="onChange">
+					<![CDATA[
+                                            fieldSalaire.value = employeWin.objet.calendrier.nbHeuresTravailParJour * employeWin.objet.calendrier.nbJoursTravailParMois * self.value;
+                                        ]]>
+                                    </attribute>
+                                </doublebox>
+                            </row>														
+                            <row>
+                                <label value="Salaire"/>		 
+                                <doublebox id="fieldSalaire" readonly="true" format="#,##0.##" constraint="no empty: Veillez indiquez une valeur" value="@{employeWin.objet.salaire, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'>
+                                    <attribute name="onChange">
+					<![CDATA[
+                                           fieldTauxHoraire.value  = self.value / (employeWin.objet.calendrier.nbHeuresTravailParJour * employeWin.objet.calendrier.nbJoursTravailParMois);
+                                        ]]>
+                                    </attribute>
+                                </doublebox>
+                            </row>													 				
+                            <row>
+                                <label value="Fonction " />
+                                <hbox>
+                                    <textbox id="fieldFonction" value="@{employeWin.objet.fonction.libelle, save-when='triggerBtn.onClick'}" disabled="true" width="100px"/>
+                                    <button  onClick='employeWin.choisir("fonction", fieldFonction, employeWin.objet, "fonction")' image="/images/skin/search.png"/>
+                                </hbox>
+                            </row>	
+                            <row>
+                                <label value="Site"/>			 
+                                <textbox id="fieldSite" value="@{employeWin.objet.site, save-when='triggerBtn.onClick'}"/>
+                            </row>
+                        </rows>
+                    </grid>					
+					
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));employeWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));employeWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        employeWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute>  
+                    </button>
+                    <!-- <button id="btnNew" onClick="employeWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="employeWin.cancel()" label="Annuler" image="/images/skin/cancel.png"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="employeWin.select()" model="@{employeWin.listeObjets}" selectedItem="@{employeWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterNumero" value="@{employeWin.filtre.numero}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                            employeWin.ofs=0;
+                                            if(event.value.equals("")) {
+                                                if(employeWin.filtre.numero != null) {
+                                                        employeWin.filtre.numero = null;
+                                                }
+                                            } else {
+                                                employeWin.filtre.numero=new Integer(event.value);
+                                            }
+                                            employeWin.filtrer();
+                                            self.focus();
+                                            if(!event.value.equals("")) {
+                                                self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                            }
+                                        ]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterNom" value="@{employeWin.filtre.nom}" onChanging="employeWin.ofs; employeWin.filtre.nom=event.value; employeWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterPrenom" value="@{employeWin.filtre.prenom}" onChanging="employeWin.ofs; employeWin.filtre.prenom=event.value; employeWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterTelephone" value="@{employeWin.filtre.telephone}" onChanging="employeWin.ofs; employeWin.filtre.telephone=event.value; employeWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterTauxHoraire" value="@{employeWin.filtre.tauxHoraire}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                employeWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(employeWin.filtre.tauxHoraire != null) {
+                                                                employeWin.filtre.tauxHoraire = null;
+                                                        }
+                                                } else {
+                                                        employeWin.filtre.tauxHoraire=new Double(event.value);
+                                                }
+                                                employeWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterSalaire" value="@{employeWin.filtre.salaire}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                employeWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(employeWin.filtre.salaire != null) {
+                                                                employeWin.filtre.salaire = null;
+                                                        }
+                                                } else {
+                                                        employeWin.filtre.salaire=new Double(event.value);
+                                                }
+                                                employeWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+                            
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterSite" value="@{employeWin.filtre.site}" onChanging="employeWin.ofs; employeWin.filtre.site=event.value; employeWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+							
+                            <listheader id="hnumero" label="Numéro" sort="auto(numero)" onSort="employeWin.sort(event)"/>	
+							
+                            <listheader id="hnom" label="Nom" sort="auto(nom)" onSort="employeWin.sort(event)"/>	
+							
+                            <listheader id="hprenom" label="Prénom" sort="auto(prenom)" onSort="employeWin.sort(event)"/>	
+							
+                            <listheader id="htelephone" label="Téléphone" sort="auto(telephone)" onSort="employeWin.sort(event)"/>	
+							
+                            <listheader id="htauxHoraire" label="Taux Horaire" sort="auto(tauxHoraire)" onSort="employeWin.sort(event)"/>	
+							
+                            <listheader id="hsalaire" label="Salaire" sort="auto(salaire)" onSort="employeWin.sort(event)"/>
+                            
+                            <listheader id="hsite" label="Site" sort="auto(site)" onSort="employeWin.sort(event)"/>			                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            
+                            <listcell>		
+                                <intbox value="@{element.numero, save-when='self.onChange'}" inplace="true" onOK="employeWin.objet=self.parent.parent.value; employeWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+                            </listcell>							
+							
+                            <listcell>			
+                                <textbox value="@{element.nom, save-when='self.onChange'}" inplace="true" onOK="employeWin.objet=self.parent.parent.value; employeWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>			
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.prenom, save-when='self.onChange'}" inplace="true" onOK="employeWin.objet=self.parent.parent.value; employeWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.telephone, save-when='self.onChange'}" inplace="true" onOK="employeWin.objet=self.parent.parent.value; employeWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <doublebox value="@{element.tauxHoraire, save-when='self.onChange'}" inplace="true" onOK="employeWin.objet=self.parent.parent.value; employeWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <doublebox value="@{element.salaire, save-when='self.onChange'}" inplace="true" onOK="employeWin.objet=self.parent.parent.value; employeWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>
+                            
+                            <listcell>			
+                                <textbox value="@{element.site, save-when='self.onChange'}" inplace="true" onOK="employeWin.objet=self.parent.parent.value; employeWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>			
+                            </listcell>
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{employeWin.tailleListe}" pageSize="@{employeWin.maxNb}" onPaging="employeWin.getNextElements(event);" />
+                    
+                    <separator/>
+                    <button id="btnNew" unless="${arg.ispopup}" onClick="employeWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button onClick="eastPanel.open=true" label="Filtre avancé" image="/images/skin/funnel.png"/>
+                    <button id="btnPdf" unless="${arg.ispopup}" onClick="employeWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" unless="${arg.ispopup}" onClick="employeWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

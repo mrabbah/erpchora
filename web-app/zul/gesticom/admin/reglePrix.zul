@@ -1,0 +1,1060 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./reglePrixWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="reglePrixWin" height="100%" width="100%" style="margin:auto;" use="${reglePrixWindow}" onCreate='reglePrixWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/reglePrix.zs"/> -->
+        <zscript><![CDATA[
+        String imgPath = "/images/skin";
+        ]]>
+        </zscript>
+        <borderlayout>
+            <north id="eastPanel" size="65px" open="false"  title="Recherche avancée" flex="true" splittable="true"  collapsible="true"  >
+                <hlayout spacing="10px" style="margin-top:9px;margin-left:10px">
+			
+                    <label value="catégories partenaires :" />
+                    <bandbox autodrop="true" mold="rounded">
+                        <bandpopup>
+                            <listbox id="filtercategoriePartenaires" model="@{reglePrixWin.categoriePartenaires}" 
+                                     selectedItem="@{reglePrixWin.filtre.categoriePartenaires, converter=com.choranet.zk.SelectedItemsConverterV3}"
+                                     onSelect="reglePrixWin.ofs=0;reglePrixWin.filtrer();"
+                                     fixedLayout="true" multiple="true" checkmark="true">
+                                <listhead>
+                                    <listheader label=""/>							
+                                </listhead>
+                                <listitem self="@{each=elementfiltrecategoriePartenaires}">
+                                    <listcell label="@{elementfiltrecategoriePartenaires}"/>							
+                                </listitem>								
+                            </listbox>
+                        </bandpopup>
+                    </bandbox>
+                    
+                    <label value="partenaires :" />
+                    <bandbox    autodrop="true" mold="rounded">
+                        <bandpopup>
+                            <listbox id="filterpartenaires" model="@{reglePrixWin.partenaires}" 
+                                     selectedItem="@{reglePrixWin.filtre.partenaires, converter=com.choranet.zk.SelectedItemsConverterV3}"
+                                     onSelect="reglePrixWin.ofs=0;reglePrixWin.filtrer();"
+                                     fixedLayout="true" multiple="true" checkmark="true">
+                                <listhead>
+                                    <listheader label=""/>							
+                                </listhead>
+                                <listitem self="@{each=elementfiltrepartenaires}">
+                                    <listcell label="@{elementfiltrepartenaires}"/>							
+                                </listitem>								
+                            </listbox>
+                        </bandpopup>
+                    </bandbox>
+			
+                    <label value="catégories produits :" />
+                    <bandbox    autodrop="true" mold="rounded">
+                        <bandpopup>
+                            <listbox id="filtercategorieProduits" model="@{reglePrixWin.categorieProduits}" 
+                                     selectedItem="@{reglePrixWin.filtre.categorieProduits, converter=com.choranet.zk.SelectedItemsConverterV3}"
+                                     onSelect="reglePrixWin.ofs=0;reglePrixWin.filtrer();"
+                                     fixedLayout="true" multiple="true" checkmark="true">
+                                <listhead>
+                                    <listheader label=""/>							
+                                </listhead>
+                                <listitem self="@{each=elementfiltrecategorieProduits}">
+                                    <listcell label="@{elementfiltrecategorieProduits}"/>							
+                                </listitem>								
+                            </listbox>
+                        </bandpopup>
+                    </bandbox>
+                    
+                    <label value="produits :" />
+                    <bandbox    autodrop="true" mold="rounded">
+                        <bandpopup>
+                            <listbox id="filterproduits" model="@{reglePrixWin.produits}" 
+                                     selectedItem="@{reglePrixWin.filtre.produits, converter=com.choranet.zk.SelectedItemsConverterV3}"
+                                     onSelect="reglePrixWin.ofs=0;reglePrixWin.filtrer();"
+                                     fixedLayout="true" multiple="true" checkmark="true">
+                                <listhead>
+                                    <listheader label=""/>							
+                                </listhead>
+                                <listitem self="@{each=elementfiltreproduits}">
+                                    <listcell label="@{elementfiltreproduits}"/>							
+                                </listitem>								
+                            </listbox>
+                        </bandpopup>
+                    </bandbox>
+										                    
+                </hlayout>
+            </north>
+            <west id="westPanel" title="Gestion des règles de prix" size="100%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <tabbox mold="accordion-lite">
+                        <tabs>
+                            <tab label="Zone de paramètrage" />
+                        </tabs>
+                        <tabpanels>
+                            <tabpanel>
+                                <tabbox>
+                                    <tabs>
+                                        <tab label="Informations clé">
+<!--                                            <attribute name="onCreate">
+                                                <![CDATA[
+                                                    fieldTypePrixdeBase.selectedIndex=0;
+                                                ]]>
+                                            </attribute>-->
+                                        </tab>
+                                        <tab label="Validité de règle">
+<!--                                            <attribute name="onChange">
+                                                <![CDATA[
+                                                    fieldDateDebut.constraint="";
+                                                    if (fieldActive.checked == true) {
+                                                        fieldTypeRegle.disabled = false;
+                                                        fieldDateDebut.disabled = false;
+                                                        fieldDateFin.disabled = false;
+                                                        fieldDateDebut.constraint="no empty: Veillez indiquez une valeur";
+                                                    } else {
+                                                        fieldTypeRegle.disabled = true;
+                                                        fieldDateDebut.disabled = true;
+                                                        fieldDateFin.disabled = true;
+                                                    }
+                                                ]]>
+                                            </attribute>-->
+                                        </tab>
+                                        <tab label="Conditions de base">
+                                            <attribute name="onOpen, onClick">
+                                                    <![CDATA[
+                                                        //alert(fieldOperateurComparaison.value);
+                                                        if (!fieldOperateurComparaison.value.equals("Inclu strictement entre")) {
+                                                            fieldQuantiteMin.disabled = true;
+                                                        } 
+                                                        else {
+                                                            fieldQuantiteMin.disabled = false;
+                                                            fieldQuantiteMin.constraint="no empty: Veillez indiquez une valeur";
+                                                        }
+                                                        fieldQuantiteMax.disabled = false;
+                                                        fieldQuantiteMax.constraint="no empty: Veillez indiquez une valeur";
+                                                    ]]>
+                                            </attribute>
+                                        </tab>
+                                        <tab label="Conditions avancées" />
+                                        <tab label="Arrondissement">
+                                            <attribute name="onCreate">
+                                                <![CDATA[
+                                                    fieldSenseArrondissement.disabled = fieldArrondirApresVirguel.checked;
+                                                    fieldSeuilArrondissement.disabled = fieldArrondirApresVirguel.checked;
+                                                ]]>
+                                            </attribute>
+                                        </tab>
+                                    </tabs>
+                                    <tabpanels>
+                                        <tabpanel>
+                                            <grid fixedLayout="true">
+                                                <rows>
+                                                    <row>
+                                                        <label value="Code"/>	 
+                                                        <textbox id="fieldCode" constraint="no empty: Veillez indiquez une valeur" value="@{reglePrixWin.objet.code, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'>
+<!--                                                            <attribute name="onChange">
+                                                                    <![CDATA[
+                                                                        fieldTypePrixdeBase.selectedIndex=0;
+                                                                    ]]>
+                                                            </attribute>-->
+                                                        </textbox>
+                                              
+                                                        <label value="Libelle"/>
+                                                        <textbox id="fieldLibelle" constraint="no empty: Veillez indiquez une valeur" value="@{reglePrixWin.objet.libelle, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                                                    </row>
+                                                    <row>
+                                                        <label value="Prix de Base"/>	
+                                                        <combobox id="fieldTypePrixdeBase" readonly="true" constraint="no empty: Veillez indiquez une valeur" style="margin-left:3px" width="130px" value="@{reglePrixWin.objet.typePrixdeBase, save-when='triggerBtn.onClick'}" >
+                                                            <comboitem label="Prix d'achat" value="Prix d'achat"/>
+                                                            <comboitem label="Prix de revient" value="Prix de revient"/>
+                                                            <comboitem label="Prix de vente" value="Prix de vente"/>
+                                                        </combobox>
+                                            
+                                                        <label value="Priorité"/>		 
+                                                        <intbox id="fieldPriorite" constraint="no empty: Veillez indiquez une valeur" value="@{reglePrixWin.objet.priorite, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                                                    </row>
+                                                    <row>
+                                                        <label value="Taux de remise (%)"/>		 
+                                                        <doublebox id="fieldTauxRemise" constraint="no empty: Veillez indiquez une valeur" value="@{reglePrixWin.objet.tauxRemise, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                                                   
+                                                        <label value="Remise fixe"/>		 
+                                                        <doublebox id="fieldValeurFixe" value="@{reglePrixWin.objet.valeurFixe, save-when='triggerBtn.onClick'}"/>
+                                                    </row>
+                                                </rows>
+                                            </grid>
+                                        </tabpanel>
+                                        <tabpanel>
+                                            <grid fixedLayout="true">
+                                                <rows>
+                                                    <row>
+                                                        <label value="Active"/>
+                                                        <checkbox id="fieldActive" label="?" checked="@{reglePrixWin.objet.active, save-when='triggerBtn.onClick'}">
+                                                            <attribute name="onClick">
+                                                                    <![CDATA[
+                                                                        fieldDateDebut.constraint="";
+                                                                        if (self.checked == true) {
+                                                                            fieldTypeRegle.disabled = false;
+                                                                            fieldDateDebut.disabled = false;
+                                                                            fieldDateFin.disabled = false;
+                                                                            fieldDateDebut.constraint="no empty: Veillez indiquez une valeur";
+                                                                        } else {
+                                                                            fieldTypeRegle.disabled = true;
+                                                                            fieldDateDebut.disabled = true;
+                                                                            fieldDateFin.disabled = true;
+                                                                        }
+                                                                    ]]>
+                                                            </attribute>
+                                                        </checkbox>
+                                                        
+                                                        <label value="Type Opération"/>	
+                                                        <combobox id="fieldTypeRegle" readonly="true" constraint="no empty: Veillez indiquez une valeur" style="margin-left:3px" width="130px" selectedItem="@{reglePrixWin.objet.typeRegle, save-when='triggerBtn.onClick'}">
+                                                            <comboitem label="ACHAT" value="ACHAT"/>
+                                                            <comboitem label="VENTE" value="VENTE"/>
+                                                        </combobox>
+                                                    </row>													
+                                                    <row>
+                                                        <label value="Date début"/>		 
+                                                        <datebox id="fieldDateDebut" format="dd/MM/yyyy" value="@{reglePrixWin.objet.dateDebut, save-when='triggerBtn.onClick'}" >
+                                                            <attribute name="onChange">
+                                                                <![CDATA[
+                                                                    fieldDateDebut.disabled = !fieldActive.checked;
+                                                                    if(fieldDateDebut.value != null && fieldDateFin.value != null) {
+                                                                        if (fieldDateDebut.value.getTime() >= fieldDateFin.value.getTime()){
+                                                                            fieldDateFin.value = fieldDateDebut.value;
+                                                                        }
+                                                                    }
+                                                                ]]>
+                                                            </attribute>
+                                                        </datebox>
+                                                        <label value="Date fin"/>		 
+                                                        <datebox id="fieldDateFin" format="dd/MM/yyyy" value="@{reglePrixWin.objet.dateFin, save-when='triggerBtn.onClick'}" >
+                                                            <attribute name="onChange">
+                                                                <![CDATA[
+                                                                    fieldDateFin.disabled = !fieldActive.checked;
+                                                                    if(fieldDateDebut.value != null && fieldDateFin.value != null) {
+                                                                        if (fieldDateDebut.value.getTime() >= fieldDateFin.value.getTime()){
+                                                                            fieldDateFin.value = fieldDateDebut.value;
+                                                                        }
+                                                                    }
+                                                                ]]>
+                                                            </attribute>
+                                                        </datebox>
+                                                    </row>	
+                                                </rows>
+                                            </grid>
+                                        </tabpanel>
+                                        <tabpanel>
+                                            <grid fixedLayout="true">
+                                                <rows>
+                                                    <row>
+                                                        <label value="Quantité du produit" />			 
+                                                        <combobox id="fieldOperateurComparaison" readonly="true" style="margin-left:3px" width="140px" value="@{reglePrixWin.objet.operateurComparaison, save-when='triggerBtn.onClick'}">
+                                                            <attribute name="onChange">
+                                                                    <![CDATA[
+                                                                        //alert(fieldOperateurComparaison.value);
+                                                                        if (!self.value.equals("Inclu strictement entre")) {
+                                                                            fieldQuantiteMin.disabled = true;
+                                                                        } 
+                                                                        else {
+                                                                            fieldQuantiteMin.disabled = false;
+                                                                            fieldQuantiteMin.constraint="no empty: Veillez indiquez une valeur";
+                                                                        }
+                                                                        labelQtymax.value = "Quantité";
+                                                                        fieldQuantiteMax.disabled = false;
+                                                                        fieldQuantiteMax.constraint="no empty: Veillez indiquez une valeur";
+                                                                    ]]>
+                                                            </attribute>
+                                                            <comboitem label="Egal à" value="Egal à"/>
+                                                            <comboitem label="Inférieur à" value="Inférieur à"/>
+                                                            <comboitem label="Supèrieur à" value="Supèrieur à"/>
+                                                            <comboitem label="Inclu strictement entre" value="Inclu strictement entre"/>
+                                                        </combobox>
+                                                        
+                                                        <label value="Quantité min"/>			 
+                                                        <doublebox id="fieldQuantiteMin" disabled="true" value="@{reglePrixWin.objet.quantiteMin, save-when='triggerBtn.onClick'}"/>
+                                                        
+                                                        <label id="labelQtymax" value="Quantité max"/>			 
+                                                        <doublebox id="fieldQuantiteMax" disabled="true" value="@{reglePrixWin.objet.quantiteMax, save-when='triggerBtn.onClick'}"/>
+                                                    </row>	
+                                                </rows>
+                                            </grid>
+                                            <hlayout spacing="10px" style="margin-left:5px" height="340px">
+                                                <box pack="center" align="center" width="50%" height="100%">
+                                                    <hlayout height="330px" style="padding:10px" width="100%"> 
+                                                        <listbox id="lstcategoriePartenaires" multiple="true" vflex="true" model="@{reglePrixWin.categoriePartenaires}" selectedItem="@{reglePrixWin.baseCtgrPrtSelected, converter=com.choranet.zk.SelectedItemsConverterV3}"  width="250px" height="100%">
+                                                            <listhead sizable="true">
+                                                                <listheader label="Catégorie Partenaire" sort="auto(libelle)"/>
+                                                                <listheader label="Parent"/>
+                                                            </listhead>
+                                                            <listitem self="@{each=element}">
+                                                                <listcell label="@{element.libelle}"/>
+                                                                <listcell label="@{element.categorieParente}"/>
+                                                            </listitem>
+                                                        </listbox>
+                                    
+                                                        <vbox spacing="10px"> 
+                                                            <image style="cursor:pointer" src="${imgPath}/rightrightarrow_g.png" onClick="reglePrixWin.choisirTout(1)"/>
+                                                            <image style="cursor:pointer" src="${imgPath}/rightarrow_g.png" onClick="reglePrixWin.choisirDesElements(1)"/>
+                                                            <image style="cursor:pointer" src="${imgPath}/leftarrow_g.png" onClick="reglePrixWin.enleverDesElements(1)"/>
+                                                            <image style="cursor:pointer" src="${imgPath}/leftleftarrow_g.png" onClick="reglePrixWin.enleverTout(1)"/>
+                                                        </vbox>
+                                                        <listbox id="lstcategoriePartenairesAbonnesRegle" multiple="true" vflex="true" model="@{reglePrixWin.categoriePartenairesSelected}" selectedItem="@{reglePrixWin.baseCtgrPrtAbnSelected, converter=com.choranet.zk.SelectedItemsConverterV3}"  width="250px" height="100%">
+                                                            <listhead sizable="true">
+                                                                <listheader label="Catégorie Partenaire" sort="auto(libelle)"/>
+                                                                <listheader label="Parent"/>
+                                                            </listhead>
+                                                            <listitem self="@{each=element}">
+                                                                <listcell label="@{element.libelle}"/>
+                                                                <listcell label="@{element.categorieParente}"/>
+                                                            </listitem>
+                                                        </listbox>
+                                                    </hlayout>
+                                                </box>
+                                                <box pack="center" align="center" width="50%" height="100%">
+                                                    <hlayout height="330px" style="padding:10px" width="100%"> 
+                                                        <listbox id="lstcategorieProduits" multiple="true" vflex="true" model="@{reglePrixWin.categorieProduits}" selectedItem="@{reglePrixWin.baseCtgrPrdSelected, converter=com.choranet.zk.SelectedItemsConverterV3}"  width="250px" height="100%">
+                                                            <listhead sizable="true">
+                                                                <listheader label="Catégorie Produit" sort="auto(intitule)"/>
+                                                                <listheader label="Parent" />
+                                                            </listhead>
+                                                            <listitem self="@{each=element}">
+                                                                <listcell label="@{element.intitule}"/>
+                                                                <listcell label="@{element.categorieParente}"/>
+                                                            </listitem>
+                                                        </listbox>
+                                    
+                                                        <vbox spacing="10px"> 
+                                                            <image style="cursor:pointer" src="${imgPath}/rightrightarrow_g.png" onClick="reglePrixWin.choisirTout(3)"/>
+                                                            <image style="cursor:pointer" src="${imgPath}/rightarrow_g.png" onClick="reglePrixWin.choisirDesElements(3)"/>
+                                                            <image style="cursor:pointer" src="${imgPath}/leftarrow_g.png" onClick="reglePrixWin.enleverDesElements(3)"/>
+                                                            <image style="cursor:pointer" src="${imgPath}/leftleftarrow_g.png" onClick="reglePrixWin.enleverTout(3)"/>
+                                                        </vbox>
+                                                        <listbox id="lstcategorieProduitsAbonnesRegle" multiple="true" vflex="true" model="@{reglePrixWin.categorieProduitsSelected}" selectedItem="@{reglePrixWin.baseCtgrPrdAbnSelected, converter=com.choranet.zk.SelectedItemsConverterV3}"  width="250px" height="100%">
+                                                            <listhead sizable="true">
+                                                                <listheader label="Catégorie Produit" sort="auto(intitule)"/>
+                                                                <listheader label="Parent"/>
+                                                            </listhead>
+                                                            <listitem self="@{each=element}">
+                                                                <listcell label="@{element.intitule}"/>
+                                                                <listcell label="@{element.categorieParente}"/>
+                                                            </listitem>
+                                                        </listbox>
+                                                    </hlayout>
+                                                </box>
+                                            </hlayout>
+                                            
+                                        </tabpanel>
+                                        <tabpanel>
+                                            <tabbox>
+                                                <tabs>
+                                                    <tab label="Par partenaires" />
+                                                    <tab label="Par Produits" />
+                                                </tabs>
+                                                <tabpanels>
+                                                    <tabpanel>
+                                                        <box pack="center" align="center" width="100%" height="100%">
+                                                            <hlayout height="330px" style="padding:2px" width="100%"> 
+                                                                <listbox id="lstpartenaires" multiple="true" vflex="true" model="@{reglePrixWin.partenaires}" selectedItem="@{reglePrixWin.basePrtSelected, converter=com.choranet.zk.SelectedItemsConverterV3}"  width="550px" height="100%">
+                                                                    <listhead sizable="true">
+                                                                        <listheader label="Nom" sort="auto(raisonSociale)"/>
+                                                                        <listheader label="F.Juridique" sort="auto(formeJuridique)"/>
+                                                                        <listheader label="Echeance" sort="auto(echeance)"/>
+                                                                        <listheader label="Mode Réglement" sort="auto(modeReglementDefaut)"/>
+                                                                        <listheader label="Ctgr. Partenaire" sort="auto(categoriePartenaires)"/>	
+                                                                    </listhead>
+                                                                    <listitem self="@{each=element}">
+                                                                        <listcell label="@{element.raisonSociale}"/>
+                                                                        <listcell label="@{element.formeJuridique}"/>
+                                                                        <listcell label="@{element.echeance}"/>
+                                                                        <listcell label="@{element.modeReglementDefaut}"/>
+                                                                        <listcell label="@{element.categoriePartenaires}"/>
+                                                                    </listitem>
+                                                                </listbox>
+                                    
+                                                                <vbox spacing="10px"> 
+                                                                    <image style="cursor:pointer" src="${imgPath}/rightrightarrow_g.png" onClick="reglePrixWin.choisirTout(2)"/>
+                                                                    <image style="cursor:pointer" src="${imgPath}/rightarrow_g.png" onClick="reglePrixWin.choisirDesElements(2)"/>
+                                                                    <image style="cursor:pointer" src="${imgPath}/leftarrow_g.png" onClick="reglePrixWin.enleverDesElements(2)"/>
+                                                                    <image style="cursor:pointer" src="${imgPath}/leftleftarrow_g.png" onClick="reglePrixWin.enleverTout(2)"/>
+                                                                </vbox>
+                                                                <listbox id="lstpartenairesAbonnesRegle" multiple="true" vflex="true" model="@{reglePrixWin.partenairesSelected}" selectedItem="@{reglePrixWin.basePrtAbnSelected, converter=com.choranet.zk.SelectedItemsConverterV3}"  width="550px" height="100%">
+                                                                    <listhead sizable="true">
+                                                                        <listheader label="Nom" sort="auto(raisonSociale)"/>
+                                                                        <listheader label="F.Juridique" sort="auto(formeJuridique)"/>
+                                                                        <listheader label="Echeance" sort="auto(echeance)"/>
+                                                                        <listheader label="Mode Réglement" sort="auto(modeReglementDefaut)"/>
+                                                                        <listheader label="Ctgr. Partenaire" sort="auto(categoriePartenaires)"/>	
+                                                                    </listhead>
+                                                                    <listitem self="@{each=element}">    
+                                                                        <listcell label="@{element.raisonSociale}"/>
+                                                                        <listcell label="@{element.formeJuridique}"/>
+                                                                        <listcell label="@{element.echeance}"/>
+                                                                        <listcell label="@{element.modeReglementDefaut}"/>
+                                                                        <listcell label="@{element.categoriePartenaires}"/>
+                                                                    </listitem>
+                                                                </listbox>
+                                                            </hlayout>
+                                                        </box>
+                                                    </tabpanel>
+                                                    <tabpanel>
+                                                        <box pack="center" align="center" width="100%" height="100%">
+                                                            <hlayout height="330px" style="padding:2px" width="100%"> 
+                                                                <listbox id="lstproduits" multiple="true" vflex="true" model="@{reglePrixWin.produits}" selectedItem="@{reglePrixWin.basePrdSelected, converter=com.choranet.zk.SelectedItemsConverterV3}"  width="550px" height="100%">
+                                                                    <listhead sizable="true">
+                                                                        <listheader label="Code" sort="auto(code)"/>
+                                                                        <listheader label="Designation" sort="auto(designation)"/>
+                                                                        <listheader label="Prix d'achat" sort="auto(prixAchat)"/>
+                                                                        <listheader label="Prix Vente Sd." sort="auto(prixVenteStandard)"/>
+                                                                        <listheader label="Ctgr.Produit" sort="auto(categorieProduit)"/>	
+                                                                    </listhead>
+                                                                    <listitem self="@{each=element}">
+                                                                        <listcell label="@{element.code}"/>
+                                                                        <listcell label="@{element.designation}"/>
+                                                                        <listcell label="@{element.prixAchat}"/>
+                                                                        <listcell label="@{element.prixVenteStandard}"/>
+                                                                        <listcell label="@{element.categorieProduit}"/>
+                                                                    </listitem>
+                                                                </listbox>
+                                    
+                                                                <vbox spacing="10px"> 
+                                                                    <image style="cursor:pointer" src="${imgPath}/rightrightarrow_g.png" onClick="reglePrixWin.choisirTout(4)"/>
+                                                                    <image style="cursor:pointer" src="${imgPath}/rightarrow_g.png" onClick="reglePrixWin.choisirDesElements(4)"/>
+                                                                    <image style="cursor:pointer" src="${imgPath}/leftarrow_g.png" onClick="reglePrixWin.enleverDesElements(4)"/>
+                                                                    <image style="cursor:pointer" src="${imgPath}/leftleftarrow_g.png" onClick="reglePrixWin.enleverTout(4)"/>
+                                                                </vbox>
+                                                                <listbox id="lstproduitsAbonnesRegle" multiple="true" vflex="true" model="@{reglePrixWin.produitsSelected}" selectedItem="@{reglePrixWin.basePrdAbnSelected, converter=com.choranet.zk.SelectedItemsConverterV3}"  width="550px" height="100%">
+                                                                    <listhead sizable="true">
+                                                                        <listheader label="Code" sort="auto(code)"/>
+                                                                        <listheader label="Designation" sort="auto(designation)"/>
+                                                                        <listheader label="Prix d'achat" sort="auto(prixAchat)"/>
+                                                                        <listheader label="Prix Vente Sd." sort="auto(prixVenteStandard)"/>
+                                                                        <listheader label="Ctgr.Produit" sort="auto(categorieProduit)"/>
+                                                                    </listhead>
+                                                                    <listitem self="@{each=element}">    
+                                                                        <listcell label="@{element.code}"/>
+                                                                        <listcell label="@{element.designation}"/>
+                                                                        <listcell label="@{element.prixAchat}"/>
+                                                                        <listcell label="@{element.prixVenteStandard}"/>
+                                                                        <listcell label="@{element.categorieProduit}"/>
+                                                                    </listitem>
+                                                                </listbox>
+                                                            </hlayout>
+                                                        </box>
+                                                    </tabpanel>
+                                                </tabpanels>
+                                            </tabbox>
+                                        </tabpanel>
+                                        <tabpanel>
+                                            <grid fixedLayout="true">
+                                                <rows>												
+                                                    <row>
+                                                        <label value="Arrondir Aprés Virgule"/>		 
+                                                        <checkbox id="fieldArrondirApresVirguel" label="?" checked="@{reglePrixWin.objet.arrondirApresVirguel, save-when='triggerBtn.onClick'}">
+                                                            <attribute name="onClick">
+                                                                    <![CDATA[
+                                                                        fieldSenseArrondissement.disabled = !self.checked;
+                                                                        fieldSeuilArrondissement.disabled = !self.checked;
+                                                                    ]]>
+                                                            </attribute>
+                                                        </checkbox>
+                                                        <label value="Sense d'arrondissement"/>		 
+                                                        <combobox id="fieldSenseArrondissement" readonly="true" style="margin-left:3px" width="130px" value="@{reglePrixWin.objet.senseArrondissement, save-when='triggerBtn.onClick'}">
+                                                            <comboitem label="Minoration" value="Minoration"/>
+                                                            <comboitem label="Majoration" value="Majoration"/>
+                                                            <comboitem label="Rapprochement" value="Rapprochement"/>
+                                                        </combobox>
+                                                    
+                                                        <label value="Seuil d'arrondissement"/>		 
+                                                        <doublebox id="fieldSeuilArrondissement" disabled="true" value="@{reglePrixWin.objet.seuilArrondissement, save-when='triggerBtn.onClick'}" />
+                                                    </row>				
+                                                </rows>
+                                            </grid>
+                                        </tabpanel>
+                                    </tabpanels>
+                                </tabbox>                             
+                            </tabpanel> 
+                        </tabpanels>
+                    </tabbox>
+                    	
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));reglePrixWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));reglePrixWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        reglePrixWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute>
+                    </button>
+                    <!-- <button id="btnNew" onClick="reglePrixWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="reglePrixWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="true"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="reglePrixWin.select()" model="@{reglePrixWin.listeObjets}" selectedItem="@{reglePrixWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterCode" value="@{reglePrixWin.filtre.code}" onChanging="reglePrixWin.ofs; reglePrixWin.filtre.code=event.value; reglePrixWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+                            
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterPriorite" value="@{reglePrixWin.filtre.priorite}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                reglePrixWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(reglePrixWin.filtre.priorite != null) {
+                                                                reglePrixWin.filtre.priorite = null;
+                                                        }
+                                                } else {
+                                                        reglePrixWin.filtre.priorite=new Integer(event.value);
+                                                }
+                                                reglePrixWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+                            
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterTypePrixdeBase" value="@{reglePrixWin.filtre.typePrixdeBase}" onChanging="reglePrixWin.ofs; reglePrixWin.filtre.typePrixdeBase=event.value; reglePrixWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterTauxRemise" value="@{reglePrixWin.filtre.tauxRemise}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                reglePrixWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(reglePrixWin.filtre.tauxRemise != null) {
+                                                                reglePrixWin.filtre.tauxRemise = null;
+                                                        }
+                                                } else {
+                                                        reglePrixWin.filtre.tauxRemise=new Double(event.value);
+                                                }
+                                                reglePrixWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+                            
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterValeurFixe" value="@{reglePrixWin.filtre.valeurFixe}" width="100%">
+                                    <attribute name="onChanging">
+										<![CDATA[
+											reglePrixWin.ofs=0;
+											if(event.value.equals("")) {
+												if(reglePrixWin.filtre.valeurFixe != null) {
+													reglePrixWin.filtre.valeurFixe = null;
+												}
+											} else {
+												reglePrixWin.filtre.valeurFixe=new Double(event.value);
+											}
+											reglePrixWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+								
+<!--                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterLibelle" value="@{reglePrixWin.filtre.libelle}" onChanging="reglePrixWin.ofs; reglePrixWin.filtre.libelle=event.value; reglePrixWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								-->
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterOperateurComparaison" value="@{reglePrixWin.filtre.operateurComparaison}" onChanging="reglePrixWin.ofs; reglePrixWin.filtre.operateurComparaison=event.value; reglePrixWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterQuantiteMin" value="@{reglePrixWin.filtre.quantiteMin}" width="100%">
+                                    <attribute name="onChanging">
+										<![CDATA[
+											reglePrixWin.ofs=0;
+											if(event.value.equals("")) {
+												if(reglePrixWin.filtre.quantiteMin != null) {
+													reglePrixWin.filtre.quantiteMin = null;
+												}
+											} else {
+												reglePrixWin.filtre.quantiteMin=new Double(event.value);
+											}
+											reglePrixWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+				
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterQuantiteMax" value="@{reglePrixWin.filtre.quantiteMax}" width="100%">
+                                    <attribute name="onChanging">
+										<![CDATA[
+											reglePrixWin.ofs=0;
+											if(event.value.equals("")) {
+												if(reglePrixWin.filtre.quantiteMax != null) {
+													reglePrixWin.filtre.quantiteMax = null;
+												}
+											} else {
+												reglePrixWin.filtre.quantiteMax=new Double(event.value);
+											}
+											reglePrixWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>    
+								
+<!--                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDateDebut" format="dd/MM/yyyy" value="@{reglePrixWin.filtre.dateDebut}" onOK="reglePrixWin.ofs=0; reglePrixWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDateFin" format="dd/MM/yyyy" value="@{reglePrixWin.filtre.dateFin}" onOK="reglePrixWin.ofs=0; reglePrixWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>-->
+										
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filterArrondirApresVirguel" readonly="true" onOK="reglePrixWin.ofs=0;reglePrixWin.filtrer();" >
+                                    <attribute name="onCreate">
+                                        <![CDATA[
+                                            List l = new ArrayList();
+                                            l.add("Oui/Non");
+                                            l.add("Oui");
+                                            l.add("Non");
+                                            ListModelList lm = new ListModelList(l);
+                                            lm.addSelection(lm.get(0));
+                                            self.setModel(lm);
+                                        ]]>
+                                    </attribute>
+                                    <attribute name="onChange">
+                                        <![CDATA[
+                                            if(self.selectedIndex == 0) {
+                                                reglePrixWin.filtre.arrondirApresVirguel = null;
+                                            } else if(self.selectedIndex == 1) {
+                                                reglePrixWin.filtre.arrondirApresVirguel = true;
+                                            } else {
+                                                reglePrixWin.filtre.arrondirApresVirguel = false;
+                                            }
+                                        ]]>
+                                    </attribute>
+                                </combobox>                                
+                            </auxheader>
+                            
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filterActive" readonly="true" onOK="reglePrixWin.ofs=0;reglePrixWin.filtrer();" >
+                                    <attribute name="onCreate">
+                                        <![CDATA[
+                                            List l = new ArrayList();
+                                            l.add("Oui/Non");
+                                            l.add("Oui");
+                                            l.add("Non");
+                                            ListModelList lm = new ListModelList(l);
+                                            lm.addSelection(lm.get(0));
+                                            self.setModel(lm);
+                                        ]]>
+                                    </attribute>
+                                    <attribute name="onChange">
+                                        <![CDATA[
+                                            if(self.selectedIndex == 0) {
+                                                reglePrixWin.filtre.active = null;
+                                            } else if(self.selectedIndex == 1) {
+                                                reglePrixWin.filtre.active = true;
+                                            } else {
+                                                reglePrixWin.filtre.active = false;
+                                            }
+                                        ]]>
+                                    </attribute>
+                                </combobox>                                
+                            </auxheader>
+										
+								
+<!--                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterSenseArrondissement" value="@{reglePrixWin.filtre.senseArrondissement}" onChanging="reglePrixWin.ofs; reglePrixWin.filtre.senseArrondissement=event.value; reglePrixWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterSeuilArrondissement" value="@{reglePrixWin.filtre.seuilArrondissement}" width="100%">
+                                    <attribute name="onChanging">
+										<![CDATA[
+											reglePrixWin.ofs=0;
+											if(event.value.equals("")) {
+												if(reglePrixWin.filtre.seuilArrondissement != null) {
+													reglePrixWin.filtre.seuilArrondissement = null;
+												}
+											} else {
+												reglePrixWin.filtre.seuilArrondissement=new Double(event.value);
+											}
+											reglePrixWin.filtrer();
+											self.focus();
+											if(!event.value.equals("")) {
+												self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+											}
+										]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>-->
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+							
+                            <listheader width="50px" label="Code" sort="auto(code)" onSort="reglePrixWin.sort(event)"/>
+                            
+                            <listheader width="60px" label="Priorité" sort="auto(priorite)" onSort="reglePrixWin.sort(event)"/>
+                            
+                            <listheader label="Prix de Base" sort="auto(typePrixdeBase)" onSort="reglePrixWin.sort(event)"/>
+							
+                            <listheader label="Taux Remise" sort="auto(tauxRemise)" onSort="reglePrixWin.sort(event)"/>	
+                            
+                            <listheader label="Remise Fixe" sort="auto(valeurFixe)" onSort="reglePrixWin.sort(event)"/>	
+							
+<!--                            <listheader label="Libelle" sort="auto(libelle)" onSort="reglePrixWin.sort(event)"/>	-->
+							
+                            <listheader width="123px"  label="Opérateur Comp." sort="auto(operateurComparaison)" onSort="reglePrixWin.sort(event)"/>	
+							
+                            <listheader label="Quantité Min" sort="auto(quantiteMin)" onSort="reglePrixWin.sort(event)"/>		
+                            
+                            <listheader label="Quantité Max" sort="auto(quantiteMax)" onSort="reglePrixWin.sort(event)"/>		
+							
+                            <listheader label="Arrondissement" align="center" sort="auto(arrondirApresVirguel)" onSort="reglePrixWin.sort(event)"/>
+                            
+                            <listheader width="100px" label="Active" align="center" sort="auto(active)" onSort="reglePrixWin.sort(event)"/>		
+							
+<!--                            <listheader label="SenseArrondissement" sort="auto(senseArrondissement)" onSort="reglePrixWin.sort(event)"/>	
+							
+                            <listheader label="SeuilArrondissement" sort="auto(seuilArrondissement)" onSort="reglePrixWin.sort(event)"/>	-->
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            
+                            <listcell>
+							
+                                <textbox value="@{element.code, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.objet=self.parent.parent.value; reglePrixWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>	
+                            
+                            <listcell>
+							
+                                <intbox value="@{element.priorite, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.objet=self.parent.parent.value; reglePrixWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>	
+                            
+                            <listcell>
+							
+                                <textbox value="@{element.typePrixdeBase, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.objet=self.parent.parent.value; reglePrixWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>	
+					
+							
+                            <listcell>
+							
+                                <doublebox value="@{element.tauxRemise, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.objet=self.parent.parent.value; reglePrixWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>	
+                            
+                            		
+                            <listcell>
+							
+                                <doublebox value="@{element.valeurFixe, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.objet=self.parent.parent.value; reglePrixWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>	
+							
+<!--                            <listcell>
+							
+                                <textbox value="@{element.libelle, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.objet=self.parent.parent.value; reglePrixWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							-->
+                            <listcell>
+							
+                                <textbox value="@{element.operateurComparaison, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.objet=self.parent.parent.value; reglePrixWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+						
+                            <listcell>
+							
+                                <doublebox value="@{element.quantiteMin, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.objet=self.parent.parent.value; reglePrixWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>
+                            
+                            <listcell>
+							
+                                <doublebox value="@{element.quantiteMax, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.objet=self.parent.parent.value; reglePrixWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>	
+							
+			
+<!--                            <listcell>
+							
+                                <datebox format="dd/MM/yyyy" value="@{element.dateDebut, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.objet=self.parent.parent.value; reglePrixWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <datebox format="dd/MM/yyyy" value="@{element.dateFin, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.objet=self.parent.parent.value; reglePrixWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							-->
+							
+                      				
+                            <listcell>
+							
+                                <combobox inplace="true" readonly="true" >
+                                    <attribute name="onOK">
+                                        <![CDATA[
+                                            if(self.selectedIndex == 0) {
+                                                self.parent.parent.value.arrondirApresVirguel = true;
+                                            } else {
+                                                self.parent.parent.value.arrondirApresVirguel = false;
+                                            }
+                                            reglePrixWin.objet=self.parent.parent.value; 
+                                            reglePrixWin.update();
+                                        ]]>
+                                    </attribute>
+                                    <attribute name="onCreate">
+                                        <![CDATA[
+                                            List l = new ArrayList();
+                                            l.add("Oui");
+                                            l.add("Non");
+                                            ListModelList lm = new ListModelList(l);
+                                            self.setModel(lm);
+                                        ]]>
+                                    </attribute>
+                                    <attribute name="onAfterRender">
+                                        <![CDATA[
+                                            if(self.parent.parent.value.arrondirApresVirguel == true) {
+                                                self.selectedIndex = 0;
+                                            } else {
+                                                self.selectedIndex = 1;
+                                            }
+                                        ]]>
+                                    </attribute>
+                                </combobox>
+							
+                            </listcell>	
+                            
+                            <listcell>
+							
+                                <combobox inplace="true" readonly="true" >
+                                    <attribute name="onOK">
+                                        <![CDATA[
+                                            if(self.selectedIndex == 0) {
+                                                self.parent.parent.value.active = true;
+                                            } else {
+                                                self.parent.parent.value.active = false;
+                                            }
+                                            reglePrixWin.objet=self.parent.parent.value; 
+                                            reglePrixWin.update();
+                                        ]]>
+                                    </attribute>
+                                    <attribute name="onCreate">
+                                        <![CDATA[
+                                            List l = new ArrayList();
+                                            l.add("Oui");
+                                            l.add("Non");
+                                            ListModelList lm = new ListModelList(l);
+                                            self.setModel(lm);
+                                        ]]>
+                                    </attribute>
+                                    <attribute name="onAfterRender">
+                                        <![CDATA[
+                                            if(self.parent.parent.value.active == true) {
+                                                self.selectedIndex = 0;
+                                            } else {
+                                                self.selectedIndex = 1;
+                                            }
+                                        ]]>
+                                    </attribute>
+                                </combobox>
+							
+                            </listcell>	
+							
+<!--                            <listcell>
+							
+                                <textbox value="@{element.senseArrondissement, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.objet=self.parent.parent.value; reglePrixWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <doublebox value="@{element.seuilArrondissement, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.objet=self.parent.parent.value; reglePrixWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+							
+                            </listcell>							-->
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{reglePrixWin.tailleListe}" pageSize="@{reglePrixWin.maxNb}" onPaging="reglePrixWin.getNextElements(event);" />
+                    <separator/>
+<!--                    <grid>
+                        <columns>
+                            <column width="32px" />
+							
+                            <column width="50px"/>
+							
+                            <column width="60px"/>
+							
+                            <column />
+							
+                            <column />
+							
+                            <column />
+							
+                            <column width="123px"/>
+							
+                            <column />
+							
+                            <column width="115px"/>
+							
+                            <column width="115px"/>
+							
+                            <column />
+							
+                            <column width="100px"/>
+							
+                            <column />
+							
+                            <column />
+							
+                            <column />
+							
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png"  />
+								
+                                <textbox id="fieldcodebis" value="@{reglePrixWin.objet.code, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.add();" width="97%"/>
+				
+                                <intbox id="fieldprioritebis" value="@{reglePrixWin.objet.priorite, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.add();" width="97%" />
+                                
+                                <combobox id="fieldtypePrixdeBasebis" style="margin-left:3px" value="@{reglePrixWin.objet.typePrixdeBase, save-when='triggerBtn.onClick'}" width="97%">
+                                    <comboitem label="Prix d'achat" value="prixAchat"/>
+                                    <comboitem label="Prix de Revient" value="prixRevient"/>
+                                    <comboitem label="Prix de vente" value="prixVente"/>
+                                </combobox>
+
+                                <doublebox id="fieldtauxRemisebis" value="@{reglePrixWin.objet.tauxRemise, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.add();" width="97%" />
+				
+                                <doublebox id="fieldvaleurFixebis" value="@{reglePrixWin.objet.valeurFixe, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.add();" width="97%" />
+                                
+                                <textbox id="fieldlibellebis" value="@{reglePrixWin.objet.libelle, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.add();" width="99%"/>
+								
+                                <combobox id="fieldoperateurComparaisonbis" draggable="false" style="margin-left:3px" width="97%" value="@{reglePrixWin.objet.operateurComparaison, save-when='triggerBtn.onClick'}">
+                                    <comboitem label="Egal à" value="egal"/>
+                                    <comboitem label="Inférieur à" value="inferieur"/>
+                                    <comboitem label="Inférieur ou égal à" value="inferieurouegal"/>
+                                    <comboitem label="Supèrieur à" value="superieur"/>
+                                    <comboitem label="Supèrieur ou égal à" value="superieurouegal"/>
+                                </combobox>
+								
+                                <intbox id="fieldquantiteComparaisonbis" value="@{reglePrixWin.objet.quantiteComparaison, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.add();" width="97%" />
+								
+                                <datebox id="fielddateDebutbis" format="dd/MM/yyyy" value="@{reglePrixWin.objet.dateDebut, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.add();" width="97%"/>
+								
+                                <datebox id="fielddateFinbis" format="dd/MM/yyyy" value="@{reglePrixWin.objet.dateFin, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.add();" width="97%"/>
+								
+                                <combobox id="fieldarrondirApresVirguelbis" inplace="true" readonly="true" onOK="reglePrixWin.add();" >
+                                    <attribute name="onCreate">
+											<![CDATA[
+												List l = new ArrayList();
+												l.add("Oui");
+												l.add("Non");
+												ListModelList lm = new ListModelList(l);
+												lm.addSelection(lm.get(0));
+												self.setModel(lm);
+												reglePrixWin.objet.arrondirApresVirguel = true;
+											]]>
+                                    </attribute>
+                                    <attribute name="onChange">
+											<![CDATA[
+												if(self.selectedIndex == 0) {
+													reglePrixWin.objet.arrondirApresVirguel = true;
+												} else {
+													reglePrixWin.objet.arrondirApresVirguel = false;
+												}
+											]]>
+                                    </attribute>
+                                </combobox>
+                                
+                                <combobox id="fieldactivebis" inplace="true" readonly="true" onOK="reglePrixWin.add();" >
+                                    <attribute name="onCreate">
+											<![CDATA[
+												List l = new ArrayList();
+												l.add("Oui");
+												l.add("Non");
+												ListModelList lm = new ListModelList(l);
+												lm.addSelection(lm.get(0));
+												self.setModel(lm);
+												reglePrixWin.objet.active = true;
+											]]>
+                                    </attribute>
+                                    <attribute name="onChange">
+											<![CDATA[
+												if(self.selectedIndex == 0) {
+													reglePrixWin.objet.active = true;
+												} else {
+													reglePrixWin.objet.active = false;
+												}
+											]]>
+                                    </attribute>
+                                </combobox>
+								
+                                <textbox id="fieldsenseArrondissementbis" value="@{reglePrixWin.objet.senseArrondissement, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.add();" width="99%"/>
+								
+                                <doublebox id="fieldseuilArrondissementbis" value="@{reglePrixWin.objet.seuilArrondissement, save-when='self.onChange'}" inplace="true" onOK="reglePrixWin.add();" width="99%" />
+								  
+                            </row>
+                        </rows>
+                    </grid>-->
+                    <separator/>
+                    <button id="btnNew" onClick="reglePrixWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="reglePrixWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="reglePrixWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

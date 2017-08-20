@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./regimeTVAWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="regimeTVAWin" height="100%" width="100%" style="margin:auto;" use="${regimeTVAWindow}" onCreate='regimeTVAWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/regimeTVA.zs"/> -->
+        <borderlayout>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="regimeTVAWin.select()" model="@{regimeTVAWin.listeObjets}" selectedItem="@{regimeTVAWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterLibelle" value="@{regimeTVAWin.filtre.libelle}" onChanging="regimeTVAWin.ofs; regimeTVAWin.filtre.libelle=event.value; regimeTVAWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterTaux" value="@{regimeTVAWin.filtre.taux}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                regimeTVAWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(regimeTVAWin.filtre.taux != null) {
+                                                                regimeTVAWin.filtre.taux = null;
+                                                        }
+                                                } else {
+                                                        regimeTVAWin.filtre.taux=new Integer(event.value);
+                                                }
+                                                regimeTVAWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+                            
+                            <auxheader colspan="1" unless="${arg.ispopup}"/>
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+							
+                            <listheader label="Libelle" sort="auto(libelle)" onSort="regimeTVAWin.sort(event)"/>	
+							
+                            <listheader label="Taux" sort="auto(taux)" onSort="regimeTVAWin.sort(event)"/>
+                            
+                            <listheader width="50px"/>
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            
+                            <listcell>
+							
+                                <textbox value="@{element.libelle, save-when='self.onChange'}" constraint="no empty: Veillez indiquez une valeur" inplace="true" 
+                                onChange='self.style="font-weight:bold"' onOK="regimeTVAWin.objet=self.parent.parent.value; regimeTVAWin.update();" width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <intbox value="@{element.taux, save-when='self.onChange'}" constraint="no empty: Veillez indiquez une valeur" inplace="true" 
+                                onChange='self.style="font-weight:bold"' onOK="regimeTVAWin.objet=self.parent.parent.value; regimeTVAWin.update();" width="99%" />
+							
+                            </listcell>	
+                            
+                            <listcell image="/images/skin/database_delete.png" unless="${arg.ispopup}">
+                                <attribute name="onClick">
+                                    <![CDATA[
+                                    Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                        public void onEvent(Event evt) throws InterruptedException {
+                                            if (evt.getName().equals("onOK")) {
+                                                regimeTVAWin.delete();
+                                            } 
+                                        }
+                                    });
+                                    ]]>
+                                </attribute>
+                            </listcell>
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{regimeTVAWin.tailleListe}" pageSize="@{regimeTVAWin.maxNb}" onPaging="regimeTVAWin.getNextElements(event);" />
+                    <separator/>
+                    <grid>
+                        <columns>
+                            <column width="32px" />
+							
+                            <column />
+							
+                            <column />
+                            
+                            <column width="50px" />
+							
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png">
+                                    <attribute name="onClick">
+                                        <![CDATA[
+                                            regimeTVAWin.objetSelected = null;
+                                            regimeTVAWin.objet = com.choranet.compta.RegimeTVA.class.newInstance();
+                                            regimeTVAWin.rafraichirField();
+                                            regimeTVAWin.rafraichirList();
+                                            regimeTVAWin.isUpdate = false;
+                                        ]]>
+                                    </attribute>
+                                </image>
+								
+                                <textbox id="fieldlibellebis" constraint="no empty: Veillez indiquez une valeur" value="@{regimeTVAWin.objet.libelle, save-when='triggerBtn.onClick'}" inplace="true" width="99%" />
+								
+                                <intbox id="fieldtauxbis" constraint="no empty: Veillez indiquez une valeur" value="@{regimeTVAWin.objet.taux, save-when='triggerBtn.onClick'}" inplace="true" width="50%" />
+							
+                                <button id="btnAdd" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn)); regimeTVAWin.addOrUpdate();" image="/images/skin/database_add.png" width="99%" />				  			                                        
+                            
+                            </row>
+                        </rows>
+                    </grid>
+                    <separator/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                    <button id="btnPdf" unless="${arg.ispopup}" onClick="regimeTVAWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel"  unless="${arg.ispopup}" onClick="regimeTVAWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

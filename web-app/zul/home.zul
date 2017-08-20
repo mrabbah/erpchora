@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<window position="center" mode="overlapped" width="510px" height="410px">
+    <image src="/images/skin/home.png" width="500px"  height="400px"/>
+</window>
+

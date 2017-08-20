@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./periodeWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="periodeWin" height="100%" width="100%" style="margin:auto;" use="${periodeWindow}" onCreate='periodeWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/periode.zs"/> -->
+        <borderlayout>
+            <north id="eastPanel" size="65px" open="false"  title="Recherche avancee" flex="true" splittable="true"  collapsible="true"  >
+                <hlayout spacing="10px" style="margin-top:9px;margin-left:10px">
+					
+					<label value="exercice :" />
+                    <combobox id="filterexercice" model="@{periodeWin.exercices}" selectedItem="@{periodeWin.filtre.exercice}" autocomplete="true" autodrop="true" mold="rounded" onSelect="periodeWin.ofs=0;periodeWin.filtrer()" onOK="periodeWin.ofs=0;periodeWin.filtrer()">
+                        <comboitem self="@{each=elementfiltreexercice}" label="@{elementfiltreexercice}"/>
+                    </combobox>
+										                    
+                </hlayout>
+            </north>
+            <west id="westPanel" title="CRUD" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+						
+							<row>
+                                <label value="Intitule"/>
+								 
+								<textbox id="fieldIntitule" constraint="no empty: Veillez indiquez une valeur" value="@{periodeWin.objet.intitule, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");'/>
+                            </row>												
+						 
+						
+						<row>
+							<label value="exercice " />
+							<combobox id="coexercices" model="@{periodeWin.exercices}" selectedItem="@{periodeWin.exerciceSelected}">
+								<comboitem self="@{each=elementexercice}" label="@{elementexercice}"/>
+							</combobox>
+						</row>
+						
+                        </rows>
+                    </grid>					
+					
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));periodeWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));periodeWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        periodeWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute>   
+                    </button>
+                    <!-- <button id="btnNew" onClick="periodeWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="periodeWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="periodeWin.select()" model="@{periodeWin.listeObjets}" selectedItem="@{periodeWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+							<auxheader colspan="1"/>
+							
+							<auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterIntitule" value="@{periodeWin.filtre.intitule}" onChanging="periodeWin.ofs; periodeWin.filtre.intitule=event.value; periodeWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								 
+                        </auxhead>
+						<listhead sizable="true">
+							<listheader width="32px" />
+							
+							<listheader label="Intitule" sort="auto(intitule)" onSort="periodeWin.sort(event)"/>	
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+							<listcell image="/images/skin/icon_selection.png"/>
+                            
+							<listcell>
+							
+								<textbox value="@{element.intitule, save-when='self.onChange'}" inplace="true" onOK="periodeWin.objet=self.parent.parent.value; periodeWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+							</listcell>							
+							     
+                        </listitem>
+                    </listbox>
+					<paging id="paging" totalSize="@{periodeWin.tailleListe}" pageSize="@{periodeWin.maxNb}" onPaging="periodeWin.getNextElements(event);" />
+					<separator/>
+                    <grid>
+                        <columns>
+                            <column width="32px" />
+							
+							<column />
+							
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png"  />
+								
+									<textbox id="fieldintitulebis" value="@{periodeWin.objet.intitule, save-when='self.onChange'}" inplace="true" onOK="periodeWin.add();" width="99%"/>
+								  
+                            </row>
+                        </rows>
+                    </grid>
+                    <separator/>
+                    <button id="btnNew" onClick="periodeWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="periodeWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="periodeWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

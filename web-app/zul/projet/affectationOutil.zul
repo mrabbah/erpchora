@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./affectationOutilWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="affectationOutilWin" height="100%" width="100%" style="margin:auto;" use="${affectationOutilWindow}" onCreate='affectationOutilWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/affectationOutil.zs"/> -->
+        <borderlayout>
+            <north id="eastPanel" size="65px" open="false"  title="Recherche avancée" flex="true" splittable="true"  collapsible="true"  >
+<!--                <hlayout spacing="10px" style="margin-top:9px;margin-left:10px">                                        
+                </hlayout>-->
+            </north>
+            <west id="westPanel" title="CRUD" size="40%" flex="true" splittable="true" collapsible="true" open="false">
+                <groupbox id="gbCrud" width="100%" height="100%">
+                    <grid fixedLayout="true">
+                        <rows>
+                            <row>
+                                <label value="Projet " />
+                                <combobox id="coprojets" model="@{affectationOutilWin.projets}" selectedItem="@{affectationOutilWin.projetSelected}" width="99%">
+                                    <comboitem self="@{each=elementprojet}" label="@{elementprojet}"/>
+                                </combobox>
+                            </row>
+                            <row>
+                                <label value="Outil/Engin/Machine " />
+                                <combobox id="cooutilEmployes" model="@{affectationOutilWin.outilEmployes}" selectedItem="@{affectationOutilWin.outilEmployeSelected}" onSelect="affectationOutilWin.outilSelectionner()" width="99%">
+                                    <comboitem self="@{each=elementoutilEmploye}" label="@{elementoutilEmploye}"/>
+                                </combobox>
+                            </row>
+                            <row>
+                                <label value="Employé " />
+                                <combobox id="coemployes" model="@{affectationOutilWin.employes}" selectedItem="@{affectationOutilWin.employeSelected}" width="99%">
+                                    <comboitem self="@{each=elementemploye}" label="@{elementemploye}"/>
+                                </combobox>
+                            </row>                            
+                            <row>
+                                <label value="Date"/>
+                                <datebox id="fieldDate" constraint="no empty: Veillez indiquez une valeur" format="dd/MM/yyyy" value="@{affectationOutilWin.objet.date, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>
+                            <row>
+                                <label value="Heures d'utilisation"/>
+                                <intbox id="fieldHeuresUtilisation" constraint="no empty: Veillez indiquez une valeur" value="@{affectationOutilWin.objet.heuresUtilisation, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>
+                            <row>
+                                <label value="Heures d'entretien"/>								 
+                                <intbox id="fieldHeuresEntretien" constraint="no empty: Veillez indiquez une valeur" value="@{affectationOutilWin.objet.heuresEntretien, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+                            <row>
+                                <label value="Coût Horaire"/>
+                                <doublebox id="fieldCoutHoraire" constraint="no empty: Veillez indiquez une valeur" value="@{affectationOutilWin.objet.coutHoraire, save-when='triggerBtn.onClick'}" onBindingSave='if(self.value == null)throw new WrongValueException(self, "Vous devriez indiquer une valeur");' width="99%"/>
+                            </row>												
+                        </rows>
+                    </grid>					
+                    <separator />
+                    <button id="btnSave" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));affectationOutilWin.add()" label="Sauveguarder" image="/images/skin/database_save.png"/>
+                    <button id="btnUpdate" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));affectationOutilWin.update()" label="Modifier" image="/images/skin/database_edit.png" visible="false"/>
+                    <button id="btnDelete" label="Supprimer" image="/images/skin/database_delete.png" visible="false">
+                        <attribute name="onClick">
+                            <![CDATA[
+                            Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                public void onEvent(Event evt) throws InterruptedException {
+                                    if (evt.getName().equals("onOK")) {
+                                        Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn));
+                                        affectationOutilWin.delete();
+                                    } 
+                                }
+                            });
+                            ]]>
+                        </attribute> 
+                    </button>
+                    <!-- <button id="btnNew" onClick="affectationOutilWin.newRecord()" label="Nouveau enregistrement" image="/images/skin/database_add.png"/> -->
+                    <button id="btnCancel" onClick="affectationOutilWin.cancel()" label="Annuler" image="/images/skin/cancel.png" visible="false"/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                </groupbox>
+            </west>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="affectationOutilWin.select()" model="@{affectationOutilWin.listeObjets}" selectedItem="@{affectationOutilWin.objetSelected}"  width="100%" height="100%" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>                            
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filterprojet" model="@{affectationOutilWin.projetsFiltre}" selectedItem="@{affectationOutilWin.filtre.projet}" autocomplete="true" autodrop="true" mold="rounded" onSelect="affectationOutilWin.ofs=0;affectationOutilWin.filtrer()" onOK="affectationOutilWin.ofs=0;affectationOutilWin.filtrer()" width="90%">
+                                    <comboitem self="@{each=elementfiltreprojet}" label="@{elementfiltreprojet}"/>
+                                </combobox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filteroutilEmploye" model="@{affectationOutilWin.outilEmployes}" selectedItem="@{affectationOutilWin.filtre.outilEmploye}" autocomplete="true" autodrop="true" mold="rounded" onSelect="affectationOutilWin.ofs=0;affectationOutilWin.filtrer()" onOK="affectationOutilWin.ofs=0;affectationOutilWin.filtrer()" width="90%">
+                                    <comboitem self="@{each=elementfiltreoutilEmploye}" label="@{elementfiltreoutilEmploye}"/>
+                                </combobox>   
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <combobox id="filteremploye" model="@{affectationOutilWin.employes}" selectedItem="@{affectationOutilWin.filtre.employe}" autocomplete="true" autodrop="true" mold="rounded" onSelect="affectationOutilWin.ofs=0;affectationOutilWin.filtrer()" onOK="affectationOutilWin.ofs=0;affectationOutilWin.filtrer()" width="90%">
+                                    <comboitem self="@{each=elementfiltreemploye}" label="@{elementfiltreemploye}"/>
+                                </combobox> 
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <datebox id="filterDate" format="dd/MM/yyyy" value="@{affectationOutilWin.filtre.date}" onOK="affectationOutilWin.ofs=0; affectationOutilWin.filtrer(); self.focus();" width="90%"/>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterHeuresUtilisation" value="@{affectationOutilWin.filtre.heuresUtilisation}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                affectationOutilWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(affectationOutilWin.filtre.heuresUtilisation != null) {
+                                                                affectationOutilWin.filtre.heuresUtilisation = null;
+                                                        }
+                                                } else {
+                                                        affectationOutilWin.filtre.heuresUtilisation=new Integer(event.value);
+                                                }
+                                                affectationOutilWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <intbox id="filterHeuresEntretien" value="@{affectationOutilWin.filtre.heuresEntretien}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                affectationOutilWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(affectationOutilWin.filtre.heuresEntretien != null) {
+                                                                affectationOutilWin.filtre.heuresEntretien = null;
+                                                        }
+                                                } else {
+                                                        affectationOutilWin.filtre.heuresEntretien=new Integer(event.value);
+                                                }
+                                                affectationOutilWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </intbox>
+                            </auxheader>
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <doublebox id="filterCoutHoraire" value="@{affectationOutilWin.filtre.coutHoraire}" width="100%">
+                                    <attribute name="onChanging">
+                                        <![CDATA[
+                                                affectationOutilWin.ofs=0;
+                                                if(event.value.equals("")) {
+                                                        if(affectationOutilWin.filtre.coutHoraire != null) {
+                                                                affectationOutilWin.filtre.coutHoraire = null;
+                                                        }
+                                                } else {
+                                                        affectationOutilWin.filtre.coutHoraire=new Double(event.value);
+                                                }
+                                                affectationOutilWin.filtrer();
+                                                self.focus();
+                                                if(!event.value.equals("")) {
+                                                        self.setSelectionRange(self.value.toString().length(), self.value.toString().length());
+                                                }
+                                        ]]>
+                                    </attribute>    
+                                </doublebox>
+                            </auxheader>
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+                            <listheader id="hprojet" label="Projet" sort="auto(projet)" onSort="affectationOutilWin.sort(event)"/>	
+                            <listheader id="houtilemploye" label="Outil employé" sort="auto(outilEmploye)" onSort="affectationOutilWin.sort(event)"/>	
+                            <listheader id="hemploye" label="Employé" sort="auto(employe)" onSort="affectationOutilWin.sort(event)"/>	
+                            <listheader id="hdate" label="Date" sort="auto(date)" onSort="affectationOutilWin.sort(event)"/>	
+                            <listheader id="hheuresUtilisation" label="Heures d'utilisation" sort="auto(heuresUtilisation)" onSort="affectationOutilWin.sort(event)"/>	
+                            <listheader id="hheuresEntretien" label="Heures d'entretien" sort="auto(heuresEntretien)" onSort="affectationOutilWin.sort(event)"/>	
+                            <listheader id="hcoutHoraire" label="Coût Horaire" sort="auto(coutHoraire)" onSort="affectationOutilWin.sort(event)"/>	
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            <listcell label="@{element.projet}" />
+                            <listcell label="@{element.outilEmploye}" />
+                            <listcell label="@{element.employe}" />
+                            <listcell>
+                                <datebox format="dd/MM/yyyy" value="@{element.date, save-when='self.onChange'}" inplace="true" onOK="affectationOutilWin.objet=self.parent.parent.value; affectationOutilWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+                            </listcell>	
+                            <listcell>
+                                <intbox value="@{element.heuresUtilisation, save-when='self.onChange'}" inplace="true" onOK="affectationOutilWin.objet=self.parent.parent.value; affectationOutilWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+                            </listcell>	
+                            <listcell>
+                                <intbox value="@{element.heuresEntretien, save-when='self.onChange'}" inplace="true" onOK="affectationOutilWin.objet=self.parent.parent.value; affectationOutilWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+                            </listcell>							                            						
+                            <listcell>
+                                <doublebox value="@{element.coutHoraire, save-when='self.onChange'}" inplace="true" onOK="affectationOutilWin.objet=self.parent.parent.value; affectationOutilWin.update();" onChange='self.style="font-weight:bold"' width="99%" />
+                            </listcell>							
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{affectationOutilWin.tailleListe}" pageSize="@{affectationOutilWin.maxNb}" onPaging="affectationOutilWin.getNextElements(event);" />
+                    <separator/>                   
+                    <button id="btnNew" onClick="affectationOutilWin.newRecord()" label="Nouveau" image="/images/skin/database_add.png"/>
+                    <button id="btnPdf" onClick="affectationOutilWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" onClick="affectationOutilWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>

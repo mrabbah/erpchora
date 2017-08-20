@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./modeReglementWin" ?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <window id="modeReglementWin" height="100%" width="100%" style="margin:auto;" use="${modeReglementWindow}" onCreate='modeReglementWin.verifierDroitAction();'>
+    <!-- <zscript src="/zs/modeReglement.zs"/> -->
+        <borderlayout>
+            <center border="none" flex="true">
+                <groupbox width="100%" height="100%">
+                    <listbox id="lstObjet" onSelect="modeReglementWin.select()" model="@{modeReglementWin.listeObjets}" selectedItem="@{modeReglementWin.objetSelected}"  width="100%" height="480px" mold="paging" paginal="${paging}">
+                        <auxhead sclass="category-center">
+                            <auxheader colspan="1"/>
+							
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterCode" value="@{modeReglementWin.filtre.code}" onChanging="modeReglementWin.ofs; modeReglementWin.filtre.code=event.value; modeReglementWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+								
+                            <auxheader colspan="1">
+                                <image src="/images/skin/funnel.png" width="10px" height="10px" />
+                                <textbox id="filterLibelle" value="@{modeReglementWin.filtre.libelle}" onChanging="modeReglementWin.ofs; modeReglementWin.filtre.libelle=event.value; modeReglementWin.filtrer(); self.focus(); self.setSelectionRange(self.value.length(), self.value.length())" width="100%"/>
+                            </auxheader>
+                            
+                            <auxheader colspan="1"/>
+								 
+                        </auxhead>
+                        <listhead sizable="true">
+                            <listheader width="32px" />
+							
+                            <listheader label="Code" sort="auto(code)" onSort="modeReglementWin.sort(event)"/>	
+							
+                            <listheader label="Libelle" sort="auto(libelle)" onSort="modeReglementWin.sort(event)"/>
+                            
+                            <listheader width="50px" />
+							                                 
+                        </listhead>
+                        <listitem value="@{element}" self="@{each=element}">    
+                            <listcell image="/images/skin/icon_selection.png"/>
+                            
+                            <listcell>
+							
+                                <textbox value="@{element.code, save-when='self.onChange'}" inplace="true" onOK="modeReglementWin.objet=self.parent.parent.value; modeReglementWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>							
+							
+                            <listcell>
+							
+                                <textbox value="@{element.libelle, save-when='self.onChange'}" inplace="true" onOK="modeReglementWin.objet=self.parent.parent.value; modeReglementWin.update();" onChange='self.style="font-weight:bold"' width="99%"/>
+							
+                            </listcell>	
+                            
+                             <listcell image="/images/skin/database_delete.png" unless="${arg.ispopup}">
+                                 <attribute name="onClick">
+                                    <![CDATA[
+                                    Messagebox.show("Etes vous sûr de vouloir continuer ?", "Confirmation", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+                                        public void onEvent(Event evt) throws InterruptedException {
+                                            if (evt.getName().equals("onOK")) {
+                                                modeReglementWin.delete();
+                                            } 
+                                        }
+                                    });
+                                    ]]>
+                                </attribute>                                       
+                            </listcell>
+							     
+                        </listitem>
+                    </listbox>
+                    <paging id="paging" totalSize="@{modeReglementWin.tailleListe}" pageSize="@{modeReglementWin.maxNb}" onPaging="modeReglementWin.getNextElements(event);" />
+                    <separator/>
+                    <grid>
+                        <columns>
+                            <column width="32px" />
+							
+                            <column />
+							
+                            <column />
+                            
+                            <column width="50px" />
+							
+                        </columns>
+                        <rows>
+                            <row>
+                                <image src="/images/skin/database_edit.png">
+                                    <attribute name="onClick">
+                                        <![CDATA[
+                                            modeReglementWin.objet = com.choranet.gesticom.ModeReglement.class.newInstance();
+                                            modeReglementWin.rafraichirField();
+                                            modeReglementWin.rafraichirList();
+                                            modeReglementWin.isUpdate = false;
+                                        ]]>
+                                    </attribute>
+                                </image>
+								
+                                <textbox id="fieldcodebis" constraint="no empty: Veillez indiquez une valeur" value="@{modeReglementWin.objet.code, save-when='triggerBtn.onClick'}" inplace="true" width="99%"/>
+								
+                                <textbox id="fieldlibellebis" constraint="no empty: Veillez indiquez une valeur" value="@{modeReglementWin.objet.libelle, save-when='triggerBtn.onClick'}" inplace="true" width="99%"/>
+                                    
+                                <button id="btnAdd" onClick="Events.sendEvent(new Event(Events.ON_CLICK,triggerBtn)); modeReglementWin.addOrUpdate();" image="/images/skin/database_add.png" width="99%"/>				  			                
+								  
+                            </row>
+                        </rows>
+                    </grid>
+                    <separator/>
+                    <button visible="false" id="triggerBtn" onBindingValidate=""/>
+                    <button id="btnPdf" unless="${arg.ispopup}" onClick="modeReglementWin.genererRapportPdf()" label="Generer rapport" image="/images/skin/pdf-soubor-logo.png"/>
+                    <button id="btnExcel" unless="${arg.ispopup}" onClick="modeReglementWin.genererRapportExcel()" label="Generer excel" image="/images/skin/excel-icon.png"/>
+                </groupbox>
+            </center>
+        </borderlayout>
+    </window>
+</zk>
